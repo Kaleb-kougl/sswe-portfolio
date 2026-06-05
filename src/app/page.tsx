@@ -5,7 +5,7 @@ export default function Home() {
     <>
       {/* Skip link — first focusable element */}
       <a
-        href="#inspector"
+        href="#main-content"
         className="skip-link"
       >
         Skip to main content

@@ -7,22 +7,13 @@ import {
   useMemo,
   startTransition,
 } from 'react';
-import { motion } from 'motion/react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { FILE_TREE, type FileNode } from '@/data/fileTree';
 import { FILE_LOG_MAP } from '@/data/consoleLogs';
 import { useEngineStore } from '@/store/useEngineStore';
 
-// --- Motion variants for staggered entrance (TDD §2.2) ---
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.04 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -8 },
-  visible: { opacity: 1, x: 0 },
-};
+// Stagger delay per node (matches the old 0.04s staggerChildren)
+const STAGGER_DELAY_S = 0.04;
 
 // --- Flatten tree into ordered list for keyboard navigation ---
 function flattenVisible(
@@ -37,6 +28,18 @@ function flattenVisible(
     }
   }
   return result;
+}
+
+// Count visible descendants (for stagger delay offset calculation)
+function countVisible(nodes: FileNode[], expandedSet: Set<string>): number {
+  let count = 0;
+  for (const node of nodes) {
+    count += 1;
+    if (node.isFolder && expandedSet.has(node.id) && node.children) {
+      count += countVisible(node.children, expandedSet);
+    }
+  }
+  return count;
 }
 
 function findParent(
@@ -76,6 +79,7 @@ function findParentInTree(
 interface TreeNodeProps {
   node: FileNode;
   level: number;
+  staggerIndex: number;
   activeFileId: string | null;
   focusedNodeId: string | null;
   expandedSet: Set<string>;
@@ -88,6 +92,7 @@ interface TreeNodeProps {
 function TreeNode({
   node,
   level,
+  staggerIndex,
   activeFileId,
   focusedNodeId,
   expandedSet,
@@ -122,9 +127,13 @@ function TreeNode({
     [node.id, nodeRefs]
   );
 
+  // Count child nodes for stagger offset
+  let childStaggerBase = staggerIndex + 1;
+
   return (
-    <motion.li
-      variants={itemVariants}
+    <li
+      className="tree-stagger-item"
+      style={{ animationDelay: `${staggerIndex * STAGGER_DELAY_S}s` }}
       role="treeitem"
       aria-expanded={node.isFolder ? isExpanded : undefined}
       aria-selected={isActive}
@@ -172,29 +181,30 @@ function TreeNode({
       </button>
 
       {node.isFolder && isExpanded && node.children && (
-        <motion.ul
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          role="group"
-        >
-          {node.children.map((child) => (
-            <TreeNode
-              key={child.id}
-              node={child}
-              level={level + 1}
-              activeFileId={activeFileId}
-              focusedNodeId={focusedNodeId}
-              expandedSet={expandedSet}
-              onFileSelect={onFileSelect}
-              onToggleExpand={onToggleExpand}
-              onFocusNode={onFocusNode}
-              nodeRefs={nodeRefs}
-            />
-          ))}
-        </motion.ul>
+        <ul role="group">
+          {node.children.map((child) => {
+            const idx = childStaggerBase;
+            // Advance by 1 + count of child's visible descendants
+            childStaggerBase += 1 + (child.isFolder && expandedSet.has(child.id) && child.children ? countVisible(child.children, expandedSet) : 0);
+            return (
+              <TreeNode
+                key={child.id}
+                node={child}
+                level={level + 1}
+                staggerIndex={idx}
+                activeFileId={activeFileId}
+                focusedNodeId={focusedNodeId}
+                expandedSet={expandedSet}
+                onFileSelect={onFileSelect}
+                onToggleExpand={onToggleExpand}
+                onFocusNode={onFocusNode}
+                nodeRefs={nodeRefs}
+              />
+            );
+          })}
+        </ul>
       )}
-    </motion.li>
+    </li>
   );
 }
 
@@ -340,6 +350,9 @@ export function HierarchyTree() {
     ]
   );
 
+  // Build stagger indices for root-level nodes
+  let rootStagger = 0;
+
   return (
     <nav
       className="flex h-full flex-col overflow-hidden bg-bg-sidebar"
@@ -351,29 +364,31 @@ export function HierarchyTree() {
         </span>
       </div>
       <div className="flex-1 overflow-y-auto p-1" onKeyDown={handleTreeKeyDown}>
-        <motion.ul
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+        <ul
           role="tree"
           className="space-y-0.5"
           aria-label="Project files"
         >
-          {FILE_TREE.map((node) => (
-            <TreeNode
-              key={node.id}
-              node={node}
-              level={0}
-              activeFileId={activeFileId}
-              focusedNodeId={focusedNodeId}
-              expandedSet={expandedSet}
-              onFileSelect={handleFileSelect}
-              onToggleExpand={handleToggleExpand}
-              onFocusNode={handleFocusNode}
-              nodeRefs={nodeRefs}
-            />
-          ))}
-        </motion.ul>
+          {FILE_TREE.map((node) => {
+            const idx = rootStagger;
+            rootStagger += 1 + (node.isFolder && expandedSet.has(node.id) && node.children ? countVisible(node.children, expandedSet) : 0);
+            return (
+              <TreeNode
+                key={node.id}
+                node={node}
+                level={0}
+                staggerIndex={idx}
+                activeFileId={activeFileId}
+                focusedNodeId={focusedNodeId}
+                expandedSet={expandedSet}
+                onFileSelect={handleFileSelect}
+                onToggleExpand={handleToggleExpand}
+                onFocusNode={handleFocusNode}
+                nodeRefs={nodeRefs}
+              />
+            );
+          })}
+        </ul>
       </div>
     </nav>
   );

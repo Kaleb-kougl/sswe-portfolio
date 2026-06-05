@@ -86,7 +86,7 @@ function DesktopLayout() {
 
   return (
     <LucideProvider size={16} strokeWidth={1.5}>
-      <div className="h-dvh w-full overflow-hidden bg-bg-editor">
+      <div id="main-content" tabIndex={-1} className="h-dvh w-full overflow-hidden bg-bg-editor">
         {/* Root vertical group: [TopBar + Main area] / [Console] */}
         <Group
           orientation="vertical"

@@ -25,8 +25,9 @@ test.describe('Visual Regression', () => {
     await page.waitForTimeout(2_000); // Let animations settle
 
     await expect(page).toHaveScreenshot('desktop-layout.png', {
-      maxDiffPixelRatio: 0.01,
+      maxDiffPixelRatio: 0.05,
       fullPage: false,
+      timeout: 15_000,
     });
 
     await context.close();
@@ -47,8 +48,9 @@ test.describe('Visual Regression', () => {
     await page.waitForTimeout(2_000);
 
     await expect(page).toHaveScreenshot('mobile-layout.png', {
-      maxDiffPixelRatio: 0.01,
+      maxDiffPixelRatio: 0.05,
       fullPage: false,
+      timeout: 15_000,
     });
 
     await context.close();

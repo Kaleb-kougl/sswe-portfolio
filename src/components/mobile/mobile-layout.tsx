@@ -71,6 +71,7 @@ export default function MobileLayout() {
               <div
                 ref={viewportRef}
                 className="absolute inset-0 z-0 h-dvh w-screen"
+                role="img"
                 aria-label="3D Viewport"
               >
                 <CanvasLoadingHUD />

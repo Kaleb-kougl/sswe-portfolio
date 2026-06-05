@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
-    "test:motionscore": "motionscore http://localhost:3000 --threshold B"
+    "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

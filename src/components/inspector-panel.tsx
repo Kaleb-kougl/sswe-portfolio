@@ -76,6 +76,7 @@ export function InspectorPanel() {
   return (
     <aside
       id="inspector"
+      tabIndex={-1}
       className="flex h-full flex-col overflow-hidden bg-bg-panel"
       aria-label="Inspector panel"
     >

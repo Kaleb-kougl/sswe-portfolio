@@ -28,7 +28,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await expect(console_).toBeVisible();
 
     // TopBar contains download button
-    const downloadBtn = page.locator('a[href="/KalebK_Resume.pdf"]');
+    const downloadBtn = page.locator('a[href="/KalebK_Resume.pdf"]').first();
     await expect(downloadBtn).toBeVisible();
   });
 
@@ -43,7 +43,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     // Inspector should show the title and company
     const inspector = page.locator('[aria-label="Inspector panel"]');
     await expect(inspector.getByText('Staff Software Engineer')).toBeVisible({ timeout: 5_000 });
-    await expect(inspector.getByText('IBM')).toBeVisible();
+    await expect(inspector.getByText('IBM', { exact: true })).toBeVisible();
   });
 
   test('file tree → console wiring: Indeed shows gRPC channels log', async ({ page }) => {
@@ -93,7 +93,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.goto('/');
     await page.waitForSelector('a[href="/KalebK_Resume.pdf"]', { timeout: 15_000 });
 
-    const downloadLink = page.locator('a[href="/KalebK_Resume.pdf"]');
+    const downloadLink = page.locator('a[href="/KalebK_Resume.pdf"]').first();
     await expect(downloadLink).toHaveAttribute('href', '/KalebK_Resume.pdf');
     await expect(downloadLink).toHaveAttribute('download', '');
   });
@@ -148,8 +148,8 @@ test.describe('IDE Portfolio — Mobile', () => {
     await expect(panelGroup).toHaveCount(0);
 
     // Download resume button should be visible in mobile top bar
-    const downloadLink = page.locator('a[href="/KalebK_Resume.pdf"]');
-    await expect(downloadLink).toBeVisible();
+    const downloadLink = page.getByRole('link', { name: 'Download resume' });
+    await expect(downloadLink.first()).toBeVisible();
 
     // Open drawer and select a file to trigger bottom sheet
     await menuTrigger.click();

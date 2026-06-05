@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 const IDELayout = dynamic(() => import('./ide-layout'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-dvh w-full items-center justify-center bg-bg-editor">
+    <div id="main-content" tabIndex={-1} className="flex h-dvh w-full items-center justify-center bg-bg-editor">
       <div className="flex flex-col items-center gap-3">
         <div className="flex gap-1">
           <div
