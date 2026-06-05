@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Group,
   Panel,
@@ -12,9 +14,70 @@ import { TopBar } from './top-bar';
 import { HierarchyTree } from './hierarchy-tree';
 import { InspectorPanel } from './inspector-panel';
 import { TerminalConsole } from './terminal-console';
+import { ViewportRefProvider } from './viewport-ref-context';
+import { CanvasLoadingHUD } from './3d/canvas-loading-hud';
+import { useIsMobile } from '@/hooks/useIsMobile';
+
+// Dynamic import of MemoizedCanvasWrapper (ssr: false — R3F requires browser APIs)
+const MemoizedCanvasWrapper = dynamic(
+  () => import('./3d/canvas-wrapper').then((mod) => mod.MemoizedCanvasWrapper),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center bg-bg-editor">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex gap-1">
+            <div
+              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              style={{ animationDelay: '0ms' }}
+            />
+            <div
+              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              style={{ animationDelay: '150ms' }}
+            />
+            <div
+              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              style={{ animationDelay: '300ms' }}
+            />
+          </div>
+          <p className="font-mono text-[10px] text-text-muted">
+            Initializing 3D engine...
+          </p>
+        </div>
+      </div>
+    ),
+  }
+);
+
+// Dynamic import of MobileLayout — code-split so desktop users don't pay for mobile bundle
+const MobileLayout = dynamic(() => import('./mobile/mobile-layout'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-dvh w-full items-center justify-center bg-bg-editor">
+      <p className="font-mono text-xs text-text-muted animate-pulse">
+        Loading mobile layout...
+      </p>
+    </div>
+  ),
+});
 
 export default function IDELayout() {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <MobileLayout />;
+  }
+
+  return <DesktopLayout />;
+}
+
+/**
+ * DesktopLayout — the original 4-pane IDE layout using react-resizable-panels.
+ * Rendered when viewport >= 768px.
+ */
+function DesktopLayout() {
   const hierarchyRef = usePanelRef();
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: 'ide-layout',
@@ -55,22 +118,18 @@ export default function IDELayout() {
                   aria-label="Resize hierarchy panel"
                 />
 
-                {/* Center Panel: Viewport */}
+                {/* Center Panel: Viewport (3D Canvas) */}
                 <Panel id="viewport" defaultSize="45%" className="relative">
-                  <main
-                    aria-label="Viewport"
-                    className="flex h-full items-center justify-center bg-bg-editor"
-                  >
-                    <div
-                      id="viewport"
-                      className="flex flex-col items-center gap-3 text-center"
+                  <ViewportRefProvider value={viewportRef}>
+                    <main
+                      ref={viewportRef}
+                      className="relative h-full w-full bg-bg-editor"
+                      aria-label="3D Viewport"
                     >
-                      <div className="h-16 w-16 rounded-lg border border-border/50 bg-bg-hover/30" />
-                      <p className="font-mono text-xs text-text-muted">
-                        3D Viewport — Phase 3
-                      </p>
-                    </div>
-                  </main>
+                      <CanvasLoadingHUD />
+                      <MemoizedCanvasWrapper />
+                    </main>
+                  </ViewportRefProvider>
                 </Panel>
 
                 <Separator
@@ -100,3 +159,4 @@ export default function IDELayout() {
     </LucideProvider>
   );
 }
+

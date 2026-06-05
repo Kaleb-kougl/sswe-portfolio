@@ -80,3 +80,55 @@ body {
   background: var(--color-text-accent);
   color: var(--color-bg-editor);
 }
+
+/* --- R3F Stats Panel Positioning --- */
+.stats-panel {
+  position: absolute !important;
+  top: 4px !important;
+  left: 4px !important;
+  z-index: 20 !important;
+  opacity: 0.8;
+}
+
+@media (max-width: 767px) {
+  .stats-panel {
+    top: auto !important;
+    bottom: 40px !important;
+    left: 4px !important;
+    opacity: 0.6;
+  }
+}
+
+/* --- Mobile Glassmorphic Surfaces --- */
+.glass-surface {
+  background: color-mix(in srgb, var(--color-bg-panel) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+/* --- Mobile Bottom Sheet --- */
+.sheet-handle {
+  width: 3rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: var(--color-resize-handle);
+  margin: 0.5rem auto 0;
+}
+
+/* --- Mobile Touch Behavior --- */
+@media (max-width: 767px) {
+  /* Prevent overscroll bounce on iOS */
+  html, body {
+    overscroll-behavior: none;
+  }
+
+  /* Safe area insets for notch devices */
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top, 0.5rem);
+  }
+
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+

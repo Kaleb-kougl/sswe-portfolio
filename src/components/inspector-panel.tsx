@@ -1,12 +1,78 @@
 'use client';
 
-import { useEngineStore } from '@/store/useEngineStore';
-import { RESUME_DATA, CONTACT_INFO, SUMMARY, EDUCATION, SKILLS } from '@/data/resumeData';
+import { useRef, useEffect, useId } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+import { useEngineStore, type TransientUpdates } from '@/store/useEngineStore';
+import {
+  RESUME_DATA,
+  CONTACT_INFO,
+  SUMMARY,
+  EDUCATION,
+  SKILLS,
+  type ProjectEntry,
+} from '@/data/resumeData';
 
+// --- Control metadata matching TDD §2.3 Controls Specification Table ---
+interface SliderControl {
+  type: 'slider';
+  label: string;
+  field: keyof TransientUpdates;
+  min: number;
+  max: number;
+  step: number;
+  formatValue?: (v: number) => string;
+}
+
+interface ToggleControl {
+  type: 'toggle';
+  label: string;
+  field: keyof TransientUpdates;
+}
+
+interface RadioControl {
+  type: 'radio';
+  label: string;
+  field: keyof TransientUpdates;
+  options: string[];
+}
+
+type ControlSpec = SliderControl | ToggleControl | RadioControl;
+
+const CONTROL_SPECS: Record<string, ControlSpec> = {
+  targetBundleSize: {
+    type: 'slider',
+    label: 'Target Bundle Size',
+    field: 'targetBundleSize',
+    min: 0.3,
+    max: 6.0,
+    step: 0.1,
+    formatValue: (v: number) => `${v.toFixed(1)} MB`,
+  },
+  isModuleFederationEnabled: {
+    type: 'toggle',
+    label: 'Enable Module Federation',
+    field: 'isModuleFederationEnabled',
+  },
+  isSloIncidentSimulated: {
+    type: 'toggle',
+    label: 'Simulate SLO Incident',
+    field: 'isSloIncidentSimulated',
+  },
+  forceAiState: {
+    type: 'radio',
+    label: 'Force AI State',
+    field: 'forceAiState',
+    options: ['Patrol', 'Aggro', 'Flee'],
+  },
+  showNavMesh: {
+    type: 'toggle',
+    label: 'Show NavMesh',
+    field: 'showNavMesh',
+  },
+};
+
+// --- Main Component ---
 export function InspectorPanel() {
-  const activeFileId = useEngineStore((s) => s.activeFileId);
-  const entry = activeFileId ? RESUME_DATA[activeFileId] : null;
-
   return (
     <aside
       id="inspector"
@@ -20,16 +86,46 @@ export function InspectorPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-[var(--panel-padding)]">
-        {!entry ? (
-          <WelcomeView />
-        ) : (
-          <FileEntryView entry={entry} />
-        )}
+        <InspectorPanelContent />
       </div>
     </aside>
   );
 }
 
+/**
+ * InspectorPanelContent — the reusable inner content of the inspector.
+ * Used by both the desktop InspectorPanel and the mobile MobileBottomSheet.
+ */
+export function InspectorPanelContent() {
+  const { activeFileId, setTransientState } = useEngineStore(
+    useShallow((s) => ({
+      activeFileId: s.activeFileId,
+      setTransientState: s.setTransientState,
+    }))
+  );
+
+  const entry = activeFileId ? RESUME_DATA[activeFileId] : null;
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // Focus management: when a file is selected, move focus to Inspector heading
+  useEffect(() => {
+    if (activeFileId && headingRef.current) {
+      headingRef.current.focus();
+    }
+  }, [activeFileId]);
+
+  if (!entry) return <WelcomeView />;
+
+  return (
+    <FileEntryView
+      entry={entry}
+      headingRef={headingRef}
+      setTransientState={setTransientState}
+    />
+  );
+}
+
+// --- Welcome View (no file selected) ---
 function WelcomeView() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
@@ -57,9 +153,12 @@ function WelcomeView() {
           Education
         </p>
         <div className="rounded-md border border-border bg-bg-editor p-3">
-          <p className="font-ui text-sm text-text-primary">{EDUCATION.school}</p>
+          <p className="font-ui text-sm text-text-primary">
+            {EDUCATION.school}
+          </p>
           <p className="font-mono text-xs text-text-muted">
-            {EDUCATION.degree} — GPA: {EDUCATION.gpa} — {EDUCATION.graduationDate}
+            {EDUCATION.degree} — GPA: {EDUCATION.gpa} —{' '}
+            {EDUCATION.graduationDate}
           </p>
         </div>
       </div>
@@ -82,20 +181,27 @@ function WelcomeView() {
   );
 }
 
+// --- File Entry View (with resume content + controls) ---
 interface FileEntryViewProps {
-  entry: NonNullable<ReturnType<typeof getEntry>>;
+  entry: ProjectEntry;
+  headingRef: React.RefObject<HTMLHeadingElement | null>;
+  setTransientState: (updates: TransientUpdates) => void;
 }
 
-function getEntry(id: string) {
-  return RESUME_DATA[id] ?? null;
-}
-
-function FileEntryView({ entry }: { entry: (typeof RESUME_DATA)[string] }) {
+function FileEntryView({
+  entry,
+  headingRef,
+  setTransientState,
+}: FileEntryViewProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="space-y-1">
-        <h2 className="font-ui text-lg font-semibold text-text-primary">
+        <h2
+          ref={headingRef}
+          tabIndex={-1}
+          className="font-ui text-lg font-semibold text-text-primary outline-none focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-panel rounded-sm"
+        >
           {entry.title}
         </h2>
         {entry.company && (
@@ -109,12 +215,12 @@ function FileEntryView({ entry }: { entry: (typeof RESUME_DATA)[string] }) {
             entry.type === 'work'
               ? 'bg-text-accent/10 text-text-accent'
               : entry.type === 'project'
-              ? 'bg-text-green/10 text-text-green'
-              : entry.type === 'skill'
-              ? 'bg-text-peach/10 text-text-peach'
-              : entry.type === 'contact'
-              ? 'bg-text-yellow/10 text-text-yellow'
-              : 'bg-text-muted/10 text-text-muted'
+                ? 'bg-text-green/10 text-text-green'
+                : entry.type === 'skill'
+                  ? 'bg-text-peach/10 text-text-peach'
+                  : entry.type === 'contact'
+                    ? 'bg-text-yellow/10 text-text-yellow'
+                    : 'bg-text-muted/10 text-text-muted'
           }`}
         >
           {entry.type}
@@ -134,17 +240,189 @@ function FileEntryView({ entry }: { entry: (typeof RESUME_DATA)[string] }) {
         ))}
       </ul>
 
-      {/* Controls placeholder — Phase 2 */}
+      {/* Interactive Controls */}
       {entry.controls && entry.controls.length > 0 && (
         <div className="mt-6 rounded-md border border-border/50 bg-bg-editor p-3">
-          <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-wider text-text-muted">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-wider text-text-muted">
             Interactive Controls
           </p>
-          <p className="font-mono text-xs text-text-muted italic">
-            Controls will be available in Phase 2.
-          </p>
+          <div className="space-y-4">
+            {entry.controls.map((controlId) => {
+              const spec = CONTROL_SPECS[controlId];
+              if (!spec) return null;
+
+              switch (spec.type) {
+                case 'slider':
+                  return (
+                    <SliderControl
+                      key={controlId}
+                      spec={spec}
+                      setTransientState={setTransientState}
+                    />
+                  );
+                case 'toggle':
+                  return (
+                    <ToggleControl
+                      key={controlId}
+                      spec={spec}
+                      setTransientState={setTransientState}
+                    />
+                  );
+                case 'radio':
+                  return (
+                    <RadioGroupControl
+                      key={controlId}
+                      spec={spec}
+                      setTransientState={setTransientState}
+                    />
+                  );
+              }
+            })}
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+// --- Slider Control (IBM Bundle Size) ---
+function SliderControl({
+  spec,
+  setTransientState,
+}: {
+  spec: SliderControl;
+  setTransientState: (u: TransientUpdates) => void;
+}) {
+  const value = useEngineStore(
+    (s) => s[spec.field as keyof typeof s]
+  ) as number;
+  const sliderId = useId();
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor={sliderId}
+          className="font-mono text-xs text-text-muted"
+        >
+          {spec.label}
+        </label>
+        <span className="font-mono text-xs font-medium text-text-accent">
+          {spec.formatValue ? spec.formatValue(value) : value}
+        </span>
+      </div>
+      <input
+        id={sliderId}
+        type="range"
+        min={spec.min}
+        max={spec.max}
+        step={spec.step}
+        value={value}
+        onChange={(e) =>
+          setTransientState({
+            [spec.field]: parseFloat(e.target.value),
+          } as TransientUpdates)
+        }
+        className="w-full accent-text-accent"
+        aria-valuemin={spec.min}
+        aria-valuemax={spec.max}
+        aria-valuenow={value}
+        aria-valuetext={spec.formatValue ? spec.formatValue(value) : `${value}`}
+      />
+      <div className="flex justify-between font-mono text-[10px] text-text-muted">
+        <span>
+          {spec.formatValue ? spec.formatValue(spec.min) : spec.min}
+        </span>
+        <span>
+          {spec.formatValue ? spec.formatValue(spec.max) : spec.max}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// --- Toggle Control (Indeed toggles, HammerBall NavMesh) ---
+function ToggleControl({
+  spec,
+  setTransientState,
+}: {
+  spec: ToggleControl;
+  setTransientState: (u: TransientUpdates) => void;
+}) {
+  const value = useEngineStore(
+    (s) => s[spec.field as keyof typeof s]
+  ) as boolean;
+  const checkboxId = useId();
+
+  return (
+    <div className="flex items-center gap-3 min-h-[44px]">
+      <input
+        id={checkboxId}
+        type="checkbox"
+        checked={value}
+        onChange={(e) =>
+          setTransientState({
+            [spec.field]: e.target.checked,
+          } as TransientUpdates)
+        }
+        className="h-4 w-4 rounded border-border bg-bg-panel text-text-accent accent-text-accent cursor-pointer"
+      />
+      <label
+        htmlFor={checkboxId}
+        className="font-mono text-xs text-text-muted cursor-pointer select-none"
+      >
+        {spec.label}
+      </label>
+    </div>
+  );
+}
+
+// --- Radio Group Control (HammerBall AI State) ---
+function RadioGroupControl({
+  spec,
+  setTransientState,
+}: {
+  spec: RadioControl;
+  setTransientState: (u: TransientUpdates) => void;
+}) {
+  const value = useEngineStore(
+    (s) => s[spec.field as keyof typeof s]
+  ) as string;
+  const groupId = useId();
+
+  return (
+    <fieldset className="space-y-2">
+      <legend className="font-mono text-xs text-text-muted">{spec.label}</legend>
+      <div className="flex flex-wrap gap-3" role="radiogroup" aria-label={spec.label}>
+        {spec.options.map((option) => {
+          const radioId = `${groupId}-${option}`;
+          return (
+            <div key={option} className="flex items-center gap-2 min-h-[44px]">
+              <input
+                id={radioId}
+                type="radio"
+                name={`${groupId}-${spec.field}`}
+                value={option}
+                checked={value === option}
+                onChange={() =>
+                  setTransientState({
+                    [spec.field]: option,
+                  } as TransientUpdates)
+                }
+                className="h-4 w-4 border-border bg-bg-panel text-text-accent accent-text-accent cursor-pointer"
+              />
+              <label
+                htmlFor={radioId}
+                className={`font-mono text-xs cursor-pointer select-none ${
+                  value === option ? 'text-text-accent' : 'text-text-muted'
+                }`}
+              >
+                {option}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }

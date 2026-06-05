@@ -1,64 +1,164 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useMemo,
+  startTransition,
+} from 'react';
+import { motion } from 'motion/react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { FILE_TREE, type FileNode } from '@/data/fileTree';
 import { FILE_LOG_MAP } from '@/data/consoleLogs';
 import { useEngineStore } from '@/store/useEngineStore';
 
+// --- Motion variants for staggered entrance (TDD §2.2) ---
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.04 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: { opacity: 1, x: 0 },
+};
+
+// --- Flatten tree into ordered list for keyboard navigation ---
+function flattenVisible(
+  nodes: FileNode[],
+  expandedSet: Set<string>
+): FileNode[] {
+  const result: FileNode[] = [];
+  for (const node of nodes) {
+    result.push(node);
+    if (node.isFolder && expandedSet.has(node.id) && node.children) {
+      result.push(...flattenVisible(node.children, expandedSet));
+    }
+  }
+  return result;
+}
+
+function findParent(
+  nodes: FileNode[],
+  targetId: string,
+  parent: FileNode | null = null
+): FileNode | null {
+  for (const node of nodes) {
+    if (node.id === targetId) return parent;
+    if (node.children) {
+      const found = findParent(node.children, targetId, node);
+      if (found !== undefined && found !== null) return found;
+      // Check if target is a direct child
+      if (node.children.some((c) => c.id === targetId)) return node;
+    }
+  }
+  return null;
+}
+
+function findParentInTree(
+  nodes: FileNode[],
+  targetId: string
+): FileNode | null {
+  for (const node of nodes) {
+    if (node.children) {
+      for (const child of node.children) {
+        if (child.id === targetId) return node;
+      }
+      const found = findParentInTree(node.children, targetId);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// --- TreeNode Component ---
 interface TreeNodeProps {
   node: FileNode;
   level: number;
   activeFileId: string | null;
+  focusedNodeId: string | null;
+  expandedSet: Set<string>;
   onFileSelect: (id: string) => void;
+  onToggleExpand: (id: string) => void;
+  onFocusNode: (id: string) => void;
+  nodeRefs: React.MutableRefObject<Map<string, HTMLButtonElement>>;
 }
 
-function TreeNode({ node, level, activeFileId, onFileSelect }: TreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+function TreeNode({
+  node,
+  level,
+  activeFileId,
+  focusedNodeId,
+  expandedSet,
+  onFileSelect,
+  onToggleExpand,
+  onFocusNode,
+  nodeRefs,
+}: TreeNodeProps) {
+  const isExpanded = expandedSet.has(node.id);
+  const isFocused = node.id === focusedNodeId;
+  const isActive = node.id === activeFileId;
 
   const handleClick = useCallback(() => {
+    onFocusNode(node.id);
     if (node.isFolder) {
-      setIsExpanded((prev) => !prev);
+      onToggleExpand(node.id);
     } else {
       onFileSelect(node.id);
     }
-  }, [node.id, node.isFolder, onFileSelect]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleClick();
-      }
-    },
-    [handleClick]
-  );
+  }, [node.id, node.isFolder, onFileSelect, onToggleExpand, onFocusNode]);
 
   const Icon = node.icon;
-  const isActive = node.id === activeFileId;
+
+  const setRef = useCallback(
+    (el: HTMLButtonElement | null) => {
+      if (el) {
+        nodeRefs.current.set(node.id, el);
+      } else {
+        nodeRefs.current.delete(node.id);
+      }
+    },
+    [node.id, nodeRefs]
+  );
 
   return (
-    <li
+    <motion.li
+      variants={itemVariants}
       role="treeitem"
       aria-expanded={node.isFolder ? isExpanded : undefined}
-      aria-selected={!node.isFolder ? isActive : undefined}
+      aria-selected={isActive}
     >
       <button
+        ref={setRef}
         type="button"
         onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        className={`flex w-full items-center gap-1 rounded-sm px-1 py-0.5 text-left font-mono text-[13px] transition-colors ${
+        tabIndex={isFocused ? 0 : -1}
+        className={`flex w-full items-center gap-1.5 rounded-sm px-1 text-left font-mono text-[13px] transition-colors min-h-[44px] min-w-[44px] ${
           isActive
             ? 'bg-bg-active text-text-accent'
             : 'text-text-primary hover:bg-bg-hover'
         }`}
         style={{ paddingLeft: `${level * 12 + 4}px` }}
+        aria-label={
+          node.isFolder
+            ? `${node.label} folder, ${isExpanded ? 'expanded' : 'collapsed'}`
+            : node.label
+        }
       >
         {node.isFolder ? (
           isExpanded ? (
-            <ChevronDown size={14} strokeWidth={1.5} className="shrink-0 text-text-muted" />
+            <ChevronDown
+              size={14}
+              strokeWidth={1.5}
+              className="shrink-0 text-text-muted"
+            />
           ) : (
-            <ChevronRight size={14} strokeWidth={1.5} className="shrink-0 text-text-muted" />
+            <ChevronRight
+              size={14}
+              strokeWidth={1.5}
+              className="shrink-0 text-text-muted"
+            />
           )
         ) : (
           <span className="w-[14px] shrink-0" />
@@ -72,32 +172,172 @@ function TreeNode({ node, level, activeFileId, onFileSelect }: TreeNodeProps) {
       </button>
 
       {node.isFolder && isExpanded && node.children && (
-        <ul role="group">
+        <motion.ul
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          role="group"
+        >
           {node.children.map((child) => (
             <TreeNode
               key={child.id}
               node={child}
               level={level + 1}
               activeFileId={activeFileId}
+              focusedNodeId={focusedNodeId}
+              expandedSet={expandedSet}
               onFileSelect={onFileSelect}
+              onToggleExpand={onToggleExpand}
+              onFocusNode={onFocusNode}
+              nodeRefs={nodeRefs}
             />
           ))}
-        </ul>
+        </motion.ul>
       )}
-    </li>
+    </motion.li>
   );
 }
 
+// --- HierarchyTree Root ---
 export function HierarchyTree() {
   const activeFileId = useEngineStore((s) => s.activeFileId);
   const setActiveFile = useEngineStore((s) => s.setActiveFile);
 
+  // Track expanded folders — all expanded by default
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    for (const node of FILE_TREE) {
+      if (node.isFolder) initial.add(node.id);
+    }
+    return initial;
+  });
+
+  // Track which node has keyboard focus (roving tabindex)
+  const [focusedNodeId, setFocusedNodeId] = useState<string | null>(
+    FILE_TREE[0]?.id ?? null
+  );
+
+  // Refs for programmatic focus
+  const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+
+  // Flat list of visible nodes for arrow key navigation
+  const visibleNodes = useMemo(
+    () => flattenVisible(FILE_TREE, expandedSet),
+    [expandedSet]
+  );
+
   const handleFileSelect = useCallback(
     (id: string) => {
       const logMsg = FILE_LOG_MAP[id];
-      setActiveFile(id, logMsg);
+      // Use startTransition for non-urgent state updates (TDD §6)
+      startTransition(() => {
+        setActiveFile(id, logMsg);
+      });
     },
     [setActiveFile]
+  );
+
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpandedSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleFocusNode = useCallback(
+    (id: string) => {
+      setFocusedNodeId(id);
+      const el = nodeRefs.current.get(id);
+      el?.focus();
+    },
+    []
+  );
+
+  // --- WAI-ARIA Tree keyboard navigation ---
+  const handleTreeKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const currentIndex = visibleNodes.findIndex(
+        (n) => n.id === focusedNodeId
+      );
+      if (currentIndex === -1) return;
+
+      const current = visibleNodes[currentIndex];
+      let handled = true;
+
+      switch (e.key) {
+        case 'ArrowDown': {
+          const next = visibleNodes[currentIndex + 1];
+          if (next) handleFocusNode(next.id);
+          break;
+        }
+        case 'ArrowUp': {
+          const prev = visibleNodes[currentIndex - 1];
+          if (prev) handleFocusNode(prev.id);
+          break;
+        }
+        case 'ArrowRight': {
+          if (current.isFolder) {
+            if (!expandedSet.has(current.id)) {
+              // Expand collapsed folder
+              handleToggleExpand(current.id);
+            } else if (current.children?.length) {
+              // Move to first child
+              handleFocusNode(current.children[0].id);
+            }
+          }
+          break;
+        }
+        case 'ArrowLeft': {
+          if (current.isFolder && expandedSet.has(current.id)) {
+            // Collapse expanded folder
+            handleToggleExpand(current.id);
+          } else {
+            // Move to parent
+            const parent = findParentInTree(FILE_TREE, current.id);
+            if (parent) handleFocusNode(parent.id);
+          }
+          break;
+        }
+        case 'Home': {
+          handleFocusNode(visibleNodes[0].id);
+          break;
+        }
+        case 'End': {
+          handleFocusNode(visibleNodes[visibleNodes.length - 1].id);
+          break;
+        }
+        case 'Enter':
+        case ' ': {
+          e.preventDefault();
+          if (current.isFolder) {
+            handleToggleExpand(current.id);
+          } else {
+            handleFileSelect(current.id);
+          }
+          break;
+        }
+        default:
+          handled = false;
+      }
+
+      if (handled) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    [
+      focusedNodeId,
+      visibleNodes,
+      expandedSet,
+      handleFocusNode,
+      handleToggleExpand,
+      handleFileSelect,
+    ]
   );
 
   return (
@@ -110,18 +350,30 @@ export function HierarchyTree() {
           Hierarchy
         </span>
       </div>
-      <div className="flex-1 overflow-y-auto p-1">
-        <ul role="tree" className="space-y-0.5">
+      <div className="flex-1 overflow-y-auto p-1" onKeyDown={handleTreeKeyDown}>
+        <motion.ul
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          role="tree"
+          className="space-y-0.5"
+          aria-label="Project files"
+        >
           {FILE_TREE.map((node) => (
             <TreeNode
               key={node.id}
               node={node}
               level={0}
               activeFileId={activeFileId}
+              focusedNodeId={focusedNodeId}
+              expandedSet={expandedSet}
               onFileSelect={handleFileSelect}
+              onToggleExpand={handleToggleExpand}
+              onFocusNode={handleFocusNode}
+              nodeRefs={nodeRefs}
             />
           ))}
-        </ul>
+        </motion.ul>
       </div>
     </nav>
   );

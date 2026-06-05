@@ -3,6 +3,14 @@ import { devtools, subscribeWithSelector } from 'zustand/middleware';
 
 export type ViewState = 'hidden' | 'peek' | 'expanded';
 
+/** Structured console log entry with a stable unique ID for React keying. */
+export interface ConsoleLogEntry {
+  id: number;
+  msg: string;
+}
+
+let logCounter = 0;
+
 /** Narrow type for transient state updates — prevents accidentally overwriting reactive state. */
 export interface TransientUpdates {
   targetBundleSize?: number;
@@ -15,14 +23,18 @@ export interface TransientUpdates {
 interface EngineState {
   // --- REACTIVE STATE (DOM Re-renders Expected) ---
   activeFileId: string | null;
-  consoleLogs: string[];
+  consoleLogs: ConsoleLogEntry[];
   mobileSheetState: ViewState;
   isAssetLoading: boolean;
+  isMobileDrawerOpen: boolean;
+  isGestureDragging: boolean;
 
   setActiveFile: (id: string, logMsg?: string) => void;
   pushLog: (msg: string) => void;
   setMobileSheetState: (state: ViewState) => void;
   setAssetLoading: (status: boolean) => void;
+  setMobileDrawerOpen: (open: boolean) => void;
+  setGestureDragging: (dragging: boolean) => void;
 
   // --- TRANSIENT STATE (WebGL reads imperatively; bypasses React renders) ---
   // IBM Flex
@@ -34,10 +46,11 @@ interface EngineState {
   forceAiState: 'Patrol' | 'Aggro' | 'Flee';
   showNavMesh: boolean;
 
-  // TODO: Phase 3 — add cameraTarget: THREE.Vector3 when three.js is installed
+  // Camera (plain object to avoid importing THREE in the store — preserves SSR safety)
+  cameraTarget: { x: number; y: number; z: number };
 
   setTransientState: (updates: TransientUpdates) => void;
-  // TODO: Phase 3 — add setCameraTarget: (target: THREE.Vector3) => void
+  setCameraTarget: (target: { x: number; y: number; z: number }) => void;
   resetStore: () => void;
 }
 
@@ -46,9 +59,11 @@ export const useEngineStore = create<EngineState>()(
     subscribeWithSelector((set, _get, store) => ({
       // --- Reactive defaults ---
       activeFileId: null,
-      consoleLogs: [],
+      consoleLogs: [] as ConsoleLogEntry[],
       mobileSheetState: 'hidden' as ViewState,
       isAssetLoading: false,
+      isMobileDrawerOpen: false,
+      isGestureDragging: false,
 
       // --- Reactive actions ---
       setActiveFile: (id, logMsg) =>
@@ -57,7 +72,7 @@ export const useEngineStore = create<EngineState>()(
             activeFileId: id,
             isAssetLoading: true,
             consoleLogs: logMsg
-              ? [...state.consoleLogs, logMsg].slice(-100)
+              ? [...state.consoleLogs, { id: logCounter++, msg: logMsg }].slice(-100)
               : state.consoleLogs,
           }),
           undefined,
@@ -67,7 +82,7 @@ export const useEngineStore = create<EngineState>()(
       pushLog: (msg) =>
         set(
           (state) => ({
-            consoleLogs: [...state.consoleLogs, msg].slice(-100),
+            consoleLogs: [...state.consoleLogs, { id: logCounter++, msg }].slice(-100),
           }),
           undefined,
           'reactive/pushLog'
@@ -77,6 +92,10 @@ export const useEngineStore = create<EngineState>()(
         set({ mobileSheetState: state }, undefined, 'reactive/setMobileSheetState'),
       setAssetLoading: (status) =>
         set({ isAssetLoading: status }, undefined, 'reactive/setAssetLoading'),
+      setMobileDrawerOpen: (open) =>
+        set({ isMobileDrawerOpen: open }, undefined, 'reactive/setMobileDrawerOpen'),
+      setGestureDragging: (dragging) =>
+        set({ isGestureDragging: dragging }, undefined, 'reactive/setGestureDragging'),
 
       // --- Transient defaults ---
       targetBundleSize: 6.0,
@@ -84,10 +103,13 @@ export const useEngineStore = create<EngineState>()(
       isSloIncidentSimulated: false,
       forceAiState: 'Patrol' as const,
       showNavMesh: false,
+      cameraTarget: { x: 0, y: 0, z: 0 },
 
       // --- Transient actions ---
       setTransientState: (updates) =>
         set(updates, undefined, 'transient/update'),
+      setCameraTarget: (target) =>
+        set({ cameraTarget: { ...target } }, undefined, 'transient/setCameraTarget'),
 
       // --- Reset ---
       resetStore: () =>

@@ -4,6 +4,17 @@ import { useEffect, useRef, useDeferredValue } from 'react';
 import { useEngineStore } from '@/store/useEngineStore';
 import { BOOT_LOGS } from '@/data/consoleLogs';
 
+// Format timestamp as HH:MM:SS
+function getTimestamp(): string {
+  const now = new Date();
+  return now.toLocaleTimeString('en-US', {
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+
 export function TerminalConsole() {
   const consoleLogs = useEngineStore((s) => s.consoleLogs);
   const deferredLogs = useDeferredValue(consoleLogs);
@@ -53,9 +64,9 @@ export function TerminalConsole() {
           </p>
         ) : (
           <ul className="space-y-0.5">
-            {deferredLogs.map((log, i) => (
-              <li key={`log-${i}`} className="font-mono text-xs leading-relaxed">
-                <LogLine text={log} />
+            {deferredLogs.map((log) => (
+              <li key={log.id} className="font-mono text-xs leading-relaxed">
+                <LogLine text={log.msg} />
               </li>
             ))}
           </ul>
@@ -66,6 +77,8 @@ export function TerminalConsole() {
 }
 
 function LogLine({ text }: { text: string }) {
+  const timestamp = useRef(getTimestamp()).current;
+
   // Color-code log prefixes
   let prefixColor = 'text-text-muted';
 
@@ -87,11 +100,18 @@ function LogLine({ text }: { text: string }) {
     const rest = text.slice(bracketEnd + 1);
     return (
       <>
+        <span className="text-text-muted/50">{timestamp}</span>
+        <span className="text-text-muted/50">{' '}</span>
         <span className={prefixColor}>{prefix}</span>
         <span className="text-text-primary">{rest}</span>
       </>
     );
   }
 
-  return <span className="text-text-primary">{text}</span>;
+  return (
+    <>
+      <span className="text-text-muted/50">{timestamp} </span>
+      <span className="text-text-primary">{text}</span>
+    </>
+  );
 }
