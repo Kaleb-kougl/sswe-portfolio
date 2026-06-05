@@ -53,7 +53,7 @@ export function FocusTrap({ children, active }: { children: ReactNode; active: b
   }, [active]);
 
   return (
-    <div ref={containerRef} onKeyDown={handleKeyDown}>
+    <div ref={containerRef} onKeyDown={handleKeyDown} className="min-h-0 flex-1 flex flex-col">
       {children}
     </div>
   );

@@ -12,10 +12,18 @@ import { InspectorPanelContent } from '../inspector-panel';
 /**
  * MobileBottomSheet — draggable inspector sheet with three states.
  *
+ * Positioning strategy:
+ * The sheet is anchored with `top: 25dvh; bottom: 0`, giving it a natural
+ * height of 75dvh that is always flush with the viewport bottom.
+ * translateY percentages are relative to this 75dvh height:
+ * - expanded: 0%   → top at 25dvh, bottom at viewport bottom (75dvh visible)
+ * - peek:     80%  → shifted down 60dvh, only ~15dvh visible
+ * - hidden:   100% → shifted fully off-screen
+ *
  * States (from mobileSheetState in Zustand):
  * - hidden: fully dismissed, full canvas visible
- * - peek: title + swipe handle at bottom
- * - expanded: ~75% of screen with full inspector content
+ * - peek: handle + title visible at bottom
+ * - expanded: ~75% of screen with full scrollable inspector content
  *
  * Uses m.* elements (parent provides LazyMotion context).
  * Focus trapped when expanded, restored on dismiss.
@@ -26,11 +34,14 @@ import { InspectorPanelContent } from '../inspector-panel';
 
 const SHEET_TRIGGER_ID = 'mobile-sheet-peek';
 
-// Y-position percentages for each state (CSS top positioning via translateY)
+// translateY as percentage of the sheet's own height (75dvh).
+// expanded: no shift (flush with viewport bottom)
+// peek: shift down 80% of 75dvh = 60dvh → 15dvh visible
+// hidden: shift down 100% = fully off-screen
 const Y_POSITIONS: Record<ViewState, string> = {
   hidden: '100%',
-  peek: '85%',
-  expanded: '25%',
+  peek: '80%',
+  expanded: '0%',
 };
 
 export function MobileBottomSheet() {
@@ -75,9 +86,14 @@ export function MobileBottomSheet() {
   );
 
   const handlePeekTap = useCallback(() => {
-    setSheetState('expanded');
-    setCameraTarget({ x: 0, y: 1.5, z: 0 });
-  }, [setSheetState, setCameraTarget]);
+    if (sheetState === 'expanded') {
+      setSheetState('peek');
+      setCameraTarget({ x: 0, y: 0, z: 0 });
+    } else {
+      setSheetState('expanded');
+      setCameraTarget({ x: 0, y: 1.5, z: 0 });
+    }
+  }, [sheetState, setSheetState, setCameraTarget]);
 
   const handleExitComplete = useCallback(() => {
     triggerRef.current?.focus();
@@ -98,8 +114,8 @@ export function MobileBottomSheet() {
           dragElastic={0.2}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
-          className="mobile-safe-bottom fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-2xl bg-bg-panel shadow-[0_-4px_30px_rgba(0,0,0,0.3)]"
-          style={{ height: '75dvh' }}
+          className="mobile-safe-bottom fixed inset-x-0 z-50 flex flex-col rounded-t-2xl bg-bg-panel shadow-[0_-4px_30px_rgba(0,0,0,0.3)]"
+          style={{ top: '25dvh', bottom: 0 }}
           role="dialog"
           aria-label="Inspector panel"
           aria-modal={sheetState === 'expanded'}
