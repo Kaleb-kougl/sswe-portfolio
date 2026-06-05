@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Surface Colors (Catppuccin Mocha inspired) --- */
+  --color-bg-editor: #1e1e2e;
+  --color-bg-sidebar: #181825;
+  --color-bg-panel: #11111b;
+  --color-bg-toolbar: #1e1e2e;
+  --color-bg-hover: #313244;
+  --color-bg-active: #45475a;
+
+  /* --- Text --- */
+  --color-text-primary: #cdd6f4;
+  --color-text-muted: #6c7086;
+  --color-text-accent: #89b4fa;
+  --color-text-green: #a6e3a1;
+  --color-text-red: #f38ba8;
+  --color-text-yellow: #f9e2af;
+  --color-text-peach: #fab387;
+
+  /* --- Borders & Dividers --- */
+  --color-border: #313244;
+  --color-resize-handle: #585b70;
+
+  /* --- Typography --- */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-ui: 'Inter', system-ui, sans-serif;
+
+  /* --- Spacing (panel defaults) --- */
+  --panel-padding: 0.75rem;
+  --toolbar-height: 2.75rem;
+}
+
+/* --- Base Styles --- */
+body {
+  background: var(--color-bg-editor);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+}
+
+/* --- Scrollbar Styling --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-hover);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-resize-handle);
+}
+
+/* --- Skip Link --- */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--color-text-accent);
+  color: var(--color-bg-editor);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 0.375rem 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--color-text-accent);
+  color: var(--color-bg-editor);
+}
