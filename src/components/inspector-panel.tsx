@@ -12,6 +12,34 @@ import {
   type ProjectEntry,
 } from '@/data/resumeData';
 
+// --- Helper for Linkifying Text ---
+function LinkifiedText({ text }: { text: string }) {
+  const parts = text.split(/((?:https?:\/\/[^\s]+)|(?:linkedin\.com[^\s]+)|(?:[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+))/g);
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (!part) return null;
+        if (part.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$/)) {
+          return (
+            <a key={i} href={`mailto:${part}`} className="text-text-accent hover:underline">
+              {part}
+            </a>
+          );
+        } else if (part.match(/^(https?:\/\/|linkedin\.com)/)) {
+          const href = part.startsWith('http') ? part : `https://${part}`;
+          return (
+            <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">
+              {part}
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 // --- Control metadata matching TDD §2.3 Controls Specification Table ---
 interface SliderControl {
   type: 'slider';
@@ -141,8 +169,12 @@ function WelcomeView() {
       </p>
       <div className="mt-4 space-y-1 text-left font-mono text-xs text-text-muted">
         <p>📍 {CONTACT_INFO.location}</p>
-        <p>📧 {CONTACT_INFO.email}</p>
-        <p>🔗 {CONTACT_INFO.linkedin}</p>
+        <p>
+          📧 <a href={`mailto:${CONTACT_INFO.email}`} className="text-text-accent hover:underline">{CONTACT_INFO.email}</a>
+        </p>
+        <p>
+          🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">{CONTACT_INFO.linkedin}</a>
+        </p>
       </div>
       <div className="mt-4">
         <p className="font-ui text-xs text-text-muted">
@@ -153,14 +185,18 @@ function WelcomeView() {
         <p className="mb-2 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
           Education
         </p>
-        <div className="rounded-md border border-border bg-bg-editor p-3">
-          <p className="font-ui text-sm text-text-primary">
-            {EDUCATION.school}
-          </p>
-          <p className="font-mono text-xs text-text-muted">
-            {EDUCATION.degree} — GPA: {EDUCATION.gpa} —{' '}
-            {EDUCATION.graduationDate}
-          </p>
+        <div className="space-y-2">
+          {EDUCATION.map((edu) => (
+            <div key={edu.school} className="rounded-md border border-border bg-bg-editor p-3">
+              <p className="font-ui text-sm text-text-primary">
+                {edu.school}
+              </p>
+              <p className="font-mono text-xs text-text-muted">
+                {edu.degree}
+                {edu.gpa ? ` — GPA: ${edu.gpa}` : ''} — {edu.graduationDate}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
       <div className="mt-4 w-full">
@@ -236,7 +272,9 @@ function FileEntryView({
             className="flex gap-2 font-ui text-sm leading-relaxed text-text-primary"
           >
             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-accent" />
-            <span>{bullet}</span>
+            <span className="break-words">
+              <LinkifiedText text={bullet} />
+            </span>
           </li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { AnimatePresence, useDragControls } from 'motion/react';
 import * as m from 'motion/react-m';
 import type { PanInfo } from 'motion/react';
@@ -8,9 +8,13 @@ import { useShallow } from 'zustand/react/shallow';
 import { useEngineStore, type ViewState } from '@/store/useEngineStore';
 import { FocusTrap } from './focus-trap';
 import { InspectorPanelContent } from '../inspector-panel';
+import { MobileConsoleContent } from './mobile-console-content';
 
 /**
- * MobileBottomSheet — draggable inspector sheet with three states.
+ * MobileBottomSheet — draggable inspector/console sheet with three states.
+ *
+ * Tab bar (top-left): "Inspector" | "Console" — positioned left to avoid
+ * accidental taps near the drag handle center.
  *
  * Positioning strategy:
  * The sheet is anchored with `top: 25dvh; bottom: 0`, giving it a natural
@@ -22,8 +26,8 @@ import { InspectorPanelContent } from '../inspector-panel';
  *
  * States (from mobileSheetState in Zustand):
  * - hidden: fully dismissed, full canvas visible
- * - peek: handle + title visible at bottom
- * - expanded: ~75% of screen with full scrollable inspector content
+ * - peek: handle + tab bar visible at bottom
+ * - expanded: ~75% of screen with full scrollable content
  *
  * Uses m.* elements (parent provides LazyMotion context).
  * Focus trapped when expanded, restored on dismiss.
@@ -32,12 +36,11 @@ import { InspectorPanelContent } from '../inspector-panel';
  * touch scrolling works normally inside the content area.
  */
 
+type SheetTab = 'inspector' | 'console';
+
 const SHEET_TRIGGER_ID = 'mobile-sheet-peek';
 
 // translateY as percentage of the sheet's own height (75dvh).
-// expanded: no shift (flush with viewport bottom)
-// peek: shift down 80% of 75dvh = 60dvh → 15dvh visible
-// hidden: shift down 100% = fully off-screen
 const Y_POSITIONS: Record<ViewState, string> = {
   hidden: '100%',
   peek: '80%',
@@ -54,6 +57,7 @@ export function MobileBottomSheet() {
     }))
   );
 
+  const [activeTab, setActiveTab] = useState<SheetTab>('inspector');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dragControls = useDragControls();
 
@@ -69,7 +73,6 @@ export function MobileBottomSheet() {
         // Swiped down — dismiss or reduce
         if (sheetState === 'expanded') {
           setSheetState('peek');
-          // Reset camera when collapsing
           setCameraTarget({ x: 0, y: 0, z: 0 });
         } else {
           setSheetState('hidden');
@@ -78,7 +81,6 @@ export function MobileBottomSheet() {
       } else if (info.offset.y < -50 && sheetState === 'peek') {
         // Swiped up from peek — expand
         setSheetState('expanded');
-        // Pan camera up so 3D frames in top 25%
         setCameraTarget({ x: 0, y: 1.5, z: 0 });
       }
     },
@@ -117,31 +119,98 @@ export function MobileBottomSheet() {
           className="mobile-safe-bottom fixed inset-x-0 z-50 flex flex-col rounded-t-2xl bg-bg-panel shadow-[0_-4px_30px_rgba(0,0,0,0.3)]"
           style={{ top: '25dvh', bottom: 0 }}
           role="dialog"
-          aria-label="Inspector panel"
+          aria-label={activeTab === 'inspector' ? 'Inspector panel' : 'Console output'}
           aria-modal={sheetState === 'expanded'}
         >
-          {/* Drag handle — only this area triggers sheet drag */}
+          {/* Row 1: Drag handle */}
           <button
             ref={triggerRef}
             id={SHEET_TRIGGER_ID}
             type="button"
             onClick={handlePeekTap}
             onPointerDown={(e) => dragControls.start(e)}
-            className="flex w-full shrink-0 flex-col items-center py-2 cursor-grab active:cursor-grabbing"
+            className="flex w-full shrink-0 cursor-grab flex-col items-center pt-2 pb-3 active:cursor-grabbing"
             style={{ touchAction: 'none' }}
-            aria-label={sheetState === 'peek' ? 'Expand inspector' : 'Drag to resize'}
+            aria-label={sheetState === 'peek' ? 'Expand panel' : 'Drag to resize'}
           >
             <div className="sheet-handle" />
           </button>
 
+          {/* Row 2: Tab bar — left-aligned to prevent accidental taps */}
+          <div className="shrink-0 px-3 pb-2">
+            <div
+              className="inline-flex gap-0.5 rounded-lg bg-bg-editor/60 p-0.5"
+              role="tablist"
+              aria-label="Sheet tabs"
+            >
+              <TabButton
+                id="sheet-tab-inspector"
+                label="Inspector"
+                isActive={activeTab === 'inspector'}
+                onClick={() => setActiveTab('inspector')}
+                controls="sheet-tabpanel"
+              />
+              <TabButton
+                id="sheet-tab-console"
+                label="Console"
+                isActive={activeTab === 'console'}
+                onClick={() => setActiveTab('console')}
+                controls="sheet-tabpanel"
+              />
+            </div>
+          </div>
+
           {/* Content — scrolls independently, drag does NOT intercept here */}
           <FocusTrap active={sheetState === 'expanded'}>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
-              <InspectorPanelContent />
+            <div
+              id="sheet-tabpanel"
+              role="tabpanel"
+              aria-labelledby={`sheet-tab-${activeTab}`}
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8"
+            >
+              {activeTab === 'inspector' ? (
+                <InspectorPanelContent />
+              ) : (
+                <MobileConsoleContent />
+              )}
             </div>
           </FocusTrap>
         </m.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// --- Tab Button ---
+
+function TabButton({
+  id,
+  label,
+  isActive,
+  onClick,
+  controls,
+}: {
+  id: string;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  controls: string;
+}) {
+  return (
+    <button
+      id={id}
+      type="button"
+      role="tab"
+      aria-selected={isActive}
+      aria-controls={controls}
+      onClick={onClick}
+      className={`rounded-md px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide transition-all ${
+        isActive
+          ? 'bg-bg-panel text-text-accent shadow-sm'
+          : 'text-text-muted hover:text-text-primary'
+      }`}
+    >
+      {label}
+    </button>
   );
 }

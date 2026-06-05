@@ -29,25 +29,49 @@ export const CONTACT_INFO: ContactInfo = {
 export const SUMMARY =
   'Front\u2011End Platform engineer with 8+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, and AI\u2011assisted code generation to accelerate delivery.';
 
-export const EDUCATION = {
-  school: 'University of Arkansas',
-  graduationDate: 'Jul 2017',
-  degree: 'Bachelor of Science Biological Sciences',
-  gpa: '3.9',
-};
+export const EDUCATION = [
+  {
+    school: 'Northwestern University',
+    graduationDate: 'Jan 2019',
+    degree: 'Full-Stack Web Development Certificate',
+  },
+  {
+    school: 'University of Arkansas',
+    graduationDate: 'Jul 2017',
+    degree: 'Bachelor of Science, Cum Laude',
+    gpa: '3.9',
+  },
+];
 
 export const SKILLS = [
   'TypeScript',
   'JavaScript',
-  'CI/CD',
+  'Python',
+  'Java',
   'React',
+  'Redux',
+  'Next.js',
+  'GraphQL',
+  'Apollo Client',
   'HTML5',
   'CSS3',
-  'Web Applications',
-  'Component libraries',
-  'Webpack',
-  'Build Systems',
-  'Performance optimization (Core Web Vitals)',
+  'Styled-Components',
+  'Webpack 5',
+  'Docker',
+  'CI/CD',
+  'Git',
+  'Cypress',
+  'DataDog',
+  'Design Systems',
+  'Design Tokens',
+  'State Management',
+  'Microfrontend Architecture',
+  'Component-Driven Development',
+  'Performance Optimization (Core Web Vitals)',
+  'System Design',
+  'TDD',
+  'Frontend Security Best Practices',
+  'Agile Methodologies',
   'AI\u2011assisted development / model\u2011assisted workflows',
 ];
 
@@ -106,7 +130,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     dates: 'May 2019 \u2013 Sep 2021',
     type: 'work',
     bullets: [
-      'Delivered a modernized customer service agent portal (API caching \u2192 ~30% faster avg response) and built the GolfTV Graph API with Apollo on AWS to improve data reliability for client integrations.',
+      'Partnered with senior engineers to deliver a modernized customer service agent portal for United Airlines; implemented API caching that reduced average response time by 30%.',
+      'Developed the GolfTV Graph API using Apollo Server and AWS to enable the worldwide launch of GolfTV.',
     ],
   },
   'jbhunt-mobile': {
@@ -159,6 +184,31 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     type: 'skill',
     bullets: [
       'Performance optimization (Core Web Vitals), Frontend SLOs, TTI/FCP measurement, Lighthouse auditing.',
+    ],
+  },
+  'roblox-css': {
+    fileId: 'roblox-css',
+    title: 'roblox-css',
+    company: 'Published npm Package',
+    dates: '',
+    type: 'project',
+    bullets: [
+      'Designed and shipped a CSS\u2011to\u2011Roblox UI translation middleware for roblox\u2011ts — write familiar CSS props (flex, grid, gradients, calc) and get native Roblox engine primitives automatically.',
+      'Built a branded type system, three specialized parsers (color, dimension, gradient), and Framer\u2011Motion\u2011inspired variant\u2011driven animation primitives powered by @rbxts/ripple.',
+      '1,419 test assertions across 24 spec files. Published as @rbxts/roblox-css under LGPL\u20113.0.',
+    ],
+    controls: ['githubLink'],
+  },
+  'acs-microdialysis': {
+    fileId: 'acs-microdialysis',
+    title: 'Microdialysis Sampling of Quorum Sensing Homoserine Lactones during Biofilm Formation',
+    company: 'Analytical Chemistry (ACS)',
+    dates: '2019',
+    type: 'project',
+    bullets: [
+      'Co\u2011authored peer\u2011reviewed research published in Analytical Chemistry — optimized microdialysis sampling procedures to collect quorum sensing molecules during in\u00a0situ biofilm formation.',
+      'Contributed to LC\u2011MS quantification of acylhomoserine lactones (AHLs) across 4\u2011day continuous sampling experiments with V.\u00a0harveyi biofilm models.',
+      'DOI: 10.1021/acs.analchem.8b05168',
     ],
   },
 };

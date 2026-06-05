@@ -10,6 +10,8 @@ import {
   Puzzle,
   Settings,
   BarChart3,
+  Package,
+  FlaskConical,
 } from 'lucide-react';
 
 export interface FileNode {
@@ -61,6 +63,16 @@ export const FILE_TREE: FileNode[] = [
     children: [
       { id: 'webpack-federation', label: 'Webpack5_Federation.ts', icon: Settings },
       { id: 'cwv-profiler', label: 'Core_Web_Vitals_Profiler.ts', icon: BarChart3 },
+    ],
+  },
+  {
+    id: 'publications',
+    label: '05_Publications',
+    icon: Folder,
+    isFolder: true,
+    children: [
+      { id: 'roblox-css', label: 'Roblox_CSS_v0.1.0.npm', icon: Package },
+      { id: 'acs-microdialysis', label: 'ACS_Anal_Chem_2019.doi', icon: FlaskConical },
     ],
   },
 ];
