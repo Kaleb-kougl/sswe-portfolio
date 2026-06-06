@@ -84,8 +84,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     type: 'profile',
     bullets: [SUMMARY],
   },
-  'network-config': {
-    fileId: 'network-config',
+  'contact-info': {
+    fileId: 'contact-info',
     title: 'Network Configuration',
     company: '',
     dates: '',
@@ -97,8 +97,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       `LinkedIn: ${CONTACT_INFO.linkedin}`,
     ],
   },
-  'indeed-onehost': {
-    fileId: 'indeed-onehost',
+  'indeed-sr-swe': {
+    fileId: 'indeed-sr-swe',
     title: 'Senior Software Engineer',
     company: 'Indeed.com',
     dates: 'Aug 2022 \u2013 Present',
@@ -112,8 +112,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },
-  'ibm-modernization': {
-    fileId: 'ibm-modernization',
+  'ibm-staff-swe': {
+    fileId: 'ibm-staff-swe',
     title: 'Staff Software Engineer',
     company: 'IBM',
     dates: 'Sep 2021 \u2013 Aug 2022',
@@ -125,8 +125,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     controls: ['targetBundleSize'],
   },
-  'ibm-golftv': {
-    fileId: 'ibm-golftv',
+  'ibm-swe': {
+    fileId: 'ibm-swe',
     title: 'Software Engineer',
     company: 'IBM',
     dates: 'May 2019 \u2013 Sep 2021',
@@ -136,8 +136,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Developed the GolfTV Graph API using Apollo Server and AWS to enable the worldwide launch of GolfTV.',
     ],
   },
-  'jbhunt-mobile': {
-    fileId: 'jbhunt-mobile',
+  'jbhunt-intern': {
+    fileId: 'jbhunt-intern',
     title: 'Application Development Intern',
     company: 'J.B. Hunt',
     dates: 'Jun 2018 \u2013 Dec 2018',

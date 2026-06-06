@@ -87,7 +87,7 @@ function buildDiamondTargets(count: number, radius: number): Float32Array {
 // ---------------------------------------------------------------------------
 
 export default function IbmFlexScene() {
-  const groupRef = useSceneGroup('ibm-modernization');
+  const groupRef = useSceneGroup('ibm-staff-swe');
   const meshRef = useRef<InstancedMesh>(null);
   const materialRef = useRef<MeshStandardMaterial>(null);
 

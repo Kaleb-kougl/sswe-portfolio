@@ -142,7 +142,7 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 1. Add `'meatsaber'` to `FLEX_SCENE_IDS` set
 2. Add `'meatsaber'` to `SceneKey` union type:
    ```ts
-   export type SceneKey = 'ibm-modernization' | 'indeed-onehost' | 'hammerball' | 'meatsaber' | 'default';
+   export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'meatsaber' | 'default';
    ```
 
 **Verify:** No type errors. Clicking meatsaber file in hierarchy triggers `getSceneKey('meatsaber') === 'meatsaber'`.

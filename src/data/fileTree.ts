@@ -24,29 +24,29 @@ export interface FileNode {
 
 export const FILE_TREE: FileNode[] = [
   {
-    id: 'player-entity',
-    label: '01_Player_Entity',
+    id: 'about-me',
+    label: '01_About_Me',
     icon: Folder,
     isFolder: true,
     children: [
       { id: 'profile', label: 'Kaleb_Kougl_Profile.json', icon: User },
-      { id: 'network-config', label: 'Contact_Info.grpc', icon: Globe },
+      { id: 'contact-info', label: 'Contact_Info.grpc', icon: Globe },
     ],
   },
   {
-    id: 'platform-architecture',
+    id: 'experience',
     label: '02_Experience',
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'indeed-onehost', label: 'Level_4_Indeed_Sr_SWE.config', icon: Building2 },
-      { id: 'ibm-modernization', label: 'Level_3_IBM_Staff_SWE.tsx', icon: Building },
-      { id: 'ibm-golftv', label: 'Level_2_IBM_SWE.gql', icon: Building },
-      { id: 'jbhunt-mobile', label: 'Level_1_JBHunt_Intern.jsx', icon: Truck },
+      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_Sr_SWE.config', icon: Building2 },
+      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Staff_SWE.tsx', icon: Building },
+      { id: 'ibm-swe', label: 'Level_2_IBM_SWE.gql', icon: Building },
+      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Intern.jsx', icon: Truck },
     ],
   },
   {
-    id: 'game-logic',
+    id: 'projects',
     label: '03_Projects',
     icon: Folder,
     isFolder: true,
@@ -56,7 +56,7 @@ export const FILE_TREE: FileNode[] = [
     ],
   },
   {
-    id: 'core-dependencies',
+    id: 'skills',
     label: '04_Skills',
     icon: Folder,
     isFolder: true,

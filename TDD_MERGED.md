@@ -37,29 +37,29 @@ export interface FileNode {
 
 export const FILE_TREE: FileNode[] = [
   {
-    id: 'player-entity',
-    label: '01_Player_Entity',
+    id: 'about-me',
+    label: '01_About_Me',
     icon: Folder,
     isFolder: true,
     children: [
       { id: 'profile', label: 'Kaleb_Kougl_Profile.json', icon: User },
-      { id: 'network-config', label: 'Network_Config.grpc', icon: Globe },
+      { id: 'contact-info', label: 'Network_Config.grpc', icon: Globe },
     ],
   },
   {
-    id: 'platform-architecture',
+    id: 'experience',
     label: '02_Platform_Architecture',
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'indeed-onehost', label: 'Level_4_Indeed_OneHost.config', icon: Building2 },
-      { id: 'ibm-modernization', label: 'Level_3_IBM_Modernization.tsx', icon: Building },
-      { id: 'ibm-golftv', label: 'Level_2_IBM_GolfTV.gql', icon: Building },
-      { id: 'jbhunt-mobile', label: 'Level_1_JBHunt_Mobile.jsx', icon: Truck },
+      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_OneHost.config', icon: Building2 },
+      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Modernization.tsx', icon: Building },
+      { id: 'ibm-swe', label: 'Level_2_IBM_GolfTV.gql', icon: Building },
+      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Mobile.jsx', icon: Truck },
     ],
   },
   {
-    id: 'game-logic',
+    id: 'projects',
     label: '03_Game_Logic',
     icon: Folder,
     isFolder: true,
@@ -69,7 +69,7 @@ export const FILE_TREE: FileNode[] = [
     ],
   },
   {
-    id: 'core-dependencies',
+    id: 'skills',
     label: '04_Core_Dependencies',
     icon: Folder,
     isFolder: true,
@@ -107,13 +107,13 @@ const itemVariants = {
 
 The magic of this portfolio is the bridge between the **Right Panel** (where recruiters read your resume) and the **Center Canvas** (where you visualize the engineering concepts). You don't need complex 3D character models—you need beautiful, glowing data visualizations of your architectural achievements.
 
-#### 🟢 IBM Modernization Flex (`ibm-modernization`)
+#### 🟢 IBM Modernization Flex (`ibm-staff-swe`)
 
 * **The Right Panel (Inspector Text):** Resume bullets for IBM Staff SWE role.
 * **The Center Canvas (Viewport):** A 3D particle system representing a software bundle. It starts as a massive, sluggish, chaotic red sphere of 6,000 polygons.
 * **The Interactive Flex:** In the Inspector below your text, add a slider: `Target Bundle Size: [ 6.0 MB =======|=== 300 KB ]`. When the user drags the slider down, they watch the 3D particles in the center viewport dynamically compress in real-time into a tiny, hyper-fast, glowing green diamond. You are letting them physically play with your 29x optimization metric.
 
-#### 🟡 Indeed OneHost Flex (`indeed-onehost`)
+#### 🟡 Indeed OneHost Flex (`indeed-sr-swe`)
 
 * **The Right Panel (Inspector Text):** Resume bullets for Indeed Senior SWE role.
 * **The Center Canvas (Viewport):** 3D wireframe blocks floating randomly in space.
@@ -131,9 +131,9 @@ Every interactive control maps to a specific Zustand field. Agents must use this
 
 | File ID | Control Label | Control Type | Zustand Field | Range / Options | Default |
 |---|---|---|---|---|---|
-| `ibm-modernization` | Target Bundle Size | Slider | `targetBundleSize` | min: 0.3, max: 6.0, step: 0.1 | `6.0` |
-| `indeed-onehost` | Enable Module Federation | Toggle (checkbox) | `isModuleFederationEnabled` | `true` / `false` | `false` |
-| `indeed-onehost` | Simulate SLO Incident | Toggle (checkbox) | `isSloIncidentSimulated` | `true` / `false` | `false` |
+| `ibm-staff-swe` | Target Bundle Size | Slider | `targetBundleSize` | min: 0.3, max: 6.0, step: 0.1 | `6.0` |
+| `indeed-sr-swe` | Enable Module Federation | Toggle (checkbox) | `isModuleFederationEnabled` | `true` / `false` | `false` |
+| `indeed-sr-swe` | Simulate SLO Incident | Toggle (checkbox) | `isSloIncidentSimulated` | `true` / `false` | `false` |
 | `hammerball` | Force AI State | Radio group | `forceAiState` | `'Patrol'` / `'Aggro'` / `'Flee'` | `'Patrol'` |
 | `hammerball` | Show NavMesh | Toggle (checkbox) | `showNavMesh` | `true` / `false` | `false` |
 
@@ -948,8 +948,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     type: 'profile',
     bullets: [SUMMARY],
   },
-  'network-config': {
-    fileId: 'network-config',
+  'contact-info': {
+    fileId: 'contact-info',
     title: 'Network Configuration',
     company: '',
     dates: '',
@@ -963,8 +963,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
   },
 
   // --- Work Experience ---
-  'indeed-onehost': {
-    fileId: 'indeed-onehost',
+  'indeed-sr-swe': {
+    fileId: 'indeed-sr-swe',
     title: 'Senior Software Engineer',
     company: 'Indeed.com',
     dates: 'Aug 2022 – Present',
@@ -978,8 +978,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },
-  'ibm-modernization': {
-    fileId: 'ibm-modernization',
+  'ibm-staff-swe': {
+    fileId: 'ibm-staff-swe',
     title: 'Staff Software Engineer',
     company: 'IBM',
     dates: 'Sep 2021 – Aug 2022',
@@ -991,8 +991,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     controls: ['targetBundleSize'],
   },
-  'ibm-golftv': {
-    fileId: 'ibm-golftv',
+  'ibm-swe': {
+    fileId: 'ibm-swe',
     title: 'Software Engineer',
     company: 'IBM',
     dates: 'May 2019 – Sep 2021',
@@ -1001,8 +1001,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Delivered a modernized customer service agent portal (API caching → ~30% faster avg response) and built the GolfTV Graph API with Apollo on AWS to improve data reliability for client integrations.',
     ],
   },
-  'jbhunt-mobile': {
-    fileId: 'jbhunt-mobile',
+  'jbhunt-intern': {
+    fileId: 'jbhunt-intern',
     title: 'Application Development Intern',
     company: 'J.B. Hunt',
     dates: 'Jun 2018 – Dec 2018',
@@ -1071,11 +1071,11 @@ To ensure agents wire the console correctly, here is the exact mapping from file
 
 export const FILE_LOG_MAP: Record<string, string> = {
   'profile':              '> [SYSTEM] Loading Player Entity... Kaleb Kougl | San Francisco, CA.',
-  'network-config':       '> [NETWORK] Establishing gRPC channels... LinkedIn, Email configured. OK',
-  'indeed-onehost':       '> [NETWORK] Opening gRPC channels for third-party integration... OK',
-  'ibm-modernization':    '> [PERF] Legacy bundle detected. Tree-shaking applied. Reduced to 300KB.',
-  'ibm-golftv':           '> [GRAPHQL] Initializing Apollo Client... GolfTV Graph API connected.',
-  'jbhunt-mobile':        '> [MOBILE] React Native bridge initialized. Jest/Appium suites loaded.',
+  'contact-info':       '> [NETWORK] Establishing gRPC channels... LinkedIn, Email configured. OK',
+  'indeed-sr-swe':       '> [NETWORK] Opening gRPC channels for third-party integration... OK',
+  'ibm-staff-swe':    '> [PERF] Legacy bundle detected. Tree-shaking applied. Reduced to 300KB.',
+  'ibm-swe':           '> [GRAPHQL] Initializing Apollo Client... GolfTV Graph API connected.',
+  'jbhunt-intern':        '> [MOBILE] React Native bridge initialized. Jest/Appium suites loaded.',
   'hammerball':            '> [SERVER] Authoritative match started. Syncing live-ops economy...',
   'analytics-extension':  '> [EXTENSION] Manifest V3 service worker registered. Analytics pipeline active.',
   'webpack-federation':   '> [WEBPACK 5] Compiling Module Federation... Done in 142ms.',
@@ -1225,8 +1225,8 @@ beforeEach(() => {
 
 // Pure store tests — no renderHook needed
 test('setActiveFile updates activeFileId and pushes log', () => {
-  useEngineStore.getState().setActiveFile('ibm-modernization', '> [PERF] ...')
-  expect(useEngineStore.getState().activeFileId).toBe('ibm-modernization')
+  useEngineStore.getState().setActiveFile('ibm-staff-swe', '> [PERF] ...')
+  expect(useEngineStore.getState().activeFileId).toBe('ibm-staff-swe')
   expect(useEngineStore.getState().consoleLogs).toContain('> [PERF] ...')
 })
 

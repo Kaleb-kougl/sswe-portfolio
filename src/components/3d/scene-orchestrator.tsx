@@ -8,9 +8,9 @@ import { useEngineStore } from '@/store/useEngineStore';
  * File IDs that have dedicated 3D flex scenes.
  * All other file IDs show the default scene.
  */
-const FLEX_SCENE_IDS = new Set(['ibm-modernization', 'indeed-onehost', 'hammerball']);
+const FLEX_SCENE_IDS = new Set(['ibm-staff-swe', 'indeed-sr-swe', 'hammerball']);
 
-export type SceneKey = 'ibm-modernization' | 'indeed-onehost' | 'hammerball' | 'default';
+export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'default';
 
 function getSceneKey(fileId: string | null): SceneKey {
   if (fileId && FLEX_SCENE_IDS.has(fileId)) return fileId as SceneKey;
@@ -72,7 +72,7 @@ export function SceneOrchestrator({ children }: { children: ReactNode }) {
 
 /**
  * Hook for flex scenes to register their group ref with the orchestrator.
- * Usage: const ref = useSceneGroup('ibm-modernization');
+ * Usage: const ref = useSceneGroup('ibm-staff-swe');
  */
 export function useSceneGroup(key: SceneKey) {
   const register = useContext(SceneOrchestratorContext);

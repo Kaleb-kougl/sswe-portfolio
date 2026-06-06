@@ -23,22 +23,22 @@ describe('useEngineStore', () => {
   });
 
   test('setActiveFile updates activeFileId and pushes log', () => {
-    useEngineStore.getState().setActiveFile('ibm-modernization', '> [PERF] Legacy bundle detected.');
+    useEngineStore.getState().setActiveFile('ibm-staff-swe', '> [PERF] Legacy bundle detected.');
 
     const state = useEngineStore.getState();
-    expect(state.activeFileId).toBe('ibm-modernization');
+    expect(state.activeFileId).toBe('ibm-staff-swe');
     expect(state.consoleLogs).toHaveLength(1);
     expect(state.consoleLogs[0].msg).toBe('> [PERF] Legacy bundle detected.');
   });
 
   test('setActiveFile sets isAssetLoading to true', () => {
-    useEngineStore.getState().setActiveFile('ibm-modernization');
+    useEngineStore.getState().setActiveFile('ibm-staff-swe');
 
     expect(useEngineStore.getState().isAssetLoading).toBe(true);
   });
 
   test('setActiveFile without logMsg does not push a log', () => {
-    useEngineStore.getState().setActiveFile('ibm-modernization');
+    useEngineStore.getState().setActiveFile('ibm-staff-swe');
 
     expect(useEngineStore.getState().consoleLogs).toHaveLength(0);
   });

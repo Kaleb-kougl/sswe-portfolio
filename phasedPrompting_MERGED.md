@@ -112,14 +112,14 @@ Once the state is perfectly bridging the Left, Right, and Bottom panels, start a
 >
 > 6. **Build procedural flex scenes (always mounted, visibility-toggled):**
 >
->    - **IBM Flex (`ibm-modernization`):** Create an `<instancedMesh args={[null, null, 500]}>` particle system. In `useEffect`, set initial positions as a large chaotic sphere. In `useFrame`, read `targetBundleSize` imperatively via `useEngineStore.getState()` and interpolate instance positions toward a tight diamond shape as the value decreases. Use a shared `tempMatrix = useMemo(() => new THREE.Matrix4(), [])` for InstancedMesh matrix updates. **Critical `useFrame` rules:**
+>    - **IBM Flex (`ibm-staff-swe`):** Create an `<instancedMesh args={[null, null, 500]}>` particle system. In `useEffect`, set initial positions as a large chaotic sphere. In `useFrame`, read `targetBundleSize` imperatively via `useEngineStore.getState()` and interpolate instance positions toward a tight diamond shape as the value decreases. Use a shared `tempMatrix = useMemo(() => new THREE.Matrix4(), [])` for InstancedMesh matrix updates. **Critical `useFrame` rules:**
 >      - **Never call `setState`** — mutate the `instancedMesh` ref directly.
 >      - **Never allocate objects** (`new Vector3()`) inside the loop — create reusable objects outside (module scope or component scope).
 >      - **Framerate-independent interpolation:** Use `delta` from `useFrame` and `THREE.MathUtils.damp()` instead of manual lerp. This ensures consistent animation speed across 60Hz and 144Hz displays.
 >      - Color: lerp from red (#f38ba8) at 6.0 MB to green (#a6e3a1) at 0.3 MB.
 >      - After updating matrices, flag `instanceMatrix.needsUpdate = true`.
 >
->    - **Indeed Flex (`indeed-onehost`):** Create 6-8 `<mesh>` components (box geometries) with randomized initial positions. In `useFrame`, lerp positions toward a unified grid when `isModuleFederationEnabled` is true, or back to scattered positions when false. When `isSloIncidentSimulated` is true, change the scene ambient/point light color/intensity to red — NOT the material color. Use `MeshStandardMaterial` (not `MeshBasicMaterial`, which ignores lights entirely). Add default lighting: `<ambientLight intensity={0.4} />` and `<directionalLight position={[5, 5, 5]} intensity={1} />`.
+>    - **Indeed Flex (`indeed-sr-swe`):** Create 6-8 `<mesh>` components (box geometries) with randomized initial positions. In `useFrame`, lerp positions toward a unified grid when `isModuleFederationEnabled` is true, or back to scattered positions when false. When `isSloIncidentSimulated` is true, change the scene ambient/point light color/intensity to red — NOT the material color. Use `MeshStandardMaterial` (not `MeshBasicMaterial`, which ignores lights entirely). Add default lighting: `<ambientLight intensity={0.4} />` and `<directionalLight position={[5, 5, 5]} intensity={1} />`.
 >
 >    - **HammerBall Flex (`hammerball`):** Create a `<mesh>` floor plane and two `<mesh>` sphere primitives ("AI orbs") that change color based on `forceAiState` (Green=#a6e3a1 for Patrol, Red=#f38ba8 for Aggro, Yellow=#f9e2af for Flee). When `showNavMesh` is true, render a wireframe grid on the floor plane. Read `forceAiState` and `showNavMesh` imperatively in `useFrame` or via `useEngineStore.subscribe()`. Add default lighting: `<ambientLight intensity={0.4} />` and `<directionalLight position={[5, 5, 5]} intensity={1} />`.
 >
@@ -271,8 +271,8 @@ Once all features are implemented, start a new chat. Paste the full TDD, then:
 > **Pure store tests:** For testing Zustand store behavior directly, use `getState()` — no `renderHook` needed:
 > ```typescript
 > test('setActiveFile updates activeFileId and pushes log', () => {
->   useEngineStore.getState().setActiveFile('ibm-modernization', '> [PERF] ...')
->   expect(useEngineStore.getState().activeFileId).toBe('ibm-modernization')
+>   useEngineStore.getState().setActiveFile('ibm-staff-swe', '> [PERF] ...')
+>   expect(useEngineStore.getState().activeFileId).toBe('ibm-staff-swe')
 >   expect(useEngineStore.getState().consoleLogs).toContain('> [PERF] ...')
 > })
 > ```

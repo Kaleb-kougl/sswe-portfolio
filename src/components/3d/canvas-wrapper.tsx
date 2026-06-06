@@ -136,7 +136,7 @@ function CanvasWrapperInner() {
         </PerformanceMonitor>
         <OrbitControlsWithGestureGuard />
         <AdaptivePixelRatio />
-        <Stats className="stats-panel" parent={viewportRef} />
+        <Stats className="stats-panel" parent={viewportRef as React.RefObject<HTMLElement>} />
       </Canvas>
     </WebGLErrorBoundary>
   );

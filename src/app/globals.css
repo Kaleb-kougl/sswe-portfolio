@@ -90,23 +90,38 @@ body {
   right: 4px !important;
   z-index: 20 !important;
   opacity: 0.8;
-  padding-top: 18px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .stats-panel::before {
   content: 'PERFORMANCE';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  display: block;
   font-family: var(--font-mono);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
-  text-align: center;
+  text-align: left;
+  padding-left: 3px;
+  margin-bottom: 2px;
   line-height: 16px;
+  white-space: nowrap;
   pointer-events: none;
+}
+
+.stats-panel:has(canvas:nth-child(1)[style*="block"])::before,
+.stats-panel:has(canvas:nth-child(1):not([style*="none"])):not(:has(canvas[style*="block"]))::before {
+  content: 'FRAMERATE';
+}
+
+.stats-panel:has(canvas:nth-child(2)[style*="block"])::before {
+  content: 'RENDER TIME (MS)';
+}
+
+.stats-panel:has(canvas:nth-child(3)[style*="block"])::before {
+  content: 'MEMORY (MB)';
 }
 
 @media (max-width: 767px) {

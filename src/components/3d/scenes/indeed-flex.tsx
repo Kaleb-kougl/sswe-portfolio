@@ -62,7 +62,7 @@ const LIGHT_LAMBDA = 4;
 /* ------------------------------------------------------------------ */
 
 export default function IndeedFlexScene() {
-  const groupRef = useSceneGroup('indeed-onehost');
+  const groupRef = useSceneGroup('indeed-sr-swe');
 
   /* ---- Refs for meshes & lights ---- */
   const meshRefs = useRef<(Mesh | null)[]>([]);
