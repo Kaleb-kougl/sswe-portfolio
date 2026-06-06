@@ -30,24 +30,24 @@ export const FILE_TREE: FileNode[] = [
     isFolder: true,
     children: [
       { id: 'profile', label: 'Kaleb_Kougl_Profile.json', icon: User },
-      { id: 'network-config', label: 'Network_Config.grpc', icon: Globe },
+      { id: 'network-config', label: 'Contact_Info.grpc', icon: Globe },
     ],
   },
   {
     id: 'platform-architecture',
-    label: '02_Platform_Architecture',
+    label: '02_Experience',
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'indeed-onehost', label: 'Level_4_Indeed_OneHost.config', icon: Building2 },
-      { id: 'ibm-modernization', label: 'Level_3_IBM_Modernization.tsx', icon: Building },
-      { id: 'ibm-golftv', label: 'Level_2_IBM_GolfTV.gql', icon: Building },
-      { id: 'jbhunt-mobile', label: 'Level_1_JBHunt_Mobile.jsx', icon: Truck },
+      { id: 'indeed-onehost', label: 'Level_4_Indeed_Sr_SWE.config', icon: Building2 },
+      { id: 'ibm-modernization', label: 'Level_3_IBM_Staff_SWE.tsx', icon: Building },
+      { id: 'ibm-golftv', label: 'Level_2_IBM_SWE.gql', icon: Building },
+      { id: 'jbhunt-mobile', label: 'Level_1_JBHunt_Intern.jsx', icon: Truck },
     ],
   },
   {
     id: 'game-logic',
-    label: '03_Game_Logic',
+    label: '03_Projects',
     icon: Folder,
     isFolder: true,
     children: [
@@ -57,7 +57,7 @@ export const FILE_TREE: FileNode[] = [
   },
   {
     id: 'core-dependencies',
-    label: '04_Core_Dependencies',
+    label: '04_Skills',
     icon: Folder,
     isFolder: true,
     children: [
