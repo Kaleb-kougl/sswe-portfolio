@@ -24,6 +24,7 @@ import {
   BufferGeometry,
   BufferAttribute,
   Color,
+  Fog,
 } from 'three';
 
 extend({
@@ -42,6 +43,7 @@ extend({
   BufferGeometry,
   BufferAttribute,
   Color,
+  Fog,
 });
 
 // TypeScript: Register extended elements for JSX type checking (TDD §3).

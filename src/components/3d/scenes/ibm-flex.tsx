@@ -1,4 +1,5 @@
 'use client';
+'use no memo';
 
 import { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';

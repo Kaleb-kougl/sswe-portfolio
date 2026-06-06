@@ -1,9 +1,9 @@
-# MeatSaber Flex Scene — Implementation Plan
+# Combat System Flex Scene — Implementation Plan
 
 > **Skills used:** `writing-plans`, `concise-planning`
 > **Reviewed by:** 4 skill-based subagents (`react-three-fiber`, `react-patterns`, `threejs-skills`, `framer-motion`)
 
-**Goal:** Port MeatSaber's composable bullet-pattern visualizer into the portfolio as a native R3F flex scene — visitors click a file, the viewport shows an auto-firing pattern gallery with bloom, and the inspector panel provides controls to switch patterns and tune visuals.
+**Goal:** Port CombatSystem's composable bullet-pattern visualizer into the portfolio as a native R3F flex scene — visitors click a file, the viewport shows an auto-firing pattern gallery with bloom, and the inspector panel provides controls to switch patterns and tune visuals.
 
 **Architecture:** Auto-demo mode (no player input needed). The `Patterns.js` generator/modifier pipeline and `BulletManager.js` InstancedMesh renderer port from vanilla Three.js → R3F `useFrame` + `<instancedMesh>`. A timer auto-fires patterns on an interval. Inspector controls let visitors pick patterns and adjust speed/bloom. No pointer lock, no combat — pure visual showcase of the math and rendering systems.
 
@@ -19,13 +19,13 @@
 - Data layer: file tree entry, resume data entry, console log
 - Store: 3 new transient fields (typed with union for pattern)
 - Three.js setup: extend `Fog` class for tree-shaking
-- Scene orchestrator: register `'meatsaber'` as a flex scene key
+- Scene orchestrator: register `'combat_system'` as a flex scene key
 - Pattern engine: port `Patterns.js` generators + modifiers → TypeScript module
 - Bullet manager: port `BulletManager.js` → R3F InstancedMesh component
-- Flex scene: `meatsaber-flex.tsx` (arena + bullet manager)
+- Flex scene: `combat-system-flex.tsx` (arena + bullet manager)
 - Bloom: conditional `<EffectComposer>` at canvas level (not inside scene group)
 - Inspector controls: pattern selector radio, auto-fire speed slider, bloom intensity slider
-- Canvas wrapper: mount `<MeatSaberFlex />` + conditional bloom
+- Canvas wrapper: mount `<CombatSystemFlex />` + conditional bloom
 - Accessibility: reduced motion support, aria-live announcements, native inputs
 - Automated tests: store unit tests, E2E additions, reduced-motion E2E, visual regression baselines
 
@@ -42,10 +42,10 @@
 Define a shared union type used across the store, pattern engine, inspector, and registry:
 
 ```ts
-// src/components/3d/scenes/meatsaber-types.ts
-export type MeatSaberPattern = 'fibonacciSphere' | 'torusKnot' | 'galaxy' | 'helix' | 'rose3D' | 'ring';
+// src/components/3d/scenes/combat-system-types.ts
+export type CombatSystemPattern = 'fibonacciSphere' | 'torusKnot' | 'galaxy' | 'helix' | 'rose3D' | 'ring';
 
-export const MEATSABER_PATTERN_LABELS: Record<MeatSaberPattern, string> = {
+export const COMBAT_SYSTEM_PATTERN_LABELS: Record<CombatSystemPattern, string> = {
   fibonacciSphere: 'Fibonacci Sphere',
   torusKnot: 'Torus Knot',
   galaxy: 'Galaxy',
@@ -63,9 +63,9 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 
 | File ID | Control Label | Control Type | Zustand Field | Range / Options | Default |
 |---|---|---|---|---|---|
-| `meatsaber` | Bullet Pattern | Radio group | `meatsaberPattern` | `'Fibonacci Sphere'` / `'Torus Knot'` / `'Galaxy'` / `'Helix'` / `'Rose 3D'` / `'Ring'` | `'Fibonacci Sphere'` (`fibonacciSphere`) |
-| `meatsaber` | Auto-fire Rate | Slider | `meatsaberFireRate` | min: 0.3, max: 3.0, step: 0.1 | `1.5` |
-| `meatsaber` | Bloom Intensity | Slider | `meatsaberBloom` | min: 0.0, max: 3.0, step: 0.1 | `1.2` |
+| `combat_system` | Bullet Pattern | Radio group | `combatSystemPattern` | `'Fibonacci Sphere'` / `'Torus Knot'` / `'Galaxy'` / `'Helix'` / `'Rose 3D'` / `'Ring'` | `'Fibonacci Sphere'` (`fibonacciSphere`) |
+| `combat_system` | Auto-fire Rate | Slider | `combatSystemFireRate` | min: 0.3, max: 3.0, step: 0.1 | `1.5` |
+| `combat_system` | Bloom Intensity | Slider | `combatSystemBloom` | min: 0.0, max: 3.0, step: 0.1 | `1.2` |
 
 ---
 
@@ -80,18 +80,18 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 
 **Steps:**
 1. Add `Gamepad2` **named import** to `fileTree.ts` (from `lucide-react`) — per TDD §4, never use `import *` or `DynamicIcon` for tree-shaking.
-2. Add `{ id: 'meatsaber', label: 'MeatSaber_Combat.three', icon: Gamepad2 }` as 3rd child of `03_Game_Logic` folder
-3. Add `meatsaber` entry to `RESUME_DATA` in `resumeData.ts`:
+2. Add `{ id: 'combat_system', label: 'Combat_System.three', icon: Gamepad2 }` as 3rd child of `03_Game_Logic` folder
+3. Add `combat_system` entry to `RESUME_DATA` in `resumeData.ts`:
    - `type: 'project'`, `company: 'Personal Project'`
    - **Note (TDD §8):** These are new project descriptions authored for this portfolio entry, not sourced from an existing resume document. Per TDD §8 rules, do not embellish existing resume content — but new project entries are authored fresh.
    - Bullets:
      - `'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition — each pattern is a pure function returning spawn data.'`
      - `'GPU-instanced bullet renderer using InstancedMesh with a 5,000-bullet pool, zero-allocation physics loop, and per-instance color via setColorAt.'`
      - `'Procedural IK spider/centipede enemies and multi-phase boss AI with state-machine-driven attack patterns.'`
-   - `controls: ['meatsaberPattern', 'meatsaberFireRate', 'meatsaberBloom']`
+   - `controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom']`
 4. Add exact log message to `FILE_LOG_MAP` in `consoleLogs.ts`:
    ```ts
-   'meatsaber': '> [GAME] MeatSaber combat engine initialized. Pattern pipeline active.',
+   'combat_system': '> [GAME] CombatSystem combat engine initialized. Pattern pipeline active.',
    ```
 
 **Verify:** `npm run build` passes — no missing imports or type errors
@@ -101,51 +101,51 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 ### Task 2: Shared types + Engine store — union type + 3 new transient fields
 
 **Files:**
-- Create: `src/components/3d/scenes/meatsaber-types.ts`
+- Create: `src/components/3d/scenes/combat-system-types.ts`
 - Modify: `src/store/useEngineStore.ts`
 
 **Steps:**
-1. Create `meatsaber-types.ts` with `MeatSaberPattern` union type and `MEATSABER_PATTERN_LABELS` map (see Types section above).
-2. Import `MeatSaberPattern` in `useEngineStore.ts`.
+1. Create `combat-system-types.ts` with `CombatSystemPattern` union type and `COMBAT_SYSTEM_PATTERN_LABELS` map (see Types section above).
+2. Import `CombatSystemPattern` in `useEngineStore.ts`.
 3. Add to `TransientUpdates` interface:
    ```ts
-   meatsaberPattern?: MeatSaberPattern;
-   meatsaberFireRate?: number;
-   meatsaberBloom?: number;
+   combatSystemPattern?: CombatSystemPattern;
+   combatSystemFireRate?: number;
+   combatSystemBloom?: number;
    ```
 4. Add corresponding fields to `EngineState` interface:
    ```ts
-   // MeatSaber Flex
-   meatsaberPattern: MeatSaberPattern;
-   meatsaberFireRate: number;
-   meatsaberBloom: number;
+   // Combat System Flex
+   combatSystemPattern: CombatSystemPattern;
+   combatSystemFireRate: number;
+   combatSystemBloom: number;
    ```
 5. Add defaults to store initializer:
    ```ts
-   meatsaberPattern: 'fibonacciSphere',
-   meatsaberFireRate: 1.5,
-   meatsaberBloom: 1.2,
+   combatSystemPattern: 'fibonacciSphere',
+   combatSystemFireRate: 1.5,
+   combatSystemBloom: 1.2,
    ```
 
-> **Why union type?** The existing store uses union types for constrained fields (e.g., `forceAiState: 'Patrol' | 'Aggro' | 'Flee'`). Using `string` would break this convention and lose compile-time exhaustiveness checking. The `PATTERN_REGISTRY` key type also benefits from `as const satisfies Record<MeatSaberPattern, ...>`.
+> **Why union type?** The existing store uses union types for constrained fields (e.g., `forceAiState: 'Patrol' | 'Aggro' | 'Flee'`). Using `string` would break this convention and lose compile-time exhaustiveness checking. The `PATTERN_REGISTRY` key type also benefits from `as const satisfies Record<CombatSystemPattern, ...>`.
 
 **Verify:** TypeScript compiles. DevTools shows new fields in initial state.
 
 ---
 
-### Task 3: Scene orchestrator — register `'meatsaber'`
+### Task 3: Scene orchestrator — register `'combat_system'`
 
 **Files:**
 - Modify: `src/components/3d/scene-orchestrator.tsx`
 
 **Steps:**
-1. Add `'meatsaber'` to `FLEX_SCENE_IDS` set
-2. Add `'meatsaber'` to `SceneKey` union type:
+1. Add `'combat_system'` to `FLEX_SCENE_IDS` set
+2. Add `'combat_system'` to `SceneKey` union type:
    ```ts
-   export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'meatsaber' | 'default';
+   export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'combat_system' | 'default';
    ```
 
-**Verify:** No type errors. Clicking meatsaber file in hierarchy triggers `getSceneKey('meatsaber') === 'meatsaber'`.
+**Verify:** No type errors. Clicking combat_system file in hierarchy triggers `getSceneKey('combat_system') === 'combat_system'`.
 
 ---
 
@@ -164,7 +164,7 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
    extend({ ..., Fog });
    ```
 
-**Why:** The MeatSaber scene uses `<fog attach="fog" ...>` in JSX. Per TDD §6 Tree-Shaking, all Three.js classes used in JSX must be explicitly extended.
+**Why:** The CombatSystem scene uses `<fog attach="fog" ...>` in JSX. Per TDD §6 Tree-Shaking, all Three.js classes used in JSX must be explicitly extended.
 
 **Verify:** `npm run build` passes. No "fog is not a known element" type error.
 
@@ -173,12 +173,12 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 ### Task 5: Pattern engine — port `Patterns.js` → TypeScript
 
 **Files:**
-- Create: `src/components/3d/scenes/meatsaber-patterns.ts`
+- Create: `src/components/3d/scenes/combat-system-patterns.ts`
 
 **Source:** `../meatSaber/src/Patterns.js` (501 lines)
 
 **Steps:**
-1. Import `MeatSaberPattern` from `meatsaber-types.ts`.
+1. Import `CombatSystemPattern` from `combat-system-types.ts`.
 2. Create typed interfaces:
    ```ts
    interface BulletSpawnData {
@@ -210,7 +210,7 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
      helix: () => compose(gen.helix(200), mod.color(0xFF66FF)),
      rose3D: () => compose(gen.rose3D(200), mod.color(0xFFFF33)),
      ring: () => compose(gen.ring(100), mod.color(0x33FFFF)),
-   } as const satisfies Record<MeatSaberPattern, () => BulletSpawnData[]>;
+   } as const satisfies Record<CombatSystemPattern, () => BulletSpawnData[]>;
    ```
 8. After spawning, the caller must call `Patterns.release(spawnData)` to return objects to the pool. Without this, the pool never recovers and eventually all calls allocate fresh objects.
 
@@ -221,7 +221,7 @@ Per TDD §2.3, every interactive control maps to a specific Zustand field:
 ### Task 6: Bullet manager — R3F InstancedMesh component
 
 **Files:**
-- Create: `src/components/3d/scenes/meatsaber-bullets.tsx`
+- Create: `src/components/3d/scenes/combat-system-bullets.tsx`
 
 **Source:** `../meatSaber/src/BulletManager.js` (160 lines)
 
@@ -237,7 +237,7 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 1. Create `<BulletManager>` R3F component:
    - `<instancedMesh frustumCulled={false}>` with `SphereGeometry(0.12, 6, 6)` and `MeshBasicMaterial({ fog: false })`
    - Pool of 2000 bullets on desktop. Accept an optional `maxBullets` prop (default 2000) so the canvas wrapper can pass a lower value on mobile (see Task 9).
-   - `useFrame` loop: read `useEngineStore.getState()` for `meatsaberPattern` and `meatsaberFireRate`
+   - `useFrame` loop: read `useEngineStore.getState()` for `combatSystemPattern` and `combatSystemFireRate`
 
    > **`frustumCulled={false}` (review finding):** The bounding sphere is computed from the single geometry at origin, not from instance positions. Without this, the entire InstancedMesh gets culled when the camera looks away from origin.
 
@@ -306,14 +306,14 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 ---
 
-### Task 7: Flex scene — `meatsaber-flex.tsx`
+### Task 7: Flex scene — `combat-system-flex.tsx`
 
 **Files:**
-- Create: `src/components/3d/scenes/meatsaber-flex.tsx`
+- Create: `src/components/3d/scenes/combat-system-flex.tsx`
 
 **Steps:**
-1. Create `<MeatSaberFlex>` component following the same pattern as `hammerball-flex.tsx`:
-   - Register with `useSceneGroup('meatsaber')`
+1. Create `<CombatSystemFlex>` component following the same pattern as `hammerball-flex.tsx`:
+   - Register with `useSceneGroup('combat_system')`
    - `<group ref={groupRef}>`
 2. Arena sub-elements:
    - Floor plane: `planeGeometry(20, 20)`, dark material `#050505`, rotation `[-π/2, 0, 0]`, **`matrixAutoUpdate={false}`**
@@ -327,7 +327,7 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 > **IMPORTANT — Bloom is NOT mounted here.** Per the TDD compliance audit, `<EffectComposer>` operates at the Canvas render-pass level, not per scene group. Even with `visible={false}`, the bloom pass would still run on every frame. Bloom is conditionally mounted in Task 9 at the canvas-wrapper level.
 
-**Verify:** Click "MeatSaber_Combat.three" in hierarchy → viewport shows dark arena with neon grid, bullets auto-firing in patterns. Other flex scenes still work when switching files.
+**Verify:** Click "Combat_System.three" in hierarchy → viewport shows dark arena with neon grid, bullets auto-firing in patterns. Other flex scenes still work when switching files.
 
 ---
 
@@ -337,27 +337,27 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 - Modify: `src/components/inspector-panel.tsx`
 
 **Steps:**
-1. Import `MEATSABER_PATTERN_LABELS` from `meatsaber-types.ts`.
+1. Import `COMBAT_SYSTEM_PATTERN_LABELS` from `combat-system-types.ts`.
 2. Add 3 entries to `CONTROL_SPECS`:
    ```ts
-   meatsaberPattern: {
+   combatSystemPattern: {
      type: 'radio',
      label: 'Bullet Pattern',
-     field: 'meatsaberPattern',
-     options: Object.keys(MEATSABER_PATTERN_LABELS),
-     formatLabel: (key: string) => MEATSABER_PATTERN_LABELS[key as MeatSaberPattern],
+     field: 'combatSystemPattern',
+     options: Object.keys(COMBAT_SYSTEM_PATTERN_LABELS),
+     formatLabel: (key: string) => COMBAT_SYSTEM_PATTERN_LABELS[key as CombatSystemPattern],
    },
-   meatsaberFireRate: {
+   combatSystemFireRate: {
      type: 'slider',
      label: 'Auto-fire Rate',
-     field: 'meatsaberFireRate',
+     field: 'combatSystemFireRate',
      min: 0.3, max: 3.0, step: 0.1,
      formatValue: (v) => `${v.toFixed(1)}/s`,
    },
-   meatsaberBloom: {
+   combatSystemBloom: {
      type: 'slider',
      label: 'Bloom Intensity',
-     field: 'meatsaberBloom',
+     field: 'combatSystemBloom',
      min: 0.0, max: 3.0, step: 0.1,
      formatValue: (v) => v.toFixed(1),
    },
@@ -369,11 +369,11 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 **Accessibility (TDD §10):** All controls use the existing `SliderControl` and `RadioGroupControl` components, which render native `<input>` elements with proper `<label>` associations, `aria-value*` attributes, `<fieldset>`/`<legend>`, 44×44px touch targets, and unique `useId()`-generated IDs. No additional a11y work needed for controls.
 
-**Verify:** Click meatsaber file → inspector shows "Bullet Pattern" radio with 6 human-readable options, two sliders. Switching pattern radio changes the spawned pattern in real-time. Adjusting bloom slider changes glow intensity.
+**Verify:** Click combat_system file → inspector shows "Bullet Pattern" radio with 6 human-readable options, two sliders. Switching pattern radio changes the spawned pattern in real-time. Adjusting bloom slider changes glow intensity.
 
 ---
 
-### Task 9: Canvas wrapper — mount `<MeatSaberFlex />` + conditional bloom
+### Task 9: Canvas wrapper — mount `<CombatSystemFlex />` + conditional bloom
 
 **Files:**
 - Modify: `src/components/3d/canvas-wrapper.tsx`
@@ -384,11 +384,11 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 - Verify peer-dependency compatibility: `@react-three/postprocessing` must support `three@^0.174` and `@react-three/fiber@^9`. Check `package.json` peer deps after install.
 
 **Steps:**
-1. Add import for `MeatSaberFlex`:
+1. Add import for `CombatSystemFlex`:
    ```tsx
-   import { MeatSaberFlex } from './scenes/meatsaber-flex';
+   import { CombatSystemFlex } from './scenes/combat-system-flex';
    ```
-2. Add `<MeatSaberFlex />` inside `<SceneOrchestrator>` `<Suspense>` block, alongside `IBMFlex`, `IndeedFlex`, `HammerBallFlex`, `DefaultScene`
+2. Add `<CombatSystemFlex />` inside `<SceneOrchestrator>` `<Suspense>` block, alongside `IBMFlex`, `IndeedFlex`, `HammerBallFlex`, `DefaultScene`
 3. **Conditional bloom** — mount `<EffectComposer>` + `<Bloom>` at the canvas level, conditionally based on active scene:
    ```tsx
    import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -405,7 +405,7 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
      useEffect(() => {
        const unsub = useEngineStore.subscribe(
          (s) => s.activeFileId,
-         (id) => setActive(id === 'meatsaber'),
+         (id) => setActive(id === 'combat_system'),
          { fireImmediately: true }
        );
        return unsub;
@@ -414,7 +414,7 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
      // Imperatively update bloom intensity — avoids React re-renders on slider drag
      useFrame(() => {
        if (bloomRef.current) {
-         bloomRef.current.intensity = useEngineStore.getState().meatsaberBloom;
+         bloomRef.current.intensity = useEngineStore.getState().combatSystemBloom;
        }
      });
 
@@ -454,15 +454,15 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 **Verify:** Full integration test:
 - `npm run dev` → open browser
-- Click "MeatSaber_Combat.three" in hierarchy
+- Click "Combat_System.three" in hierarchy
 - Viewport: dark arena, neon grid, bullets spawning in fibonacci sphere pattern with bloom
 - Inspector: shows project description + 3 interactive controls
 - Switch pattern → bullets change shape
 - Adjust fire rate → spawn interval changes
 - Adjust bloom → glow intensity changes visually (verify in DevTools: `Bloom.intensity` value matches slider)
 - Click another file (e.g. "Indeed_OneHost") → scene switches cleanly, **bloom pass stops running** (verify in Chrome DevTools → Performance → no `EffectComposer` in flamechart)
-- Click back to MeatSaber → scene + bloom restores
-- Console log shows: `> [GAME] MeatSaber combat engine initialized. Pattern pipeline active.`
+- Click back to CombatSystem → scene + bloom restores
+- Console log shows: `> [GAME] CombatSystem combat engine initialized. Pattern pipeline active.`
 - Mobile viewport (375×812): bloom disabled, ≤500 bullets, 60fps maintained
 
 ---
@@ -471,7 +471,7 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 **Files:**
 - Create: `src/hooks/useReducedMotion.ts` (shared hook)
-- Modify: `src/components/3d/scenes/meatsaber-bullets.tsx`
+- Modify: `src/components/3d/scenes/combat-system-bullets.tsx`
 - Modify: `src/components/3d/canvas-wrapper.tsx` (ConditionalBloom)
 - Modify: `src/components/inspector-panel.tsx` (aria-live region)
 
@@ -527,17 +527,17 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 4. **`aria-live` region for pattern changes (review finding):**
    When the user switches bullet patterns via the radio group, the visual change happens entirely in the WebGL canvas — screen reader users get no feedback. Add a visually-hidden live region:
    ```tsx
-   // In InspectorPanelContent, when activeFileId === 'meatsaber':
+   // In InspectorPanelContent, when activeFileId === 'combat_system':
    <div className="sr-only" role="status" aria-live="polite">
-     {`Bullet pattern: ${MEATSABER_PATTERN_LABELS[currentPattern]}`}
+     {`Bullet pattern: ${COMBAT_SYSTEM_PATTERN_LABELS[currentPattern]}`}
    </div>
    ```
 
-5. **Focus management:** The existing `InspectorPanelContent` already moves focus to `headingRef` when `activeFileId` changes (line 140-144). This handles MeatSaber scene transitions automatically — no additional work needed.
+5. **Focus management:** The existing `InspectorPanelContent` already moves focus to `headingRef` when `activeFileId` changes (line 140-144). This handles CombatSystem scene transitions automatically — no additional work needed.
 
 6. **Mobile gesture conflicts (TDD §7):** The existing `isGestureDragging` guard in `canvas-wrapper.tsx` (OrbitControlsWithGestureGuard) already handles touch conflicts between mobile sheets and OrbitControls. Confirm during manual testing.
 
-7. **Supplementary visualization contract (TDD §10):** The MeatSaber 3D scene conveys no unique information beyond what the Inspector panel text provides. Screen reader users who cannot see the canvas miss no meaningful content — the resume data, project description, and control labels fully describe the project.
+7. **Supplementary visualization contract (TDD §10):** The CombatSystem 3D scene conveys no unique information beyond what the Inspector panel text provides. Screen reader users who cannot see the canvas miss no meaningful content — the resume data, project description, and control labels fully describe the project.
 
 **Verify:**
 - Set OS to "Reduce motion" → bullets display as static geometric pattern, no bloom, no source rotation
@@ -558,50 +558,50 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 1. **Store unit test — defaults:**
    ```ts
-   test('meatsaber transient state defaults', () => {
+   test('combat_system transient state defaults', () => {
      const state = useEngineStore.getState();
-     expect(state.meatsaberPattern).toBe('fibonacciSphere');
-     expect(state.meatsaberFireRate).toBe(1.5);
-     expect(state.meatsaberBloom).toBe(1.2);
+     expect(state.combatSystemPattern).toBe('fibonacciSphere');
+     expect(state.combatSystemFireRate).toBe(1.5);
+     expect(state.combatSystemBloom).toBe(1.2);
    });
    ```
 
 2. **Store unit test — setTransientState:**
    ```ts
-   test('setTransientState updates meatsaber fields', () => {
+   test('setTransientState updates combat_system fields', () => {
      useEngineStore.getState().setTransientState({
-       meatsaberPattern: 'galaxy',
-       meatsaberFireRate: 2.5,
-       meatsaberBloom: 0.5,
+       combatSystemPattern: 'galaxy',
+       combatSystemFireRate: 2.5,
+       combatSystemBloom: 0.5,
      });
      const state = useEngineStore.getState();
-     expect(state.meatsaberPattern).toBe('galaxy');
-     expect(state.meatsaberFireRate).toBe(2.5);
-     expect(state.meatsaberBloom).toBe(0.5);
+     expect(state.combatSystemPattern).toBe('galaxy');
+     expect(state.combatSystemFireRate).toBe(2.5);
+     expect(state.combatSystemBloom).toBe(0.5);
    });
    ```
 
-3. **Store unit test — resetStore includes MeatSaber fields (review finding):**
+3. **Store unit test — resetStore includes CombatSystem fields (review finding):**
    ```ts
-   test('resetStore restores meatsaber defaults', () => {
+   test('resetStore restores combat_system defaults', () => {
      useEngineStore.getState().setTransientState({
-       meatsaberPattern: 'galaxy',
-       meatsaberFireRate: 0.5,
-       meatsaberBloom: 3.0,
+       combatSystemPattern: 'galaxy',
+       combatSystemFireRate: 0.5,
+       combatSystemBloom: 3.0,
      });
      useEngineStore.getState().resetStore();
      const state = useEngineStore.getState();
-     expect(state.meatsaberPattern).toBe('fibonacciSphere');
-     expect(state.meatsaberFireRate).toBe(1.5);
-     expect(state.meatsaberBloom).toBe(1.2);
+     expect(state.combatSystemPattern).toBe('fibonacciSphere');
+     expect(state.combatSystemFireRate).toBe(1.5);
+     expect(state.combatSystemBloom).toBe(1.2);
    });
    ```
 
 4. **E2E: file tree → inspector wiring:**
    ```ts
-   test('meatsaber file → inspector shows controls', async ({ page }) => {
+   test('combat_system file → inspector shows controls', async ({ page }) => {
      await page.getByText('03_Game_Logic').click();
-     await page.getByText('MeatSaber_Combat.three').click();
+     await page.getByText('Combat_System.three').click();
 
      await expect(page.getByText('Personal Project')).toBeVisible();
 
@@ -618,21 +618,21 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 5. **E2E: console wiring:**
    ```ts
-   test('meatsaber file → console log', async ({ page }) => {
+   test('combat_system file → console log', async ({ page }) => {
      await page.getByText('03_Game_Logic').click();
-     await page.getByText('MeatSaber_Combat.three').click();
+     await page.getByText('Combat_System.three').click();
      await expect(
-       page.getByText('> [GAME] MeatSaber combat engine initialized')
+       page.getByText('> [GAME] CombatSystem combat engine initialized')
      ).toBeVisible();
    });
    ```
 
 6. **E2E: reduced motion (review finding):**
    ```ts
-   test('meatsaber respects reduced motion', async ({ page }) => {
+   test('combat_system respects reduced motion', async ({ page }) => {
      await page.emulateMedia({ reducedMotion: 'reduce' });
      await page.getByText('03_Game_Logic').click();
-     await page.getByText('MeatSaber_Combat.three').click();
+     await page.getByText('Combat_System.three').click();
      // Canvas still mounts (graceful degradation)
      await expect(page.locator('canvas')).toBeVisible();
      // Controls still work
@@ -651,11 +651,11 @@ const _tempMatrix = new Matrix4();    // useMemo(() => new Matrix4(), [])
 
 ## Done When
 
-- [ ] MeatSaber appears in hierarchy under `03_Game_Logic`
+- [ ] CombatSystem appears in hierarchy under `03_Game_Logic`
 - [ ] Clicking it shows a live bullet-pattern auto-demo in the viewport
 - [ ] Inspector shows project description with 3 interactive controls (human-readable labels)
 - [ ] Controls affect the scene in real-time (pattern, fire rate, bloom)
-- [ ] Bloom only runs when MeatSaber scene is active (verify via Performance tab)
+- [ ] Bloom only runs when CombatSystem scene is active (verify via Performance tab)
 - [ ] Bloom intensity slider updates visually via imperative ref (not stale React prop)
 - [ ] Switching to/from other files works without WebGL errors
 - [ ] `npm run build` passes with zero errors

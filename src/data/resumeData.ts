@@ -119,7 +119,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     dates: 'Sep 2021 \u2013 Aug 2022',
     type: 'work',
     bullets: [
-      'Modernized IBM Developer site with React and Webpack, improving SEO and Core Web Vitals (TTI/FCP) across devices.',
+      'Modernized IBM Developer site (https://developer.ibm.com/) with React and Webpack, improving SEO and Core Web Vitals (TTI/FCP) across devices.',
       'Optimized Webpack to halve build time, improve rebuild/hot\u2011reload 29x, and shrink bundle from 6 MB to 300 KB.',
       'Designed and launched a Watson Media video upload pipeline to streamline advocate video publishing.',
     ],
@@ -157,6 +157,19 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Built with TypeScript, Reflex/Redux state management, and real-time live-ops economy syncing.',
     ],
     controls: ['forceAiState', 'showNavMesh'],
+  },
+  'combat_system': {
+    fileId: 'combat_system',
+    title: 'CombatSystem Combat Engine',
+    company: 'Personal Project',
+    dates: '',
+    type: 'project',
+    bullets: [
+      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition \u2014 each pattern is a pure function returning spawn data.',
+      'GPU-instanced bullet renderer using InstancedMesh with a 5,000-bullet pool, zero-allocation physics loop, and per-instance color via setColorAt.',
+      'Procedural IK spider/centipede enemies and multi-phase boss AI with state-machine-driven attack patterns.',
+    ],
+    controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom'],
   },
   'analytics-extension': {
     fileId: 'analytics-extension',

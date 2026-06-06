@@ -1,4 +1,5 @@
 'use client';
+'use no memo';
 
 import { useEffect, useRef, useCallback, createContext, useContext, type ReactNode } from 'react';
 import { type Group } from 'three';
@@ -8,9 +9,9 @@ import { useEngineStore } from '@/store/useEngineStore';
  * File IDs that have dedicated 3D flex scenes.
  * All other file IDs show the default scene.
  */
-const FLEX_SCENE_IDS = new Set(['ibm-staff-swe', 'indeed-sr-swe', 'hammerball']);
+const FLEX_SCENE_IDS = new Set(['ibm-staff-swe', 'indeed-sr-swe', 'hammerball', 'combat_system']);
 
-export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'default';
+export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'combat_system' | 'default';
 
 function getSceneKey(fileId: string | null): SceneKey {
   if (fileId && FLEX_SCENE_IDS.has(fileId)) return fileId as SceneKey;

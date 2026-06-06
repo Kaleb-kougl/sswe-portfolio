@@ -10,6 +10,7 @@ export const FILE_LOG_MAP: Record<string, string> = {
   'analytics-extension':  '> [EXTENSION] Manifest V3 service worker registered. Analytics pipeline active.',
   'webpack-federation':   '> [WEBPACK 5] Compiling Module Federation... Done in 142ms.',
   'cwv-profiler':         '> [SLO] Core Web Vitals check: TTI < 100ms. FCP < 50ms. [PASS]',
+  'combat_system':            '> [GAME] CombatSystem combat engine initialized. Pattern pipeline active.',
 };
 
 export const BOOT_LOGS: string[] = [

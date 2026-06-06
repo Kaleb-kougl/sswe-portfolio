@@ -146,6 +146,7 @@ describe('useEngineStore', () => {
     useEngineStore.getState().setTransientState({ targetBundleSize: 1.0 });
     useEngineStore.getState().setMobileSheetState('expanded');
     useEngineStore.getState().setMobileDrawerOpen(true);
+    useEngineStore.getState().setTransientState({ combatSystemPattern: 'galaxy' });
 
     // Verify mutations took effect
     expect(useEngineStore.getState().activeFileId).toBe('hammerball');
@@ -164,5 +165,40 @@ describe('useEngineStore', () => {
     expect(state.isAssetLoading).toBe(false);
     expect(state.forceAiState).toBe('Patrol');
     expect(state.showNavMesh).toBe(false);
+    expect(state.combatSystemPattern).toBe('fibonacciSphere');
+    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemBloom).toBe(1.2);
+  });
+
+  test('combat_system transient state defaults', () => {
+    const state = useEngineStore.getState();
+    expect(state.combatSystemPattern).toBe('fibonacciSphere');
+    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemBloom).toBe(1.2);
+  });
+
+  test('setTransientState updates combat_system fields', () => {
+    useEngineStore.getState().setTransientState({
+      combatSystemPattern: 'galaxy',
+      combatSystemFireRate: 2.5,
+      combatSystemBloom: 0.5,
+    });
+    const state = useEngineStore.getState();
+    expect(state.combatSystemPattern).toBe('galaxy');
+    expect(state.combatSystemFireRate).toBe(2.5);
+    expect(state.combatSystemBloom).toBe(0.5);
+  });
+
+  test('resetStore restores combat_system defaults', () => {
+    useEngineStore.getState().setTransientState({
+      combatSystemPattern: 'galaxy',
+      combatSystemFireRate: 0.5,
+      combatSystemBloom: 3.0,
+    });
+    useEngineStore.getState().resetStore();
+    const state = useEngineStore.getState();
+    expect(state.combatSystemPattern).toBe('fibonacciSphere');
+    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemBloom).toBe(1.2);
   });
 });

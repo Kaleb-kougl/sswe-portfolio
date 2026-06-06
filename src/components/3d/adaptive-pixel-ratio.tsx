@@ -1,4 +1,5 @@
 'use client';
+'use no memo';
 
 import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';

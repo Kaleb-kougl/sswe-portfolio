@@ -13,6 +13,7 @@ import {
   Package,
   FlaskConical,
   Home,
+  Gamepad2,
 } from 'lucide-react';
 
 export interface FileNode {
@@ -55,6 +56,7 @@ export const FILE_TREE: FileNode[] = [
     children: [
       { id: 'hammerball', label: 'HammerBall_LiveOps.exe', icon: Hammer },
       { id: 'analytics-extension', label: 'Indeed_Analytics_ManifestV3.crx', icon: Puzzle },
+      { id: 'combat_system', label: 'Combat_System.three', icon: Gamepad2 },
     ],
   },
   {

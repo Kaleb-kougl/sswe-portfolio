@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -22,11 +22,19 @@ export const metadata: Metadata = {
     title: 'Kaleb Kougl — IDE Portfolio',
     description:
       'Explore my engineering career through an interactive IDE interface with live 3D visualizations.',
-    url: 'https://your-domain.com', // Replace before deployment
+    url: 'https://kalebkougl.dev',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     type: 'website',
   },
-  metadataBase: new URL('https://your-domain.com'), // Replace before deployment
+  metadataBase: new URL('https://kalebkougl.dev'),
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#1e1e2e',
 };
 
 export default function RootLayout({

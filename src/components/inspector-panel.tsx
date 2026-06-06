@@ -11,6 +11,7 @@ import {
   SKILLS,
   type ProjectEntry,
 } from '@/data/resumeData';
+import { COMBAT_SYSTEM_PATTERN_LABELS, type CombatSystemPattern } from '@/components/3d/scenes/combat-system-types';
 
 // --- Helper for Linkifying Text ---
 function LinkifiedText({ text }: { text: string }) {
@@ -62,6 +63,7 @@ interface RadioControl {
   label: string;
   field: keyof TransientUpdates;
   options: string[];
+  formatLabel?: (key: string) => string;
 }
 
 type ControlSpec = SliderControl | ToggleControl | RadioControl;
@@ -96,6 +98,31 @@ const CONTROL_SPECS: Record<string, ControlSpec> = {
     type: 'toggle',
     label: 'Show NavMesh',
     field: 'showNavMesh',
+  },
+  combatSystemPattern: {
+    type: 'radio',
+    label: 'Bullet Pattern',
+    field: 'combatSystemPattern',
+    options: Object.keys(COMBAT_SYSTEM_PATTERN_LABELS),
+    formatLabel: (key: string) => COMBAT_SYSTEM_PATTERN_LABELS[key as CombatSystemPattern] ?? key,
+  },
+  combatSystemFireRate: {
+    type: 'slider',
+    label: 'Auto-fire Rate',
+    field: 'combatSystemFireRate',
+    min: 0.3,
+    max: 3.0,
+    step: 0.1,
+    formatValue: (v: number) => `${v.toFixed(1)}/s`,
+  },
+  combatSystemBloom: {
+    type: 'slider',
+    label: 'Bloom Intensity',
+    field: 'combatSystemBloom',
+    min: 0.0,
+    max: 3.0,
+    step: 0.1,
+    formatValue: (v: number) => v.toFixed(1),
   },
 };
 
@@ -218,6 +245,18 @@ function WelcomeView() {
   );
 }
 
+// --- CombatSystem Live Region (screen reader announcements) ---
+function CombatSystemLiveRegion() {
+  const pattern = useEngineStore(
+    (s) => s.combatSystemPattern
+  ) as CombatSystemPattern;
+  return (
+    <div className="sr-only" role="status" aria-live="polite">
+      {`Bullet pattern: ${COMBAT_SYSTEM_PATTERN_LABELS[pattern]}`}
+    </div>
+  );
+}
+
 // --- File Entry View (with resume content + controls) ---
 interface FileEntryViewProps {
   entry: ProjectEntry;
@@ -319,6 +358,11 @@ function FileEntryView({
             })}
           </div>
         </div>
+      )}
+
+      {/* aria-live region for WebGL scene changes */}
+      {entry.controls && entry.controls.includes('combatSystemPattern') && (
+        <CombatSystemLiveRegion />
       )}
     </div>
   );
@@ -448,6 +492,7 @@ function RadioGroupControl({
                     [spec.field]: option,
                   } as TransientUpdates)
                 }
+                aria-label={spec.formatLabel ? spec.formatLabel(option) : option}
                 className="h-4 w-4 border-border bg-bg-panel text-text-accent accent-text-accent cursor-pointer"
               />
               <label
@@ -456,7 +501,7 @@ function RadioGroupControl({
                   value === option ? 'text-text-accent' : 'text-text-muted'
                 }`}
               >
-                {option}
+                {spec.formatLabel ? spec.formatLabel(option) : option}
               </label>
             </div>
           );

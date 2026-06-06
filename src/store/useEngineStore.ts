@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
+import type { CombatSystemPattern } from '@/components/3d/scenes/combat-system-types';
 
 export type ViewState = 'hidden' | 'peek' | 'expanded';
 
@@ -18,6 +19,9 @@ export interface TransientUpdates {
   isSloIncidentSimulated?: boolean;
   forceAiState?: 'Patrol' | 'Aggro' | 'Flee';
   showNavMesh?: boolean;
+  combatSystemPattern?: CombatSystemPattern;
+  combatSystemFireRate?: number;
+  combatSystemBloom?: number;
 }
 
 interface EngineState {
@@ -45,6 +49,11 @@ interface EngineState {
   // HammerBall Flex
   forceAiState: 'Patrol' | 'Aggro' | 'Flee';
   showNavMesh: boolean;
+
+  // Combat System Flex
+  combatSystemPattern: CombatSystemPattern;
+  combatSystemFireRate: number;
+  combatSystemBloom: number;
 
   // Camera (plain object to avoid importing THREE in the store — preserves SSR safety)
   cameraTarget: { x: number; y: number; z: number };
@@ -103,6 +112,9 @@ export const useEngineStore = create<EngineState>()(
       isSloIncidentSimulated: false,
       forceAiState: 'Patrol' as const,
       showNavMesh: false,
+      combatSystemPattern: 'fibonacciSphere' as CombatSystemPattern,
+      combatSystemFireRate: 1.5,
+      combatSystemBloom: 1.2,
       cameraTarget: { x: 0, y: 0, z: 0 },
 
       // --- Transient actions ---
