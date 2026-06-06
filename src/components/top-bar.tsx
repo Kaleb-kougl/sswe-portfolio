@@ -12,7 +12,7 @@ export function TopBar() {
       <div className="flex items-center gap-2">
         <Terminal size={16} strokeWidth={1.5} className="text-text-accent" />
         <span className="font-mono text-sm font-medium text-text-primary">
-          portfolio.engine
+          portfolio.engine.kaleb.kougl
         </span>
         <span className="font-mono text-xs text-text-muted">v1.0.0</span>
       </div>
