@@ -972,7 +972,9 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     bullets: [
       'Migrated to OneHost microfrontend platform (Webpack 5 module federation) to enable reusable component library and scale consumer web experiences; automated CI/CD and mentored ~12 engineers to accelerate deployment cadence.',
       'Operationalized Frontend SLOs with SRE and Product, reducing customer‑facing incidents for consumer features.',
-      'Applied AI‑assisted code generation and model‑assisted workflows to speed delivery; architected a gRPC third‑party integration platform and shipped a TypeScript/React Manifest V3 analytics troubleshooting extension.',
+      'Applied AI‑assisted code generation and model‑assisted workflows to speed delivery.',
+      'Architected a gRPC third‑party integration platform.',
+      'Shipped a TypeScript/React Manifest V3 analytics troubleshooting extension.',
     ],
     controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },

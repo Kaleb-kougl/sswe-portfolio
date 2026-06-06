@@ -90,6 +90,23 @@ body {
   right: 4px !important;
   z-index: 20 !important;
   opacity: 0.8;
+  padding-top: 18px !important;
+}
+
+.stats-panel::before {
+  content: 'PERFORMANCE';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 16px;
+  pointer-events: none;
 }
 
 @media (max-width: 767px) {
