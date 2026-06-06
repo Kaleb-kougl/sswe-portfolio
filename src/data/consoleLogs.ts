@@ -1,4 +1,5 @@
 export const FILE_LOG_MAP: Record<string, string> = {
+  'overview':             '> [SYSTEM] Returning to overview...',
   'profile':              '> [SYSTEM] Loading Player Entity... Kaleb Kougl | San Francisco, CA.',
   'contact-info':       '> [NETWORK] Establishing gRPC channels... LinkedIn, Email configured. OK',
   'indeed-sr-swe':       '> [NETWORK] Opening gRPC channels for third-party integration... OK',

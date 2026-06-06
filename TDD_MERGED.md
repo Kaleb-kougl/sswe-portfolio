@@ -42,7 +42,7 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'profile', label: 'Kaleb_Kougl_Profile.json', icon: User },
+      { id: 'profile', label: 'Kaleb_Kougl_Summary.json', icon: User },
       { id: 'contact-info', label: 'Network_Config.grpc', icon: Globe },
     ],
   },
