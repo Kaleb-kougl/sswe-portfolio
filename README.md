@@ -6,7 +6,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 This project is deployed on Vercel and can be viewed at:
 - [https://sswe-portfolio.vercel.app/](https://sswe-portfolio.vercel.app/)
-- [https://sswe-portfolio-kaleb-kougl-s-projects.vercel.app/](https://sswe-portfolio-kaleb-kougl-s-projects.vercel.app/)
 
 ## Getting Started
 
