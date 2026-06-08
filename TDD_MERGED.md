@@ -25,7 +25,24 @@ The file tree must use the following data structure to ensure consistent IDs acr
 // src/data/fileTree.ts
 
 import { type LucideIcon } from 'lucide-react';
-import { Folder, User, Globe, Building2, Building, Truck, Hammer, Puzzle, Settings, BarChart3, ChevronRight, ChevronDown } from 'lucide-react';
+import {
+  Folder,
+  User,
+  Globe,
+  Building2,
+  Building,
+  Truck,
+  Hammer,
+  Puzzle,
+  Settings,
+  BarChart3,
+  Package,
+  FlaskConical,
+  Home,
+  Gamepad2,
+  ChevronRight,
+  ChevronDown,
+} from 'lucide-react';
 
 export interface FileNode {
   id: string;
@@ -42,40 +59,52 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
+      { id: 'overview', label: 'Inspector_Overview.md', icon: Home },
       { id: 'profile', label: 'Kaleb_Kougl_Summary.json', icon: User },
-      { id: 'contact-info', label: 'Network_Config.grpc', icon: Globe },
+      { id: 'contact-info', label: 'Contact_Info.grpc', icon: Globe },
     ],
   },
   {
     id: 'experience',
-    label: '02_Platform_Architecture',
+    label: '02_Experience',
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_OneHost.config', icon: Building2 },
-      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Modernization.tsx', icon: Building },
-      { id: 'ibm-swe', label: 'Level_2_IBM_GolfTV.gql', icon: Building },
-      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Mobile.jsx', icon: Truck },
+      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_Sr_SWE.config', icon: Building2 },
+      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Staff_SWE.tsx', icon: Building },
+      { id: 'ibm-swe', label: 'Level_2_IBM_SWE.gql', icon: Building },
+      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Intern.jsx', icon: Truck },
     ],
   },
   {
     id: 'projects',
-    label: '03_Game_Logic',
+    label: '03_Projects',
     icon: Folder,
     isFolder: true,
     children: [
       { id: 'hammerball', label: 'HammerBall_LiveOps.exe', icon: Hammer },
       { id: 'analytics-extension', label: 'Indeed_Analytics_ManifestV3.crx', icon: Puzzle },
+      { id: 'combat_system', label: 'Combat_System.three', icon: Gamepad2 },
     ],
   },
   {
     id: 'skills',
-    label: '04_Core_Dependencies',
+    label: '04_Skills',
     icon: Folder,
     isFolder: true,
     children: [
       { id: 'webpack-federation', label: 'Webpack5_Federation.ts', icon: Settings },
       { id: 'cwv-profiler', label: 'Core_Web_Vitals_Profiler.ts', icon: BarChart3 },
+    ],
+  },
+  {
+    id: 'publications',
+    label: '05_Publications',
+    icon: Folder,
+    isFolder: true,
+    children: [
+      { id: 'roblox-css', label: 'Roblox_CSS_v0.1.0.npm', icon: Package },
+      { id: 'acs-microdialysis', label: 'ACS_Anal_Chem_2019.doi', icon: FlaskConical },
     ],
   },
 ];
@@ -125,6 +154,12 @@ The magic of this portfolio is the bridge between the **Right Panel** (where rec
 * **The Center Canvas (Viewport):** An isometric 3D diorama. Two low-poly "AI" orbs are dynamically pathfinding around obstacles.
 * **The Interactive Flex:** Add radio buttons in the Inspector: `Force AI State: ( ) Patrol ( ) Aggro ( ) Flee`. Clicking these overrides the bot's state machine, changing their behavior and color instantly in the 3D canvas. Include a toggle for `[x] Show NavMesh` which draws the pathfinding grid on the floor.
 
+#### ⚔️ Combat System Flex (`combat_system`)
+
+* **The Right Panel (Inspector Text):** Project descriptions covering the implementation architecture, including the specialized Senior Agents logic.
+* **The Center Canvas (Viewport):** A dynamic 3D combat visualization rendering complex geometric projectile patterns with post-processing effects.
+* **The Interactive Flex:** Exposing controls for **Combat Pattern** (e.g., `fibonacciSphere`), **Fire Rate**, and **Bloom Intensity** to let the user manipulate the engine parameters.
+
 #### Controls Specification Table
 
 Every interactive control maps to a specific Zustand field. Agents must use this table when wiring controls to state:
@@ -136,6 +171,9 @@ Every interactive control maps to a specific Zustand field. Agents must use this
 | `indeed-sr-swe` | Simulate SLO Incident | Toggle (checkbox) | `isSloIncidentSimulated` | `true` / `false` | `false` |
 | `hammerball` | Force AI State | Radio group | `forceAiState` | `'Patrol'` / `'Aggro'` / `'Flee'` | `'Patrol'` |
 | `hammerball` | Show NavMesh | Toggle (checkbox) | `showNavMesh` | `true` / `false` | `false` |
+| `combat_system` | Combat Pattern | Dropdown/Select | `combatSystemPattern` | `'fibonacciSphere'`, etc. | `'fibonacciSphere'` |
+| `combat_system` | Fire Rate | Slider | `combatSystemFireRate` | min: 0.1, max: 5.0, step: 0.1 | `1.5` |
+| `combat_system` | Bloom Intensity | Slider | `combatSystemBloom` | min: 0.0, max: 3.0, step: 0.1 | `1.2` |
 
 ### 💻 2.4 The Bottom Panel: "The Console"
 
@@ -174,6 +212,9 @@ interface TransientUpdates {
   isSloIncidentSimulated?: boolean;
   forceAiState?: 'Patrol' | 'Aggro' | 'Flee';
   showNavMesh?: boolean;
+  combatSystemPattern?: 'fibonacciSphere' | 'spiral' | 'burst';
+  combatSystemFireRate?: number;
+  combatSystemBloom?: number;
 }
 
 interface EngineState {
@@ -197,6 +238,10 @@ interface EngineState {
   // HammerBall Flex
   forceAiState: 'Patrol' | 'Aggro' | 'Flee';
   showNavMesh: boolean;
+  // Combat System Flex
+  combatSystemPattern: 'fibonacciSphere' | 'spiral' | 'burst';
+  combatSystemFireRate: number;
+  combatSystemBloom: number;
   // Camera
   cameraTarget: THREE.Vector3;
 
@@ -217,13 +262,18 @@ export const useEngineStore = create<EngineState>()(
     // --- Reactive actions ---
     setActiveFile: (id, logMsg) =>
       set(
-        (state) => ({
-          activeFileId: id,
-          isAssetLoading: true,
-          consoleLogs: logMsg
-            ? [...state.consoleLogs, logMsg].slice(-100)
-            : state.consoleLogs,
-        }),
+        (state) => {
+          // Optimization: suppress redundant logging and re-renders when clicking an already active tab
+          if (state.activeFileId === id) return state;
+
+          return {
+            activeFileId: id,
+            isAssetLoading: true,
+            consoleLogs: logMsg
+              ? [...state.consoleLogs, logMsg].slice(-100)
+              : state.consoleLogs,
+          };
+        },
         undefined,
         'reactive/setActiveFile'
       ),
@@ -246,6 +296,9 @@ export const useEngineStore = create<EngineState>()(
     isSloIncidentSimulated: false,
     forceAiState: 'Patrol',
     showNavMesh: false,
+    combatSystemPattern: 'fibonacciSphere',
+    combatSystemFireRate: 1.5,
+    combatSystemBloom: 1.2,
     cameraTarget: new THREE.Vector3(0, 0, 0),
 
     // --- Transient actions ---
@@ -566,7 +619,9 @@ The `eventSource` ref must point to the viewport Panel's DOM container. Since `M
 
 **`MemoizedCanvasWrapper` contract:** This component must be wrapped with `React.memo()` **and accept zero props**. All data flows through Zustand subscriptions, never through props. Keep `React.memo()` on the Canvas wrapper. React Compiler cannot safely optimize R3F's Canvas boundary — R3F hooks rely on imperative mutations that bypass the Compiler's model. `React.memo()` is the correct choice here, not a fallback.
 
-**Error boundary + fallback:** R3F's `<Canvas>` accepts a `fallback` prop for systems without WebGL support. Additionally, wrap the Canvas in an error boundary to catch GPU context crashes (disabled GPUs, faulty drivers). The error boundary should render a graceful DOM fallback that still shows resume content.
+**Error boundary + fallback:** R3F's `<Canvas>` accepts a `fallback` prop for systems without WebGL support. Additionally, wrap the Canvas in an error boundary (e.g., `WebGLErrorBoundary`) to catch GPU context crashes (disabled GPUs, faulty drivers, or serialization issues like circular JSON errors). The error boundary should render a graceful DOM fallback that still shows resume content.
+
+**Auto-Retry Mechanism:** To ensure a resilient user experience, the `WebGLErrorBoundary` must clear its error state whenever the user navigates between tabs. By subscribing to the active tab state or updating on layout changes, the boundary automatically attempts to reload the 3D scene, preventing the UI from remaining permanently stuck in a crashed state.
 
 ```tsx
 // app/error.tsx
