@@ -37,7 +37,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
 
     // Click the IBM Modernization file
-    const ibmFile = page.getByRole('button', { name: /Level_3_IBM_Modernization/i });
+    const ibmFile = page.getByRole('button', { name: /Level_3_IBM_Staff_SWE/i });
     await ibmFile.click();
 
     // Inspector should show the title and company
@@ -51,7 +51,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
 
     // Click the Indeed OneHost file
-    const indeedFile = page.getByRole('button', { name: /Level_4_Indeed_OneHost/i });
+    const indeedFile = page.getByRole('button', { name: /Level_4_Indeed_Sr_SWE/i });
     await indeedFile.click();
 
     // Console should show the network log
@@ -68,11 +68,11 @@ test.describe('IDE Portfolio — Desktop', () => {
     const inspector = page.locator('[aria-label="Inspector panel"]');
 
     // IBM → slider visible
-    await page.getByRole('button', { name: /Level_3_IBM_Modernization/i }).click();
+    await page.getByRole('button', { name: /Level_3_IBM_Staff_SWE/i }).click();
     await expect(inspector.locator('input[type="range"]')).toBeVisible({ timeout: 5_000 });
 
     // Indeed → toggles visible
-    await page.getByRole('button', { name: /Level_4_Indeed_OneHost/i }).click();
+    await page.getByRole('button', { name: /Level_4_Indeed_Sr_SWE/i }).click();
     await expect(inspector.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 5_000 });
 
     // HammerBall → radio buttons visible
@@ -103,7 +103,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
 
     // First, select a file so controls are visible
-    await page.getByRole('button', { name: /Level_3_IBM_Modernization/i }).click();
+    await page.getByRole('button', { name: /Level_3_IBM_Staff_SWE/i }).click();
     await page.waitForTimeout(500);
 
     // Tab from the tree area — verify focus moves and doesn't get trapped
@@ -126,6 +126,43 @@ test.describe('IDE Portfolio — Desktop', () => {
     const activeRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
     // If we reached the body or another element, navigation wasn't trapped
     expect(activeTagName).not.toBeNull();
+  });
+
+  test('combat_system file → inspector shows controls', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
+        // Expand 03_Projects folder
+        await page.getByRole('button', { name: /Combat_System\.three/i }).click();
+    // Inspector shows project entry
+    await expect(page.getByRole('heading', { name: 'CombatSystem Combat Engine' })).toBeVisible();
+    await expect(page.getByText('Personal Project')).toBeVisible();
+    // Controls render with human-readable labels
+    await expect(page.getByText('Bullet Pattern', { exact: true })).toBeVisible();
+    await expect(page.getByText('Auto-fire Rate')).toBeVisible();
+    await expect(page.getByText('Bloom Intensity')).toBeVisible();
+    // 6 radio options
+    await expect(page.getByRole('radio')).toHaveCount(6);
+    await expect(page.getByLabel('Fibonacci Sphere')).toBeVisible();
+  });
+
+  test('combat_system file → console log', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
+            await page.getByRole('button', { name: /Combat_System\.three/i }).click();
+    await expect(
+      page.getByText('> [GAME] CombatSystem combat engine initialized')
+    ).toBeVisible();
+  });
+
+  test('combat_system respects reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
+            await page.getByRole('button', { name: /Combat_System\.three/i }).click();
+    // Canvas still mounts (graceful degradation, not removal)
+    await expect(page.locator('canvas')).toBeVisible();
+    // Controls still function
+    await expect(page.getByText('Bullet Pattern', { exact: true })).toBeVisible();
   });
 });
 
@@ -156,7 +193,7 @@ test.describe('IDE Portfolio — Mobile', () => {
     await page.waitForSelector('[role="dialog"][aria-label="Project hierarchy"]', { timeout: 5_000 });
 
     // Select a file from the drawer
-    const ibmFile = page.locator('[role="dialog"] button').filter({ hasText: /Level_3_IBM_Modernization/i });
+    const ibmFile = page.locator('[role="dialog"] button').filter({ hasText: /Level_3_IBM_Staff_SWE/i });
     await ibmFile.click();
 
     // Bottom sheet should appear (inspector dialog)
