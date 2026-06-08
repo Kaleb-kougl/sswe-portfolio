@@ -77,13 +77,16 @@ export const useEngineStore = create<EngineState>()(
       // --- Reactive actions ---
       setActiveFile: (id, logMsg) =>
         set(
-          (state) => ({
-            activeFileId: id,
-            isAssetLoading: true,
-            consoleLogs: logMsg
-              ? [...state.consoleLogs, { id: logCounter++, msg: logMsg }].slice(-100)
-              : state.consoleLogs,
-          }),
+          (state) => {
+            if (state.activeFileId === id) return state;
+            return {
+              activeFileId: id,
+              isAssetLoading: true,
+              consoleLogs: logMsg
+                ? [...state.consoleLogs, { id: logCounter++, msg: logMsg }].slice(-100)
+                : state.consoleLogs,
+            };
+          },
           undefined,
           'reactive/setActiveFile'
         ),

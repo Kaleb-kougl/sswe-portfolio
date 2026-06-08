@@ -1,9 +1,12 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { LazyMotion, domMax, MotionConfig } from 'motion/react';
 import dynamic from 'next/dynamic';
 import { LucideProvider } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
+import { useEngineStore } from '@/store/useEngineStore';
+import { FILE_LOG_MAP } from '@/data/consoleLogs';
 import { ViewportRefProvider } from '../viewport-ref-context';
 import { CanvasLoadingHUD } from '../3d/canvas-loading-hud';
 import { MobileTopBar } from './mobile-top-bar';
@@ -57,6 +60,21 @@ const MemoizedCanvasWrapper = dynamic(
  */
 export default function MobileLayout() {
   const viewportRef = useRef<HTMLDivElement>(null);
+  
+  const { activeFileId, setActiveFile, setSheetState } = useEngineStore(
+    useShallow((s) => ({
+      activeFileId: s.activeFileId,
+      setActiveFile: s.setActiveFile,
+      setSheetState: s.setMobileSheetState,
+    }))
+  );
+
+  useEffect(() => {
+    if (!activeFileId) {
+      setActiveFile('overview', FILE_LOG_MAP['overview']);
+      setSheetState('expanded');
+    }
+  }, [activeFileId, setActiveFile, setSheetState]);
 
   return (
     <LucideProvider size={16} strokeWidth={1.5}>

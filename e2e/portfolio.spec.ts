@@ -85,7 +85,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.waitForSelector('[aria-label="3D Viewport"]', { timeout: 15_000 });
 
     // R3F renders a <canvas> inside the viewport
-    const canvas = page.locator('[aria-label="3D Viewport"] canvas');
+    const canvas = page.locator('[aria-label="3D Viewport"] canvas').first();
     await expect(canvas).toBeAttached({ timeout: 15_000 });
   });
 

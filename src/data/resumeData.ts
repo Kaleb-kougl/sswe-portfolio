@@ -86,7 +86,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
   },
   'contact-info': {
     fileId: 'contact-info',
-    title: 'Network Configuration',
+    title: 'Contact Info',
     company: '',
     dates: '',
     type: 'contact',
