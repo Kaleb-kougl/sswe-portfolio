@@ -13,13 +13,13 @@ beforeEach(() => {
 });
 
 describe('useEngineStore', () => {
-  test('initial state has null activeFileId and empty consoleLogs', () => {
+  test('initial state has "overview" activeFileId and expanded mobileSheetState', () => {
     const state = useEngineStore.getState();
-    expect(state.activeFileId).toBeNull();
+    expect(state.activeFileId).toBe('overview');
     expect(state.consoleLogs).toEqual([]);
     expect(state.isAssetLoading).toBe(false);
     expect(state.isMobileDrawerOpen).toBe(false);
-    expect(state.mobileSheetState).toBe('hidden');
+    expect(state.mobileSheetState).toBe('expanded');
   });
 
   test('setActiveFile updates activeFileId and pushes log', () => {
@@ -96,7 +96,7 @@ describe('useEngineStore', () => {
     expect(state.targetBundleSize).toBe(2.5);
     expect(state.isModuleFederationEnabled).toBe(true);
     // Reactive state unchanged
-    expect(state.activeFileId).toBeNull();
+    expect(state.activeFileId).toBe('overview');
   });
 
   test('setTransientState updates AI state fields', () => {
@@ -157,10 +157,10 @@ describe('useEngineStore', () => {
 
     // Verify reset
     const state = useEngineStore.getState();
-    expect(state.activeFileId).toBeNull();
+    expect(state.activeFileId).toBe('overview');
     expect(state.consoleLogs).toEqual([]);
     expect(state.targetBundleSize).toBe(6.0);
-    expect(state.mobileSheetState).toBe('hidden');
+    expect(state.mobileSheetState).toBe('expanded');
     expect(state.isMobileDrawerOpen).toBe(false);
     expect(state.isAssetLoading).toBe(false);
     expect(state.forceAiState).toBe('Patrol');
