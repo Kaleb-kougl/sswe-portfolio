@@ -184,7 +184,7 @@ export function InspectorPanelContent() {
 // --- Welcome View (no file selected) ---
 function WelcomeView() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+    <div className="flex min-h-full flex-col items-center gap-4 py-6 text-center">
       <div className="space-y-2">
         <h1 className="font-ui text-xl font-semibold text-text-primary">
           {CONTACT_INFO.name}
