@@ -67,9 +67,9 @@ export const useEngineStore = create<EngineState>()(
   devtools(
     subscribeWithSelector((set, _get, store) => ({
       // --- Reactive defaults ---
-      activeFileId: null,
+      activeFileId: 'overview' as string | null,
       consoleLogs: [] as ConsoleLogEntry[],
-      mobileSheetState: 'hidden' as ViewState,
+      mobileSheetState: 'expanded' as ViewState,
       isAssetLoading: false,
       isMobileDrawerOpen: false,
       isGestureDragging: false,
