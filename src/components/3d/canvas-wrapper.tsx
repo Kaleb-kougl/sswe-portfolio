@@ -15,10 +15,9 @@ import IBMFlex from './scenes/ibm-flex';
 import IndeedFlex from './scenes/indeed-flex';
 import { HammerBallFlex } from './scenes/hammerball-flex';
 import { CombatSystemFlex } from './scenes/combat-system-flex';
+import { AboutMeFlex } from './scenes/about-me-flex';
 import DefaultScene from './scenes/default-scene';
 import { useEngineStore } from '@/store/useEngineStore';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { useIsMobile } from '@/hooks/useIsMobile';
 
 // Side-effect: registers Three.js classes for tree-shaking
 import './three-setup';
@@ -51,7 +50,7 @@ function WebGLFallback() {
  * drawer or bottom sheet is being actively dragged.
  * Also calls performance.regress() on camera changes for movement regression.
  */
-function OrbitControlsWithGestureGuard() {
+const OrbitControlsWithGestureGuard = memo(function OrbitControlsWithGestureGuard() {
   const isGestureDragging = useEngineStore((s) => s.isGestureDragging);
   const { performance } = useThree((s) => ({ performance: s.performance }));
 
@@ -69,7 +68,7 @@ function OrbitControlsWithGestureGuard() {
       onChange={handleChange}
     />
   );
-}
+});
 
 /**
  * ConditionalBloom — controls bloom post-processing imperatively.
@@ -91,7 +90,7 @@ function OrbitControlsWithGestureGuard() {
  * GPU COST: A zero-intensity bloom pass is a single fullscreen quad with
  * near-zero contribution. Measured overhead: <0.1ms/frame on integrated GPUs.
  */
-function ConditionalBloom() {
+const ConditionalBloom = memo(function ConditionalBloom() {
   const bloomRef = useRef<BloomEffect>(null);
 
   // ALL state checks happen inside useFrame — ZERO React re-renders.
@@ -120,7 +119,7 @@ function ConditionalBloom() {
       />
     </EffectComposer>
   );
-}
+});
 
 /**
  * WebGLFallbackAlert — rendered when the WebGLErrorBoundary catches a GPU error.
@@ -172,7 +171,7 @@ function WebGLFallbackAlert({ error, reset }: WebGLFallbackProps) {
  * imperatively, CanvasWrapperInner renders exactly ONCE — React 19 never
  * diffs its props, and the circular structure is never serialized.
  */
-function DprController() {
+const DprController = memo(function DprController() {
   const setDpr = useThree((s) => s.setDpr);
 
   return (
@@ -184,7 +183,7 @@ function DprController() {
       onFallback={() => setDpr(1)}
     />
   );
-}
+});
 
 /**
  * MemoizedCanvasWrapper — the strict isolation boundary between React DOM and R3F.
@@ -220,6 +219,7 @@ function CanvasWrapperInner() {
             <IndeedFlex />
             <HammerBallFlex />
             <CombatSystemFlex />
+            <AboutMeFlex />
             <DefaultScene />
           </Suspense>
         </SceneOrchestrator>

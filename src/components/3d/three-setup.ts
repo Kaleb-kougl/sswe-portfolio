@@ -25,6 +25,9 @@ import {
   BufferAttribute,
   Color,
   Fog,
+  SkinnedMesh,
+  Skeleton,
+  Bone,
 } from 'three';
 
 extend({
@@ -44,6 +47,9 @@ extend({
   BufferAttribute,
   Color,
   Fog,
+  SkinnedMesh,
+  Skeleton,
+  Bone,
 });
 
 // TypeScript: Register extended elements for JSX type checking (TDD §3).

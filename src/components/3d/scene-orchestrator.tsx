@@ -9,11 +9,13 @@ import { useEngineStore } from '@/store/useEngineStore';
  * File IDs that have dedicated 3D flex scenes.
  * All other file IDs show the default scene.
  */
-const FLEX_SCENE_IDS = new Set(['ibm-staff-swe', 'indeed-sr-swe', 'hammerball', 'combat_system']);
+const FLEX_SCENE_IDS = new Set(['ibm-staff-swe', 'indeed-sr-swe', 'hammerball', 'combat_system', 'overview', 'profile', 'contact-info']);
+const ABOUT_ME_IDS = new Set(['overview', 'profile', 'contact-info']);
 
-export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'combat_system' | 'default';
+export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'combat_system' | 'about-me' | 'default';
 
 function getSceneKey(fileId: string | null): SceneKey {
+  if (fileId && ABOUT_ME_IDS.has(fileId)) return 'about-me';
   if (fileId && FLEX_SCENE_IDS.has(fileId)) return fileId as SceneKey;
   return 'default';
 }
