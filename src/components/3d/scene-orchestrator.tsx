@@ -42,6 +42,11 @@ export function SceneOrchestrator({ children }: { children: ReactNode }) {
   const registerScene = useCallback((key: SceneKey, group: Group | null) => {
     if (group) {
       groupRefs.current.set(key, group);
+      
+      // Immediately set visibility to avoid all scenes showing at once 
+      // if they mount after the initial subscriber execution.
+      const currentActiveId = useEngineStore.getState().activeFileId;
+      group.visible = key === getSceneKey(currentActiveId);
     } else {
       groupRefs.current.delete(key);
     }
