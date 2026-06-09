@@ -15,6 +15,7 @@ export interface ProjectEntry {
   type: 'work' | 'project' | 'profile' | 'contact' | 'skill';
   bullets: string[];
   controls?: string[];
+  skills?: string[];
 }
 
 export const CONTACT_INFO: ContactInfo = {
@@ -157,6 +158,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Built with TypeScript, Reflex/Redux state management, and real-time live-ops economy syncing.',
     ],
     controls: ['forceAiState', 'showNavMesh'],
+    skills: ['TypeScript', 'Roblox-TS', 'Reflex', 'FSM AI', 'Multiplayer'],
   },
   'combat_system': {
     fileId: 'combat_system',
@@ -170,6 +172,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Procedural IK spider/centipede enemies and multi-phase boss AI with state-machine-driven attack patterns.',
     ],
     controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom'],
+    skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
   },
   'analytics-extension': {
     fileId: 'analytics-extension',
@@ -180,6 +183,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     bullets: [
       'End\u2011to\u2011end analytics troubleshooting browser extension in React (Manifest V3) to improve campaign management efficiency.',
     ],
+    skills: ['React', 'TypeScript', 'Manifest V3', 'Chrome Extensions'],
   },
   'webpack-federation': {
     fileId: 'webpack-federation',
@@ -213,6 +217,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       '1,419 test assertions across 24 spec files. Published as @rbxts/roblox-css under LGPL\u20113.0.',
     ],
     controls: ['githubLink'],
+    skills: ['TypeScript', 'Roblox-TS', 'CSS-in-JS', 'AST Parsing'],
   },
   'acs-microdialysis': {
     fileId: 'acs-microdialysis',

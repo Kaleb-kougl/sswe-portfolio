@@ -116,7 +116,7 @@ export const useEngineStore = create<EngineState>()(
       forceAiState: 'Patrol' as const,
       showNavMesh: false,
       combatSystemPattern: 'fibonacciSphere' as CombatSystemPattern,
-      combatSystemFireRate: 1.5,
+      combatSystemFireRate: 0.5,
       combatSystemBloom: 1.2,
       cameraTarget: { x: 0, y: 0, z: 0 },
 

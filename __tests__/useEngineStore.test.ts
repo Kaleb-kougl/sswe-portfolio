@@ -166,14 +166,14 @@ describe('useEngineStore', () => {
     expect(state.forceAiState).toBe('Patrol');
     expect(state.showNavMesh).toBe(false);
     expect(state.combatSystemPattern).toBe('fibonacciSphere');
-    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemFireRate).toBe(0.5);
     expect(state.combatSystemBloom).toBe(1.2);
   });
 
   test('combat_system transient state defaults', () => {
     const state = useEngineStore.getState();
     expect(state.combatSystemPattern).toBe('fibonacciSphere');
-    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemFireRate).toBe(0.5);
     expect(state.combatSystemBloom).toBe(1.2);
   });
 
@@ -192,13 +192,13 @@ describe('useEngineStore', () => {
   test('resetStore restores combat_system defaults', () => {
     useEngineStore.getState().setTransientState({
       combatSystemPattern: 'galaxy',
-      combatSystemFireRate: 0.5,
+      combatSystemFireRate: 1.5,
       combatSystemBloom: 3.0,
     });
     useEngineStore.getState().resetStore();
     const state = useEngineStore.getState();
     expect(state.combatSystemPattern).toBe('fibonacciSphere');
-    expect(state.combatSystemFireRate).toBe(1.5);
+    expect(state.combatSystemFireRate).toBe(0.5);
     expect(state.combatSystemBloom).toBe(1.2);
   });
 });

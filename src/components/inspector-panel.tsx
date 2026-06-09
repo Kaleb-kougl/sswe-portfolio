@@ -303,6 +303,20 @@ function FileEntryView({
         </span>
       </div>
 
+      {/* Tech Stack / Skills */}
+      {entry.skills && entry.skills.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {entry.skills.map((skill) => (
+            <span
+              key={skill}
+              className="rounded-sm border border-border bg-bg-editor px-2 py-0.5 font-mono text-[11px] text-text-muted"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Bullets */}
       <ul className="space-y-3">
         {entry.bullets.map((bullet, i) => (
