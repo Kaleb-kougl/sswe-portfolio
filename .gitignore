@@ -47,3 +47,6 @@ next-env.d.ts
 
 # doc scrapper
 r3f-scraper/*
+
+# standalone packages (have their own repos)
+/r3f-projectiles/

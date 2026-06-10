@@ -109,6 +109,7 @@ function DesktopLayout() {
                   collapsedSize="0%"
                   defaultSize="20%"
                   minSize="15%"
+                  className="contain-content"
                 >
                   <HierarchyTree />
                 </Panel>
@@ -119,7 +120,7 @@ function DesktopLayout() {
                 />
 
                 {/* Center Panel: Viewport (3D Canvas) */}
-                <Panel id="viewport" defaultSize="45%" className="relative">
+                <Panel id="viewport" defaultSize="45%" className="relative contain-content">
                   <ViewportRefProvider value={viewportRef}>
                     <main
                       ref={viewportRef}
@@ -138,7 +139,7 @@ function DesktopLayout() {
                 />
 
                 {/* Right Panel: Inspector */}
-                <Panel id="inspector-panel" defaultSize="35%" minSize="20%">
+                <Panel id="inspector-panel" defaultSize="35%" minSize="20%" className="contain-content">
                   <InspectorPanel />
                 </Panel>
               </Group>
@@ -151,7 +152,7 @@ function DesktopLayout() {
           />
 
           {/* Bottom Panel: Console */}
-          <Panel id="console" defaultSize="20%" minSize="10%">
+          <Panel id="console" defaultSize="20%" minSize="10%" className="contain-content">
             <TerminalConsole />
           </Panel>
         </Group>

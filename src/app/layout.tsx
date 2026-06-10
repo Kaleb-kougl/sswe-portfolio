@@ -47,6 +47,17 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        {/* Preload the 3D model during HTML parsing — before JS hydration.
+            as="fetch" + crossorigin matches how Three.js fetches GLBs (CORS fetch()),
+            ensuring the browser reuses this preloaded response instead of fetching twice. */}
+        <link
+          rel="preload"
+          href="/models/kbMii.glb"
+          as="fetch"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

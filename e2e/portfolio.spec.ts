@@ -160,7 +160,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await page.waitForSelector('[aria-label="Project hierarchy"]', { timeout: 15_000 });
             await page.getByRole('button', { name: /Combat_System\.three/i }).click();
     // Canvas still mounts (graceful degradation, not removal)
-    await expect(page.locator('canvas')).toBeVisible();
+    await expect(page.locator('canvas').first()).toBeVisible();
     // Controls still function
     await expect(page.getByText('Bullet Pattern', { exact: true })).toBeVisible();
   });

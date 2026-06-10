@@ -12,7 +12,7 @@ export default defineConfig({
     setupFiles: ['./__tests__/setup.ts'],
     exclude: [
       'e2e/**',
-      'node_modules/**',
+      '**/node_modules/**',
       'r3f-scraper/**',
     ],
   },
