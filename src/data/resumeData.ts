@@ -167,9 +167,10 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     dates: '',
     type: 'project',
     bullets: [
-      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition \u2014 each pattern is a pure function returning spawn data.',
+      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
       'GPU-instanced bullet renderer using InstancedMesh with a 5,000-bullet pool, zero-allocation physics loop, and per-instance color via setColorAt.',
       'Procedural IK spider/centipede enemies and multi-phase boss AI with state-machine-driven attack patterns.',
+      'Source Code: https://github.com/Kaleb-kougl/r3f-projectiles',
     ],
     controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom'],
     skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
