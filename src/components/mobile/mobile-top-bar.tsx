@@ -43,9 +43,9 @@ export function MobileTopBar() {
       </button>
 
       {/* Center: App title */}
-      <div className="flex items-center gap-1.5">
-        <Terminal size={14} strokeWidth={1.5} className="text-text-accent" />
-        <span className="font-mono text-[13px] font-medium text-text-primary">
+      <div className="flex flex-1 items-center justify-center gap-1.5 px-2">
+        <Terminal size={14} strokeWidth={1.5} className="text-text-accent shrink-0" />
+        <span className="truncate font-mono text-[13px] font-medium text-text-primary">
           portfolio.kaleb.kougl
         </span>
       </div>
@@ -54,10 +54,11 @@ export function MobileTopBar() {
       <a
         href="/KalebK_Resume.pdf"
         download
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-text-accent transition-all hover:brightness-110 active:scale-[0.97]"
+        className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-text-accent px-3 transition-all hover:brightness-110 active:scale-[0.97]"
         aria-label="Download resume"
       >
-        <Download size={16} strokeWidth={2} className="text-bg-editor" />
+        <span className="font-sans text-xs font-semibold text-bg-editor">Resume</span>
+        <Download size={14} strokeWidth={2.5} className="text-bg-editor" />
       </a>
     </header>
   );
