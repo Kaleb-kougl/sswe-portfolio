@@ -15,13 +15,15 @@ import { COMBAT_SYSTEM_PATTERN_LABELS, type CombatSystemPattern } from '@/compon
 
 // --- Helper for Linkifying Text ---
 function LinkifiedText({ text }: { text: string }) {
-  const parts = text.split(/((?:https?:\/\/[^\s]+)|(?:linkedin\.com[^\s]+)|(?:[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+))/g);
+  const parts = text.split(/(\*\*.*?\*\*|(?:https?:\/\/[^\s]+)|(?:linkedin\.com[^\s]+)|(?:[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+))/g);
 
   return (
     <>
       {parts.map((part, i) => {
         if (!part) return null;
-        if (part.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$/)) {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i} className="font-semibold text-text-primary">{part.slice(2, -2)}</strong>;
+        } else if (part.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$/)) {
           return (
             <a key={i} href={`mailto:${part}`} className="text-text-accent hover:underline">
               {part}

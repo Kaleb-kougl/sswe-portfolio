@@ -183,7 +183,9 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     dates: '',
     type: 'project',
     bullets: [
-      'End\u2011to\u2011end analytics troubleshooting browser extension in React (Manifest V3) to improve campaign management efficiency.',
+      '**Architected** a React (Manifest V3) browser extension, designing a zero-auth, stateless bridge that connects the frontend client to backend microservices via dynamic URL generation to eliminate traditional API token overhead.',
+      '**Engineered** an automated, deep-linked troubleshooting UI workflow, enabling the extension to instantly auto-populate and trigger complex campaign diagnostics without requiring manual data entry.',
+      '**Secured** cross-platform data transfers by implementing strict frontend input allowlists and automatic URL sanitization to prevent XSS, seamlessly routing external inputs into existing backend validation pipelines.',
     ],
     skills: ['React', 'TypeScript', 'Manifest V3', 'Chrome Extensions'],
   },
