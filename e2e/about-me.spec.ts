@@ -5,7 +5,7 @@ test.describe('About Me 3D Scene Integration', () => {
     await page.goto('/');
 
     // Wait for the initialization text to disappear and standard UI to show up.
-    await expect(page.locator('text=portfolio.engine.kaleb.kougl').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=portfolio.kaleb.kougl').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('Initial Load State & Mobile UI', async ({ page, isMobile }) => {

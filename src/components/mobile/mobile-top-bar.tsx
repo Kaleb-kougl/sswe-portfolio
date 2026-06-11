@@ -46,7 +46,7 @@ export function MobileTopBar() {
       <div className="flex items-center gap-1.5">
         <Terminal size={14} strokeWidth={1.5} className="text-text-accent" />
         <span className="font-mono text-[13px] font-medium text-text-primary">
-          portfolio.engine.kaleb.kougl
+          portfolio.kaleb.kougl
         </span>
       </div>
 
