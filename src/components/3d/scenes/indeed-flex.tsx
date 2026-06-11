@@ -3,6 +3,7 @@
 
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { RoundedBox, Html } from '@react-three/drei';
 import { Color, Vector3, MathUtils, type Mesh, type MeshStandardMaterial, type AmbientLight, type DirectionalLight } from 'three';
 import { useEngineStore } from '@/store/useEngineStore';
 import { useSceneGroup } from '../scene-orchestrator';
@@ -71,6 +72,11 @@ export default function IndeedFlexScene() {
   const ambientRef = useRef<AmbientLight>(null);
   const dirRef = useRef<DirectionalLight>(null);
 
+  /* ---- Host Shell & UI Refs ---- */
+  const shellRef = useRef<Mesh>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  const htmlOpacityRef = useRef(0);
+
   /* ---- Pre-allocated reusable objects (outside useFrame) ---- */
   const scattered = useMemo(() => makeScatteredPositions(), []);
   const gridVecs = useMemo(
@@ -83,8 +89,10 @@ export default function IndeedFlexScene() {
 
   /* ---- useFrame: mutate refs only, zero allocations ---- */
   useFrame((_state, delta) => {
-    const { isModuleFederationEnabled, isSloIncidentSimulated } =
+    const { isModuleFederationEnabled, isSloIncidentSimulated, activeFileId } =
       useEngineStore.getState();
+
+    const isCurrentScene = activeFileId === 'indeed-sr-swe';
 
     // --- Position interpolation ---
     for (let i = 0; i < 8; i++) {
@@ -111,6 +119,35 @@ export default function IndeedFlexScene() {
         POSITION_LAMBDA,
         delta
       );
+    }
+
+    // --- Host Shell & UI Animation ---
+    const shellScaleTarget = isModuleFederationEnabled ? 1 : 0.001;
+    const opacityTarget = (isModuleFederationEnabled && isCurrentScene) ? 1 : 0;
+
+    if (shellRef.current) {
+      shellRef.current.scale.setScalar(
+        MathUtils.damp(
+          shellRef.current.scale.x,
+          shellScaleTarget,
+          POSITION_LAMBDA,
+          delta
+        )
+      );
+    }
+
+    if (pillRef.current) {
+      htmlOpacityRef.current = MathUtils.damp(
+        htmlOpacityRef.current,
+        opacityTarget,
+        POSITION_LAMBDA,
+        delta
+      );
+      pillRef.current.style.opacity = htmlOpacityRef.current.toFixed(3);
+      pillRef.current.style.transform = `translateY(${(1 - htmlOpacityRef.current) * 10}px)`;
+      
+      // Fully hide when dismissed to prevent any stray interactions
+      pillRef.current.style.visibility = htmlOpacityRef.current < 0.01 ? 'hidden' : 'visible';
     }
 
     // --- Light colour / intensity for SLO incident ---
@@ -153,6 +190,28 @@ export default function IndeedFlexScene() {
       {/* Lighting */}
       <ambientLight ref={ambientRef} intensity={0.4} />
       <directionalLight ref={dirRef} position={[5, 5, 5]} intensity={1} />
+
+      {/* Host Shell */}
+      <mesh ref={shellRef} position={[0, 0, -0.2]} scale={0.001}>
+        <RoundedBox args={[3.4, 1.6, 0.1]} radius={0.05} smoothness={4}>
+          <meshPhysicalMaterial
+            transmission={0.9}
+            roughness={0.2}
+            thickness={0.5}
+            color="#ffffff"
+            transparent
+          />
+        </RoundedBox>
+        <Html position={[0, 1.1, 0]} center zIndexRange={[100, 0]}>
+          <div
+            ref={pillRef}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium whitespace-nowrap shadow-lg pointer-events-none select-none"
+            style={{ opacity: 0 }}
+          >
+            Remotes dynamically plug into the Host Shell at runtime.
+          </div>
+        </Html>
+      </mesh>
 
       {/* 8 microfrontend blocks */}
       {BLOCK_COLORS.map((color, i) => (

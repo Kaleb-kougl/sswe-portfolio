@@ -18,14 +18,14 @@ vi.mock('three/examples/jsm/utils/SkeletonUtils.js', () => ({
 // Mock AnimationMixer
 vi.mock('three', async () => {
   const actual = await vi.importActual<any>('three');
-  const AnimationMixerMock = function() {
-    this.clipAction = vi.fn().mockReturnValue({
+  const AnimationMixerMock = class {
+    clipAction = vi.fn().mockReturnValue({
       reset: vi.fn().mockReturnThis(),
       fadeIn: vi.fn().mockReturnThis(),
       play: vi.fn().mockReturnThis(),
       fadeOut: vi.fn().mockReturnThis(),
     });
-    this.update = vi.fn();
+    update = vi.fn();
   };
   return {
     ...actual,

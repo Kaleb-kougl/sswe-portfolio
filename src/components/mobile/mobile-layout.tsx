@@ -9,6 +9,7 @@ import { useEngineStore } from '@/store/useEngineStore';
 import { FILE_LOG_MAP } from '@/data/consoleLogs';
 import { ViewportRefProvider } from '../viewport-ref-context';
 import { CanvasLoadingHUD } from '../3d/canvas-loading-hud';
+import { ModelControlsHUD } from '../3d/model-controls-hud';
 import { MobileTopBar } from './mobile-top-bar';
 import { MobileDrawer } from './mobile-drawer';
 import { MobileBottomSheet } from './mobile-bottom-sheet';
@@ -93,6 +94,7 @@ export default function MobileLayout() {
                 aria-label="3D Viewport"
               >
                 <CanvasLoadingHUD />
+                <ModelControlsHUD />
                 <MemoizedCanvasWrapper />
               </div>
             </ViewportRefProvider>

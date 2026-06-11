@@ -16,6 +16,7 @@ import { InspectorPanel } from './inspector-panel';
 import { TerminalConsole } from './terminal-console';
 import { ViewportRefProvider } from './viewport-ref-context';
 import { CanvasLoadingHUD } from './3d/canvas-loading-hud';
+import { ModelControlsHUD } from './3d/model-controls-hud';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
 // Dynamic import of MemoizedCanvasWrapper (ssr: false — R3F requires browser APIs)
@@ -128,6 +129,7 @@ function DesktopLayout() {
                       aria-label="3D Viewport"
                     >
                       <CanvasLoadingHUD />
+                      <ModelControlsHUD />
                       <MemoizedCanvasWrapper />
                     </main>
                   </ViewportRefProvider>

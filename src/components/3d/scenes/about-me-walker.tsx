@@ -4,7 +4,7 @@
 import { useMemo, useEffect, useRef, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { AnimationMixer, MathUtils, Group } from 'three';
+import { AnimationMixer, Group } from 'three';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 useGLTF.preload('/models/kbMii.glb');
@@ -30,9 +30,10 @@ export const SPHERE_ROTATION_SPEED = 0.5;
 interface AboutMeWalkerProps {
   sphereRadius: number;
   animationName?: string;
+  targetYRotation?: number;
 }
 
-export const AboutMeWalker = memo(function AboutMeWalker({ sphereRadius, animationName = 'Walking' }: AboutMeWalkerProps) {
+export const AboutMeWalker = memo(function AboutMeWalker({ sphereRadius, animationName = 'Walking', targetYRotation }: AboutMeWalkerProps) {
   const { scene: modelScene, animations } = useGLTF('/models/kbMii.glb');
 
   // Clone with SkeletonUtils to properly re-bind SkinnedMesh skeleton
@@ -65,12 +66,17 @@ export const AboutMeWalker = memo(function AboutMeWalker({ sphereRadius, animati
   useFrame((_, delta) => {
     mixer.update(Math.min(delta, 0.05));
     if (groupRef.current) {
-      const targetY = animationName === 'Waving' ? 0 : -Math.PI / 2;
-      groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y, targetY, 5 * delta);
+      const target = targetYRotation ?? (animationName === 'Waving' ? 0 : -Math.PI / 2);
+      
+      let diff = target - groupRef.current.rotation.y;
+      // Normalize angle difference to [-PI, PI] for shortest path
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      
+      groupRef.current.rotation.y += diff * 10 * delta;
     }
   });
 
-  // Position at top of sphere, group handles smoothed rotation to face camera or sideways
+  // Position at top of sphere, group handles smoothed rotation to face camera or movement direction
   return (
     <group ref={groupRef} position={[0, sphereRadius, 0]} rotation={[0, -Math.PI / 2, 0]}>
       <primitive object={clonedScene} />
