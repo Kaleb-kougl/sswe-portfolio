@@ -76,6 +76,7 @@ export const FILE_TREE: FileNode[] = [
     isFolder: true,
     children: [
       { id: 'roblox-css', label: 'Roblox_CSS_v0.1.0.npm', icon: Package },
+      { id: 'r3f-projectiles', label: 'R3F_Projectiles.npm', icon: Package },
       { id: 'acs-microdialysis', label: 'ACS_Anal_Chem_2019.doi', icon: FlaskConical },
     ],
   },

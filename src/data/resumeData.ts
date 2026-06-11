@@ -221,6 +221,21 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     controls: ['githubLink'],
     skills: ['TypeScript', 'Roblox-TS', 'CSS-in-JS', 'AST Parsing'],
   },
+  'r3f-projectiles': {
+    fileId: 'r3f-projectiles',
+    title: '@k9kbdev/r3f-projectiles',
+    company: 'Published npm Package',
+    dates: '',
+    type: 'project',
+    bullets: [
+      'A high-performance bullet-hell and projectile engine for React Three Fiber (R3F).',
+      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
+      'GPU-instanced bullet renderer using InstancedMesh with a 5,000-bullet pool, zero-allocation physics loop, and per-instance color via setColorAt.',
+      'Published under MIT License. NPM: https://www.npmjs.com/package/@k9kbdev/r3f-projectiles',
+    ],
+    controls: ['githubLink'],
+    skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
+  },
   'acs-microdialysis': {
     fileId: 'acs-microdialysis',
     title: 'Microdialysis Sampling of Quorum Sensing Homoserine Lactones during Biofilm Formation',
