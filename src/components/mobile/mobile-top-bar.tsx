@@ -54,11 +54,11 @@ export function MobileTopBar() {
       <a
         href="/KalebK_Resume.pdf"
         download
-        className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-text-accent px-3 transition-all hover:brightness-110 active:scale-[0.97]"
+        className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-text-accent transition-all hover:brightness-110 active:scale-[0.97]"
         aria-label="Download resume"
       >
-        <span className="font-sans text-xs font-semibold text-bg-editor">Resume</span>
         <Download size={14} strokeWidth={2.5} className="text-bg-editor" />
+        <span className="font-sans text-[9px] font-semibold leading-tight text-bg-editor">Resume</span>
       </a>
     </header>
   );
