@@ -54,7 +54,7 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'hammerball', label: 'HammerBall_LiveOps.exe', icon: Hammer },
+      { id: 'hammerball', label: 'BonkBall.exe', icon: Hammer },
       { id: 'analytics-extension', label: 'Indeed_Analytics_ManifestV3.crx', icon: Puzzle },
       { id: 'combat_system', label: 'Combat_System.three', icon: Gamepad2 },
     ],

@@ -149,16 +149,18 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
   },
   'hammerball': {
     fileId: 'hammerball',
-    title: 'HammerBall LiveOps',
+    title: 'BonkBall',
     company: 'Personal Project',
     dates: '',
     type: 'project',
     bullets: [
-      'Shipped a full multiplayer game with a 5-state FSM-driven AI pipeline and authoritative client-server architecture.',
-      'Built with TypeScript, Reflex/Redux state management, and real-time live-ops economy syncing.',
+      'Architected a high-paced, objective-based multiplayer Roblox game in strict TypeScript using Flamework DI and an Entity-Component-System (ECS) pattern to enforce client-server separation.',
+      'Engineered a scalable hybrid PvPvE environment featuring intelligent NPC bots driven by a custom Finite State Machine (FSM), optimized with pre-computed spatial queries and SimplePath pathfinding.',
+      'Implemented a reactive, unidirectional state management architecture using Reflex to synchronize match phases across 20+ decoupled micro-services and programmatic HUD controllers.',
+      'Designed a unified ICombatant interface, abstracting physical entities to allow complex hit-detection and objective mechanics to seamlessly interact with both human players and AI agents.'
     ],
     controls: ['forceAiState', 'showNavMesh'],
-    skills: ['TypeScript', 'Roblox-TS', 'Reflex', 'FSM AI', 'Multiplayer'],
+    skills: ['TypeScript', 'Roblox-TS', 'Flamework', 'Reflex', 'FSM AI'],
   },
   'combat_system': {
     fileId: 'combat_system',

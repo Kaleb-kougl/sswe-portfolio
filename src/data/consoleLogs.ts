@@ -6,7 +6,7 @@ export const FILE_LOG_MAP: Record<string, string> = {
   'ibm-staff-swe':    '> [PERF] Legacy bundle detected. Tree-shaking applied. Reduced to 300KB.',
   'ibm-swe':           '> [GRAPHQL] Initializing Apollo Client... GolfTV Graph API connected.',
   'jbhunt-intern':        '> [MOBILE] React Native bridge initialized. Jest/Appium suites loaded.',
-  'hammerball':            '> [SERVER] Authoritative match started. Syncing live-ops economy...',
+  'hammerball':            '> [SERVER] BonkBall authoritative match started. Initializing FSM bot brains...',
   'analytics-extension':  '> [EXTENSION] Manifest V3 service worker registered. Analytics pipeline active.',
   'webpack-federation':   '> [WEBPACK 5] Compiling Module Federation... Done in 142ms.',
   'cwv-profiler':         '> [SLO] Core Web Vitals check: TTI < 100ms. FCP < 50ms. [PASS]',
