@@ -230,7 +230,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
   },
   'r3f-projectiles': {
     fileId: 'r3f-projectiles',
-    title: '@k9kbdev/r3f-projectiles',
+    title: 'r3f-projectiles',
     company: 'Published npm Package',
     dates: '',
     type: 'project',
