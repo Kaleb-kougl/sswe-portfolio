@@ -5,6 +5,7 @@ export interface ContactInfo {
   phone: string;
   location: string;
   linkedin: string;
+  github: string;
 }
 
 export interface ProjectEntry {
@@ -25,6 +26,7 @@ export const CONTACT_INFO: ContactInfo = {
   phone: '479-283-4454',
   location: 'San Francisco, CA',
   linkedin: 'linkedin.com/in/kaleb-kougl-7b3292151/',
+  github: 'https://github.com/Kaleb-kougl',
 };
 
 export const SUMMARY =
@@ -96,6 +98,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       `Phone: ${CONTACT_INFO.phone}`,
       `Location: ${CONTACT_INFO.location}`,
       `LinkedIn: ${CONTACT_INFO.linkedin}`,
+      `GitHub: ${CONTACT_INFO.github}`,
     ],
   },
   'indeed-sr-swe': {

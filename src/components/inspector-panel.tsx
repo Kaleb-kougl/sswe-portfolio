@@ -204,6 +204,9 @@ function WelcomeView() {
         <p>
           🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">{CONTACT_INFO.linkedin}</a>
         </p>
+        <p>
+          🐙 <a href={CONTACT_INFO.github} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">{CONTACT_INFO.github.replace('https://', '')}</a>
+        </p>
       </div>
       <div className="mt-4">
         <p className="font-ui text-xs text-text-muted">
