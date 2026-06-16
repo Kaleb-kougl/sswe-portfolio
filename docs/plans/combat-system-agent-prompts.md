@@ -54,7 +54,7 @@ Current children array (lines 55-58):
 ```ts
 children: [
   { id: 'hammerball', label: 'HammerBall_LiveOps.exe', icon: Hammer },
-  { id: 'analytics-extension', label: 'Indeed_Analytics_ManifestV3.crx', icon: Puzzle },
+  { id: 'analytics-extension', label: 'Indeed_Analytics_Chrome_Extension.crx', icon: Puzzle },
 ],
 ```
 
