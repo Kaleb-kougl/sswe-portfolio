@@ -22,6 +22,7 @@ export interface TransientUpdates {
   combatSystemPattern?: CombatSystemPattern;
   combatSystemFireRate?: number;
   combatSystemBloom?: number;
+  combatSystemPoolSize?: number;
 }
 
 interface EngineState {
@@ -54,6 +55,7 @@ interface EngineState {
   combatSystemPattern: CombatSystemPattern;
   combatSystemFireRate: number;
   combatSystemBloom: number;
+  combatSystemPoolSize: number;
 
   // Camera (plain object to avoid importing THREE in the store — preserves SSR safety)
   cameraTarget: { x: number; y: number; z: number };
@@ -118,6 +120,7 @@ export const useEngineStore = create<EngineState>()(
       combatSystemPattern: 'fibonacciSphere' as CombatSystemPattern,
       combatSystemFireRate: 0.5,
       combatSystemBloom: 1.2,
+      combatSystemPoolSize: 2000,
       cameraTarget: { x: 0, y: 0, z: 0 },
 
       // --- Transient actions ---

@@ -9,7 +9,7 @@ import type { BloomEffect } from 'postprocessing';
 import { ACESFilmicToneMapping } from 'three';
 import { useViewportRef } from '../viewport-ref-context';
 import { WebGLErrorBoundary, type WebGLFallbackProps } from './error-boundary';
-import { SceneOrchestrator } from './scene-orchestrator';
+import { SceneOrchestrator, getSceneKey } from './scene-orchestrator';
 import { AdaptivePixelRatio } from './adaptive-pixel-ratio';
 import IBMFlex from './scenes/ibm-flex';
 import IndeedFlex from './scenes/indeed-flex';
@@ -100,9 +100,10 @@ const ConditionalBloom = memo(function ConditionalBloom() {
     if (!bloom) return;
 
     const { activeFileId, combatSystemBloom } = useEngineStore.getState();
+    const sceneKey = getSceneKey(activeFileId);
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
     const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const shouldBeActive = activeFileId === 'combat_system' && !isMobile && !prefersReduced;
+    const shouldBeActive = sceneKey === 'combat_system' && !isMobile && !prefersReduced;
 
     // Set intensity: slider value when active, 0 when inactive.
     // Zero-intensity bloom is effectively a visual passthrough.

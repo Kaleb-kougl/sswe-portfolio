@@ -16,6 +16,7 @@ export type SceneKey = 'ibm-staff-swe' | 'indeed-sr-swe' | 'hammerball' | 'comba
 
 export function getSceneKey(fileId: string | null): SceneKey {
   if (fileId && ABOUT_ME_IDS.has(fileId)) return 'about-me';
+  if (fileId === 'r3f-projectiles') return 'combat_system';
   if (fileId && FLEX_SCENE_IDS.has(fileId)) return fileId as SceneKey;
   return 'default';
 }

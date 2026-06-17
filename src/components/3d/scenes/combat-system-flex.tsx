@@ -3,6 +3,8 @@
 
 import { useSceneGroup } from '../scene-orchestrator';
 import { BulletManager } from './combat-system-bullets';
+import { BulletTelemetry } from '../bullet-telemetry';
+import { useEngineStore } from '@/store/useEngineStore';
 
 /**
  * CombatSystemFlex — The CombatSystem combat scene.
@@ -15,6 +17,7 @@ import { BulletManager } from './combat-system-bullets';
  */
 export function CombatSystemFlex() {
   const groupRef = useSceneGroup('combat_system');
+  const poolSize = useEngineStore((s) => s.combatSystemPoolSize);
 
   return (
     <group ref={groupRef}>
@@ -55,7 +58,8 @@ export function CombatSystemFlex() {
       </mesh>
 
       {/* Bullet system */}
-      <BulletManager />
+      <BulletManager maxBullets={poolSize} />
+      <BulletTelemetry />
     </group>
   );
 }

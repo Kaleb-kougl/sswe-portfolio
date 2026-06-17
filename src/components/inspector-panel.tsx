@@ -12,6 +12,7 @@ import {
   type ProjectEntry,
 } from '@/data/resumeData';
 import { COMBAT_SYSTEM_PATTERN_LABELS, type CombatSystemPattern } from '@/components/3d/scenes/combat-system-types';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 // --- Helper for Linkifying Text ---
 function LinkifiedText({ text }: { text: string }) {
@@ -113,7 +114,7 @@ const CONTROL_SPECS: Record<string, ControlSpec> = {
     label: 'Auto-fire Rate',
     field: 'combatSystemFireRate',
     min: 0.3,
-    max: 3.0,
+    max: 6.0,
     step: 0.1,
     formatValue: (v: number) => `${v.toFixed(1)}/s`,
   },
@@ -125,6 +126,15 @@ const CONTROL_SPECS: Record<string, ControlSpec> = {
     max: 3.0,
     step: 0.1,
     formatValue: (v: number) => v.toFixed(1),
+  },
+  combatSystemPoolSize: {
+    type: 'slider',
+    label: 'Pool Size',
+    field: 'combatSystemPoolSize',
+    min: 100,
+    max: 5000,
+    step: 100,
+    formatValue: (v: number) => v.toString(),
   },
 };
 
@@ -274,6 +284,9 @@ function FileEntryView({
   headingRef,
   setTransientState,
 }: FileEntryViewProps) {
+  const prefersReduced = useReducedMotion();
+  const disableCombatControls = (entry.fileId === 'combat_system' || entry.fileId === 'r3f-projectiles') && prefersReduced;
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -343,6 +356,11 @@ function FileEntryView({
           <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-wider text-text-muted">
             Interactive Controls
           </p>
+          {disableCombatControls && (
+            <div className="mb-4 rounded border border-text-accent/30 bg-text-accent/10 p-2 text-xs text-text-primary">
+              <strong>Reduced Motion Active:</strong> The bullet system has been automatically paused and capped to 200 instances for accessibility. Controls are disabled.
+            </div>
+          )}
           <div className="space-y-4">
             {entry.controls.map((controlId) => {
               const spec = CONTROL_SPECS[controlId];
@@ -354,6 +372,7 @@ function FileEntryView({
                     <SliderControl
                       key={controlId}
                       spec={spec}
+                      disabled={disableCombatControls}
                       setTransientState={setTransientState}
                     />
                   );
@@ -362,6 +381,7 @@ function FileEntryView({
                     <ToggleControl
                       key={controlId}
                       spec={spec}
+                      disabled={disableCombatControls}
                       setTransientState={setTransientState}
                     />
                   );
@@ -370,6 +390,7 @@ function FileEntryView({
                     <RadioGroupControl
                       key={controlId}
                       spec={spec}
+                      disabled={disableCombatControls}
                       setTransientState={setTransientState}
                     />
                   );
@@ -391,9 +412,11 @@ function FileEntryView({
 function SliderControl({
   spec,
   setTransientState,
+  disabled,
 }: {
   spec: SliderControl;
   setTransientState: (u: TransientUpdates) => void;
+  disabled?: boolean;
 }) {
   const value = useEngineStore(
     (s) => s[spec.field as keyof typeof s]
@@ -420,12 +443,13 @@ function SliderControl({
         max={spec.max}
         step={spec.step}
         value={value}
+        disabled={disabled}
         onChange={(e) =>
           setTransientState({
             [spec.field]: parseFloat(e.target.value),
           } as TransientUpdates)
         }
-        className="w-full accent-text-accent"
+        className={`w-full accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         aria-valuemin={spec.min}
         aria-valuemax={spec.max}
         aria-valuenow={value}
@@ -447,9 +471,11 @@ function SliderControl({
 function ToggleControl({
   spec,
   setTransientState,
+  disabled,
 }: {
   spec: ToggleControl;
   setTransientState: (u: TransientUpdates) => void;
+  disabled?: boolean;
 }) {
   const value = useEngineStore(
     (s) => s[spec.field as keyof typeof s]
@@ -462,16 +488,17 @@ function ToggleControl({
         id={checkboxId}
         type="checkbox"
         checked={value}
+        disabled={disabled}
         onChange={(e) =>
           setTransientState({
             [spec.field]: e.target.checked,
           } as TransientUpdates)
         }
-        className="h-4 w-4 rounded border-border bg-bg-panel text-text-accent accent-text-accent cursor-pointer"
+        className={`h-4 w-4 rounded border-border bg-bg-panel text-text-accent accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       />
       <label
         htmlFor={checkboxId}
-        className="font-mono text-xs text-text-muted cursor-pointer select-none"
+        className={`font-mono text-xs select-none ${disabled ? 'text-text-muted/50 cursor-not-allowed' : 'text-text-muted cursor-pointer'}`}
       >
         {spec.label}
       </label>
@@ -483,9 +510,11 @@ function ToggleControl({
 function RadioGroupControl({
   spec,
   setTransientState,
+  disabled,
 }: {
   spec: RadioControl;
   setTransientState: (u: TransientUpdates) => void;
+  disabled?: boolean;
 }) {
   const value = useEngineStore(
     (s) => s[spec.field as keyof typeof s]
@@ -506,18 +535,20 @@ function RadioGroupControl({
                 name={`${groupId}-${spec.field}`}
                 value={option}
                 checked={value === option}
+                disabled={disabled}
                 onChange={() =>
                   setTransientState({
                     [spec.field]: option,
                   } as TransientUpdates)
                 }
                 aria-label={spec.formatLabel ? spec.formatLabel(option) : option}
-                className="h-4 w-4 border-border bg-bg-panel text-text-accent accent-text-accent cursor-pointer"
+                className={`h-4 w-4 border-border bg-bg-panel text-text-accent accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               />
               <label
                 htmlFor={radioId}
-                className={`font-mono text-xs cursor-pointer select-none ${
-                  value === option ? 'text-text-accent' : 'text-text-muted'
+                className={`font-mono text-xs select-none ${
+                  disabled ? 'text-text-muted/50 cursor-not-allowed' :
+                  value === option ? 'text-text-accent cursor-pointer' : 'text-text-muted cursor-pointer'
                 }`}
               >
                 {spec.formatLabel ? spec.formatLabel(option) : option}

@@ -18,6 +18,7 @@ import type { CombatSystemPattern } from './combat-system-types';
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
+export const activeBulletCount = { current: 0 };
 const ROTATION_SPEED = 0.3; // radians/sec for source position orbit
 const BOUNDS_LIMIT = 25; // must match fog far plane
 const SPAWN_CENTER_Y = 3; // bullets spawn from center at this height
@@ -67,6 +68,7 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
     const mesh = meshRef.current;
     if (!mesh) return;
 
+    activeBulletCount.current = 0;
     // Allocate the CPU-side bullet state array ONCE
     const pool: BulletState[] = new Array(maxBullets);
     for (let i = 0; i < maxBullets; i++) {
@@ -156,6 +158,7 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
 
         spawned++;
       }
+      activeBulletCount.current += spawned;
     };
   }, [_dummy, _tempColor]);
 
@@ -238,6 +241,7 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
         Math.abs(b.position.z) > BOUNDS_LIMIT
       ) {
         b.active = false;
+        activeBulletCount.current--;
         _dummy.position.set(0, -999, 0);
         _dummy.scale.set(0, 0, 0);
         _dummy.updateMatrix();

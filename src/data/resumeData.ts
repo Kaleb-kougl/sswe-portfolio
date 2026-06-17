@@ -178,7 +178,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Source Code: https://github.com/Kaleb-kougl/r3f-projectiles',
       'NPM: https://www.npmjs.com/package/@k9kbdev/r3f-projectiles',
     ],
-    controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom'],
+    controls: ['combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom', 'combatSystemPoolSize'],
     skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
   },
   'analytics-extension': {
@@ -240,7 +240,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'GPU-instanced bullet renderer using InstancedMesh with a 5,000-bullet pool, zero-allocation physics loop, and per-instance color via setColorAt.',
       'Published under MIT License. NPM: https://www.npmjs.com/package/@k9kbdev/r3f-projectiles',
     ],
-    controls: ['githubLink'],
+    controls: ['githubLink', 'combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom', 'combatSystemPoolSize'],
     skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
   },
   'acs-microdialysis': {

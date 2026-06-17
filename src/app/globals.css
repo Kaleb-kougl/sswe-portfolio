@@ -134,6 +134,44 @@ body {
   }
 }
 
+/* --- Bullet Telemetry Positioning --- */
+.bullet-stats-panel {
+  position: absolute !important;
+  top: 4px !important;
+  bottom: auto !important;
+  left: 4px !important;
+  right: auto !important;
+  z-index: 20 !important;
+  opacity: 0.8;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bullet-stats-panel::before {
+  content: 'PARTICLE SYSTEM';
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  text-align: left;
+  padding-left: 3px;
+  margin-bottom: 2px;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .bullet-stats-panel {
+    top: 4.5rem !important;
+    left: 0.75rem !important;
+    opacity: 0.6;
+  }
+}
+
 /* --- Mobile Glassmorphic Surfaces --- */
 .glass-surface {
   background: color-mix(in srgb, var(--color-bg-panel) 70%, transparent);
