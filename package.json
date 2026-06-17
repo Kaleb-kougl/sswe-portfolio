@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm install --prefix r3f-projectiles && npm run build --prefix r3f-projectiles",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -13,7 +12,7 @@
     "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {
-    "@k9kbdev/r3f-projectiles": "file:r3f-projectiles",
+    "@k9kbdev/r3f-projectiles": "^0.1.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
