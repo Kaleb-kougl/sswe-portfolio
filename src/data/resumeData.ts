@@ -75,7 +75,8 @@ export const SKILLS = [
   'TDD',
   'Frontend Security Best Practices',
   'Agile Methodologies',
-  'AI\u2011assisted development / model\u2011assisted workflows',
+  'GenAI',
+  'Agentic Workflows',
 ];
 
 export const RESUME_DATA: Record<string, ProjectEntry> = {
