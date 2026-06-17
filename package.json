@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm install --prefix r3f-projectiles && npm run build --prefix r3f-projectiles",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

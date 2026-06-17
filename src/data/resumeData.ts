@@ -195,6 +195,23 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     skills: ['React', 'TypeScript', 'Manifest V3', 'Chrome Extensions'],
   },
+  'core-skills': {
+    fileId: 'core-skills',
+    title: 'Core Skills & Technologies',
+    company: '',
+    dates: '',
+    type: 'skill',
+    bullets: [
+      '**Languages:** TypeScript, JavaScript, Python, Java',
+      '**Frontend Frameworks & Web:** React, Next.js, Redux, HTML5, CSS3, Styled-Components',
+      '**Data & State Management:** GraphQL, Apollo Client, State Management',
+      '**Architecture & Design:** Microfrontend Architecture, Design Systems, Design Tokens, Component-Driven Development, System Design',
+      '**Performance & Security:** Performance Optimization (Core Web Vitals), Frontend Security Best Practices',
+      '**Tools & Infrastructure:** Webpack 5, Docker, Git, CI/CD',
+      '**Testing & Observability:** Cypress, TDD, DataDog',
+      '**Workflow & Automation:** Agile Methodologies, GenAI, Agentic Workflows'
+    ],
+  },
   'webpack-federation': {
     fileId: 'webpack-federation',
     title: 'Webpack 5 Module Federation',

@@ -14,6 +14,7 @@ import {
   FlaskConical,
   Home,
   Gamepad2,
+  Code2,
 } from 'lucide-react';
 
 export interface FileNode {
@@ -65,6 +66,7 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
+      { id: 'core-skills', label: 'Core_Skills.json', icon: Code2 },
       { id: 'webpack-federation', label: 'Webpack5_Federation.ts', icon: Settings },
       { id: 'cwv-profiler', label: 'Core_Web_Vitals_Profiler.ts', icon: BarChart3 },
     ],
