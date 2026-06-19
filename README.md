@@ -1,6 +1,6 @@
 # Kaleb Kougl - Senior Frontend Architect Portfolio
 
-An interactive, IDE-themed portfolio built with Next.js App Router, React 19, and React Three Fiber. This project maps my resume data into a simulated Integrated Development Environment (IDE) interface, showcasing my technical experience and complex engineering concepts through live 3D visualizations. The underlying architecture was specifically engineered to solve the core problem of seamlessly bridging traditional reactive DOM state with computationally heavy WebGL rendering, ensuring high-fidelity 3D interactions without dropping frames or triggering garbage collection spikes.
+An interactive, IDE-themed portfolio built with Next.js App Router, React 19, and React Three Fiber. This project maps my resume data into a simulated Integrated Development Environment (IDE) interface, showcasing technical experience and engineering concepts through live 3D visualizations. The architecture bridges traditional reactive DOM state with computationally heavy WebGL rendering, maintaining high-fidelity 3D interactions without dropping frames or triggering garbage collection spikes.
 
 ## Live Deployment
 
@@ -14,7 +14,7 @@ This project is deployed on Vercel and can be viewed at:
   - **IBM**: Visualizes bundle optimization by compressing a chaotic 3D sphere into a diamond.
   - **Indeed**: Demonstrates Webpack Module Federation as 3D blocks snap together.
   - **HammerBall**: Visualizes Finite State Machine (FSM) AI pathfinding in 3D.
-  - **Combat System**: Utilizes my custom GPU-instanced library (authored by me) for rendering complex bullet patterns.
+  - **Combat System**: Uses my custom GPU-instanced library for rendering complex bullet patterns.
 - **Strict Performance Architecture**: Zero DOM props passed into the canvas; zero-allocation `useFrame` loops to prevent garbage collection spikes.
 - **Responsive "Spatial Map"**: Mobile fallback drops the IDE panes into sliding drawers and bottom sheets, covering the background in the 3D canvas.
 - **Accessibility (A11y)**: Supports `prefers-reduced-motion`, ARIA tree keyboard navigation, and screen-reader announcements.
@@ -33,8 +33,8 @@ This project is deployed on Vercel and can be viewed at:
 
 ## Architecture Highlights
 
-- **Modern React (v19)**: Built with the bleeding-edge React Compiler to automatically handle component memoization, yielding massive performance wins.
-- **Server Components & Suspense**: Leverages the Next.js App Router RSC architecture, dynamically lazy-loading heavy 3D assets inside `<Suspense>` boundaries without blocking the main thread.
+- **Modern React (v19)**: Built with the React Compiler to automatically handle component memoization, improving rendering performance.
+- **Server Components & Suspense**: Uses the Next.js App Router RSC architecture, dynamically lazy-loading heavy 3D assets inside `<Suspense>` boundaries without blocking the main thread.
 - **State Bifurcation**: The `useEngineStore` separates "Reactive" state (DOM renders) from "Transient" state (bypasses React, polled imperatively in WebGL).
 - **GPU Instancing**: The included `r3f-projectiles` library (which I authored) powers a custom 3D projectile engine capable of rendering 20,000 entities at 120 FPS.
 - **Scene Orchestration**: Scenes are mounted once to prevent expensive GPU recompilations, controlled imperatively via `scene-orchestrator.tsx`.
@@ -47,19 +47,19 @@ This portfolio was built to demonstrate deep engineering fundamentals applied to
 - **Recursive Tree Flattening (A11y Traversal):** The IDE File Explorer uses a recursive algorithm to flatten the deep `FileNode` tree structure into a 1D array on the fly. This enables WAI-ARIA compliant up/down keyboard navigation that logically skips over collapsed directories.
 - **Ring Buffers (Queue Management):** The Terminal Console manages its data via a sliding-window ring buffer (`.slice(-100)`). This bounds the `ConsoleLogEntry` array, preventing DOM bloat and memory leaks during long, heavily logged 3D sessions.
 - **Euler Integration (Physics):** The particle system calculates movement using frame-rate independent Euler integration (`addScaledVector(v, dt)`). By clamping the delta-time, it guarantees deterministic speeds and prevents spiral-of-death lag spikes across both 60Hz and 144Hz monitors.
-- **Algorithmic Pattern Generators (Math):** Complex projectile emissions are calculated using mathematically driven algorithms rather than hardcoded paths—including Golden Angle distributions (Fibonacci Spheres), parametric Torus Knots, and logarithmic squared distributions for spiral galaxies.
-- **Heuristic LLM Discovery (Web Crawling):** The `r3f-scraper` script utilizes an opportunistic fallback algorithm. It first attempts to resolve standard `/llms.txt` endpoints to gather context, and only falls back to a full Breadth-First Search DOM traversal if the heuristic fails.
+- **Algorithmic Pattern Generators (Math):** Complex projectile emissions are calculated using mathematically driven algorithms rather than hardcoded paths - including Golden Angle distributions (Fibonacci Spheres), parametric Torus Knots, and logarithmic squared distributions for spiral galaxies.
+- **Heuristic LLM Discovery (Web Crawling):** The `r3f-scraper` script uses an opportunistic fallback algorithm. It first attempts to resolve standard `/llms.txt` endpoints to gather context, falling back to a full Breadth-First Search DOM traversal if the heuristic fails.
 
 ## Testing & QA Highlights
 
-The project employs a robust unit testing strategy (100% pass rate across 143 tests in 22 suites), built using a strict Test-Driven Development (TDD) approach:
+The project has a strict unit testing strategy (100% pass rate across 143 tests in 22 suites), built using Test-Driven Development (TDD):
 
-- **State Management Reliability**: The Zustand store (`useEngineStore`) is comprehensively tested to verify FIFO console queues (capped at 100 entries) and ensure high-frequency transient state updates (like 3D camera coordinates) do not trigger unnecessary DOM renders.
-- **3D Context Resilience**: `error-boundary` and `canvas-wrapper` tests verify that if WebGL is disabled or crashes, the application gracefully degrades to a fallback UI. It also tests auto-recovery mechanisms that reset the context upon file navigation.
-- **Advanced WebGL Testing**: Utilizes `@react-three/test-renderer` to unit test 3D scenes by advancing frames (`renderer.advanceFrames`). This verifies `InstancedMesh` re-allocations, frustum culling, and zero-value handling during computational sequences.
+- **State Management**: The Zustand store (`useEngineStore`) is tested to verify FIFO console queues (capped at 100 entries) and ensure high-frequency transient state updates (like 3D camera coordinates) do not trigger unnecessary DOM renders.
+- **3D Context Resilience**: `error-boundary` and `canvas-wrapper` tests verify that if WebGL is disabled or crashes, the application falls back to a 2D UI. It also tests auto-recovery mechanisms that reset the context upon file navigation.
+- **WebGL Testing**: Uses `@react-three/test-renderer` to unit test 3D scenes by advancing frames (`renderer.advanceFrames`). This verifies `InstancedMesh` re-allocations, frustum culling, and zero-value handling during computational sequences.
 - **Accessibility Fallbacks**: Tests explicitly mock the `useReducedMotion` hook to ensure 3D animations, camera panning, and intensive physics systems immediately fall back to simplified states.
 - **Recursive Data Structures**: Deeply nested mock data tests ensure the `HierarchyTree` file explorer correctly flattens data and updates WAI-ARIA attributes (`aria-expanded`) without hitting call stack limits.
-- **Continuous Integration Pipeline**: Engineered a strict GitHub Actions workflow featuring dependency caching and artifact retention. The pipeline enforces zero-tolerance quality gates—requiring 100% passing unit (Vitest) and E2E (Playwright) test suites, rigorous ESLint static analysis, and successful Next.js production builds—acting as a robust fail-safe before continuous deployment to Vercel.
+- **Continuous Integration**: GitHub Actions workflow featuring dependency caching and artifact retention. The pipeline requires 100% passing unit (Vitest) and E2E (Playwright) test suites, ESLint static analysis, and successful Next.js production builds before continuous deployment to Vercel.
 
 ## Contact
 
