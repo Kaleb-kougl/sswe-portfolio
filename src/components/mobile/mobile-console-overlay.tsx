@@ -16,7 +16,7 @@ export function MobileConsoleOverlay() {
   const consoleLogs = useEngineStore((s) => s.consoleLogs);
   const deferredLogs = useDeferredValue(consoleLogs);
   const [visible, setVisible] = useState(false);
-  const [prevLogId, setPrevLogId] = useState<string | null>(null);
+  const [prevLogId, setPrevLogId] = useState<number | null>(null);
   const currentLogId = deferredLogs[deferredLogs.length - 1]?.id || null;
 
   if (currentLogId !== prevLogId) {
