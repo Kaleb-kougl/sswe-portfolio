@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
     "test:motionscore": "npx -y motionscore http://localhost:3000"

@@ -30,34 +30,6 @@ function flattenVisible(
   return result;
 }
 
-// Count visible descendants (for stagger delay offset calculation)
-function countVisible(nodes: FileNode[], expandedSet: Set<string>): number {
-  let count = 0;
-  for (const node of nodes) {
-    count += 1;
-    if (node.isFolder && expandedSet.has(node.id) && node.children) {
-      count += countVisible(node.children, expandedSet);
-    }
-  }
-  return count;
-}
-
-function findParent(
-  nodes: FileNode[],
-  targetId: string,
-  parent: FileNode | null = null
-): FileNode | null {
-  for (const node of nodes) {
-    if (node.id === targetId) return parent;
-    if (node.children) {
-      const found = findParent(node.children, targetId, node);
-      if (found !== undefined && found !== null) return found;
-      // Check if target is a direct child
-      if (node.children.some((c) => c.id === targetId)) return node;
-    }
-  }
-  return null;
-}
 
 function findParentInTree(
   nodes: FileNode[],
@@ -79,7 +51,7 @@ function findParentInTree(
 interface TreeNodeProps {
   node: FileNode;
   level: number;
-  staggerIndex: number;
+  visibleNodes: FileNode[];
   activeFileId: string | null;
   focusedNodeId: string | null;
   expandedSet: Set<string>;
@@ -92,7 +64,7 @@ interface TreeNodeProps {
 function TreeNode({
   node,
   level,
-  staggerIndex,
+  visibleNodes,
   activeFileId,
   focusedNodeId,
   expandedSet,
@@ -116,19 +88,15 @@ function TreeNode({
 
   const Icon = node.icon;
 
-  const setRef = useCallback(
-    (el: HTMLButtonElement | null) => {
-      if (el) {
-        nodeRefs.current.set(node.id, el);
-      } else {
-        nodeRefs.current.delete(node.id);
-      }
-    },
-    [node.id, nodeRefs]
-  );
+  const setRef = (el: HTMLButtonElement | null) => {
+    if (el) {
+      nodeRefs.current.set(node.id, el);
+    } else {
+      nodeRefs.current.delete(node.id);
+    }
+  };
 
-  // Count child nodes for stagger offset
-  let childStaggerBase = staggerIndex + 1;
+  const staggerIndex = visibleNodes.findIndex((n) => n.id === node.id);
 
   return (
     <li
@@ -182,26 +150,21 @@ function TreeNode({
 
       {node.isFolder && isExpanded && node.children && (
         <ul role="group">
-          {node.children.map((child) => {
-            const idx = childStaggerBase;
-            // Advance by 1 + count of child's visible descendants
-            childStaggerBase += 1 + (child.isFolder && expandedSet.has(child.id) && child.children ? countVisible(child.children, expandedSet) : 0);
-            return (
-              <TreeNode
-                key={child.id}
-                node={child}
-                level={level + 1}
-                staggerIndex={idx}
-                activeFileId={activeFileId}
-                focusedNodeId={focusedNodeId}
-                expandedSet={expandedSet}
-                onFileSelect={onFileSelect}
-                onToggleExpand={onToggleExpand}
-                onFocusNode={onFocusNode}
-                nodeRefs={nodeRefs}
-              />
-            );
-          })}
+          {node.children.map((child) => (
+            <TreeNode
+              key={child.id}
+              node={child}
+              level={level + 1}
+              visibleNodes={visibleNodes}
+              activeFileId={activeFileId}
+              focusedNodeId={focusedNodeId}
+              expandedSet={expandedSet}
+              onFileSelect={onFileSelect}
+              onToggleExpand={onToggleExpand}
+              onFocusNode={onFocusNode}
+              nodeRefs={nodeRefs}
+            />
+          ))}
         </ul>
       )}
     </li>
@@ -350,9 +313,6 @@ export function HierarchyTree() {
     ]
   );
 
-  // Build stagger indices for root-level nodes
-  let rootStagger = 0;
-
   return (
     <nav
       className="flex h-full flex-col overflow-hidden bg-bg-sidebar"
@@ -369,25 +329,21 @@ export function HierarchyTree() {
           className="space-y-0.5"
           aria-label="Project files"
         >
-          {FILE_TREE.map((node) => {
-            const idx = rootStagger;
-            rootStagger += 1 + (node.isFolder && expandedSet.has(node.id) && node.children ? countVisible(node.children, expandedSet) : 0);
-            return (
-              <TreeNode
-                key={node.id}
-                node={node}
-                level={0}
-                staggerIndex={idx}
-                activeFileId={activeFileId}
-                focusedNodeId={focusedNodeId}
-                expandedSet={expandedSet}
-                onFileSelect={handleFileSelect}
-                onToggleExpand={handleToggleExpand}
-                onFocusNode={handleFocusNode}
-                nodeRefs={nodeRefs}
-              />
-            );
-          })}
+          {FILE_TREE.map((node) => (
+            <TreeNode
+              key={node.id}
+              node={node}
+              level={0}
+              visibleNodes={visibleNodes}
+              activeFileId={activeFileId}
+              focusedNodeId={focusedNodeId}
+              expandedSet={expandedSet}
+              onFileSelect={handleFileSelect}
+              onToggleExpand={handleToggleExpand}
+              onFocusNode={handleFocusNode}
+              nodeRefs={nodeRefs}
+            />
+          ))}
         </ul>
       </div>
     </nav>

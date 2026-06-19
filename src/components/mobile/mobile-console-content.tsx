@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useDeferredValue } from 'react';
+import { useEffect, useRef, useState, useDeferredValue } from 'react';
 import { useEngineStore } from '@/store/useEngineStore';
 
 /**
@@ -61,7 +61,7 @@ function getTimestamp(): string {
 }
 
 function MobileLogLine({ text }: { text: string }) {
-  const timestamp = useRef(getTimestamp()).current;
+  const [timestamp] = useState(() => getTimestamp());
 
   let prefixColor = 'text-text-muted';
   if (text.includes('[SYSTEM]')) prefixColor = 'text-text-accent';

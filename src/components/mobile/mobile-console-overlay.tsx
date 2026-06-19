@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useDeferredValue } from 'react';
+import { useEffect, useState, useDeferredValue } from 'react';
 import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useEngineStore } from '@/store/useEngineStore';
@@ -16,21 +16,19 @@ export function MobileConsoleOverlay() {
   const consoleLogs = useEngineStore((s) => s.consoleLogs);
   const deferredLogs = useDeferredValue(consoleLogs);
   const [visible, setVisible] = useState(false);
-  const fadeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [prevLogId, setPrevLogId] = useState<string | null>(null);
+  const currentLogId = deferredLogs[deferredLogs.length - 1]?.id || null;
 
-  // Show overlay when new logs arrive, auto-fade after 3s
-  useEffect(() => {
-    if (deferredLogs.length === 0) return;
-
+  if (currentLogId !== prevLogId) {
+    setPrevLogId(currentLogId);
     setVisible(true);
+  }
 
-    if (fadeTimer.current) clearTimeout(fadeTimer.current);
-    fadeTimer.current = setTimeout(() => setVisible(false), 3000);
-
-    return () => {
-      if (fadeTimer.current) clearTimeout(fadeTimer.current);
-    };
-  }, [deferredLogs]);
+  useEffect(() => {
+    if (!visible) return;
+    const timer = setTimeout(() => setVisible(false), 3000);
+    return () => clearTimeout(timer);
+  }, [visible, currentLogId]);
 
   const lastTwo = deferredLogs.slice(-2);
 

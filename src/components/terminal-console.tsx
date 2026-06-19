@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useDeferredValue } from 'react';
+import { useEffect, useRef, useState, useDeferredValue } from 'react';
 import { useEngineStore } from '@/store/useEngineStore';
 import { BOOT_LOGS } from '@/data/consoleLogs';
 
@@ -77,7 +77,7 @@ export function TerminalConsole() {
 }
 
 function LogLine({ text }: { text: string }) {
-  const timestamp = useRef(getTimestamp()).current;
+  const [timestamp] = useState(() => getTimestamp());
 
   // Color-code log prefixes
   let prefixColor = 'text-text-muted';

@@ -9,11 +9,13 @@ import { AboutMeWalker, SPHERE_ROTATION_SPEED } from './about-me-walker';
 import { useEngineStore } from '@/store/useEngineStore';
 
 function useCharacterMovement(activeFileId: string | null) {
+  const [prevActiveFileId, setPrevActiveFileId] = useState(activeFileId);
   const [movement, setMovement] = useState({ dx: 0, dz: 0, isMoving: false, angle: 0, hasInteracted: false });
 
-  useEffect(() => {
+  if (activeFileId !== prevActiveFileId) {
+    setPrevActiveFileId(activeFileId);
     setMovement(prev => ({ ...prev, hasInteracted: false }));
-  }, [activeFileId]);
+  }
 
   useEffect(() => {
     const keys = { 
@@ -148,7 +150,7 @@ export function AboutMeFlex() {
     animationName = 'Walking';
   }
 
-  let targetYRotation = currentAngle;
+  const targetYRotation = currentAngle;
 
   return (
     <group ref={groupRef}>

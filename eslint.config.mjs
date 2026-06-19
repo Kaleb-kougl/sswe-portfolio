@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore custom project directories
+    "r3f-projectiles/**",
+    "r3f-scraper/**",
   ]),
 ]);
 
