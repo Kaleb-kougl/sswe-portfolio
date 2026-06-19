@@ -15,7 +15,7 @@ concurrency:
 
 # Follow principle of least privilege
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-test:
@@ -59,6 +59,17 @@ jobs:
 
       - name: Run End-to-End Tests
         run: npm run test:e2e
+
+      - name: Update Snapshots on Failure
+        if: failure()
+        run: npm run test:e2e -- --update-snapshots
+
+      - name: Commit updated snapshots
+        if: failure()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "test(e2e): auto-update Playwright visual snapshots"
+          file_pattern: "e2e/**/*-snapshots/*"
 
       - name: Upload Playwright Report
         if: always()

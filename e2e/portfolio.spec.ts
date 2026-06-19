@@ -76,7 +76,7 @@ test.describe('IDE Portfolio — Desktop', () => {
     await expect(inspector.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 5_000 });
 
     // HammerBall → radio buttons visible
-    await page.getByRole('button', { name: /HammerBall_LiveOps/i }).click();
+    await page.getByRole('button', { name: /BonkBall\.exe/i }).click();
     await expect(inspector.locator('input[type="radio"]').first()).toBeVisible({ timeout: 5_000 });
   });
 
