@@ -2,7 +2,6 @@ import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useActiveFile, useTransientState, useImperativeSubscription } from '../src/store/hooks';
 import { useEngineStore } from '../src/store/useEngineStore';
-import { RESUME_DATA } from '../src/data/resumeData';
 
 // Mock the dependencies
 vi.mock('../src/store/useEngineStore', () => ({

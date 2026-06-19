@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoizedCanvasWrapper } from '../src/components/3d/canvas-wrapper';
-import { useEngineStore } from '../src/store/useEngineStore';
-import { useViewportRef } from '../src/components/viewport-ref-context';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -60,7 +58,7 @@ vi.mock('@react-three/fiber', () => ({
     return <div data-testid="r3f-canvas">{children}</div>;
   },
   useThree: () => ({ performance: { regress: vi.fn() }, setDpr: vi.fn() }),
-  useFrame: (cb: any) => {
+  useFrame: () => {
     // safely do nothing, or we could call cb immediately
   },
   extend: vi.fn(),

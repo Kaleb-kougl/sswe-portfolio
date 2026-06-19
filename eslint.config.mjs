@@ -15,7 +15,15 @@ const eslintConfig = defineConfig([
     // Ignore custom project directories
     "r3f-projectiles/**",
     "r3f-scraper/**",
+    "public/draco-gltf/**",
   ]),
+  {
+    files: ["__tests__/**/*.ts", "__tests__/**/*.tsx"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-function-type": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

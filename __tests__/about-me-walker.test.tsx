@@ -12,7 +12,7 @@ vi.mock('@react-three/drei', () => ({
 }));
 
 vi.mock('three/examples/jsm/utils/SkeletonUtils.js', () => ({
-  clone: vi.fn((scene) => ({ type: 'Group', scale: { setScalar: vi.fn() } }))
+  clone: vi.fn(() => ({ type: 'Group', scale: { setScalar: vi.fn() } }))
 }));
 
 // Mock AnimationMixer

@@ -123,7 +123,6 @@ test.describe('IDE Portfolio — Desktop', () => {
 
     // Verify no focus trap by checking we can reach the inspector panel
     // (or at minimum, focus moved somewhere)
-    const activeRole = await page.evaluate(() => document.activeElement?.getAttribute('role'));
     // If we reached the body or another element, navigation wasn't trapped
     expect(activeTagName).not.toBeNull();
   });

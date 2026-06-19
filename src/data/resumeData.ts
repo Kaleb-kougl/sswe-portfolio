@@ -221,6 +221,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     bullets: [
       'Webpack 5, Module Federation, Tree-shaking, Code Splitting, Build Systems, CI/CD Automation.',
     ],
+    controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },
   'cwv-profiler': {
     fileId: 'cwv-profiler',

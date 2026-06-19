@@ -92,7 +92,7 @@ export default function IndeedFlexScene() {
     const { isModuleFederationEnabled, isSloIncidentSimulated, activeFileId } =
       useEngineStore.getState();
 
-    const isCurrentScene = activeFileId === 'indeed-sr-swe';
+    const isCurrentScene = activeFileId === 'indeed-sr-swe' || activeFileId === 'webpack-federation';
 
     // --- Position interpolation ---
     for (let i = 0; i < 8; i++) {
@@ -203,12 +203,14 @@ export default function IndeedFlexScene() {
           />
         </RoundedBox>
         <Html position={[0, 1.1, 0]} center zIndexRange={[100, 0]}>
-          <div
-            ref={pillRef}
-            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium whitespace-nowrap shadow-lg pointer-events-none select-none"
-            style={{ opacity: 0 }}
-          >
-            Remotes dynamically plug into the Host Shell at runtime.
+          <div className="-translate-y-16 md:translate-y-0">
+            <div
+              ref={pillRef}
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl md:rounded-full px-4 py-2 text-white text-sm font-medium text-center max-w-[90vw] md:max-w-none md:whitespace-nowrap shadow-lg pointer-events-none select-none"
+              style={{ opacity: 0 }}
+            >
+              Remotes dynamically plug into the Host Shell at runtime.
+            </div>
           </div>
         </Html>
       </mesh>
