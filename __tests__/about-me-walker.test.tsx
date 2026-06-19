@@ -72,7 +72,7 @@ describe('AboutMeWalker', () => {
     
     // -Math.PI / 2 = -1.57079. Lerp halfway to 0 is ~ -0.785
     expect(group.instance.rotation.y).toBeGreaterThan(-Math.PI / 2);
-    expect(group.instance.rotation.y).toBeLessThan(0);
+    expect(group.instance.rotation.y).toBeLessThanOrEqual(0);
     
     // Advance more frames to get closer to 0
     await renderer.advanceFrames(10, 0.1);

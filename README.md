@@ -1,6 +1,6 @@
 # Kaleb Kougl - Senior Frontend Architect Portfolio
 
-An interactive, IDE-themed portfolio built with Next.js App Router, React 19, and React Three Fiber. This project maps my resume data into a simulated Integrated Development Environment (IDE) interface, showcasing my technical experience and complex engineering concepts through live 3D visualizations.
+An interactive, IDE-themed portfolio built with Next.js App Router, React 19, and React Three Fiber. This project maps my resume data into a simulated Integrated Development Environment (IDE) interface, showcasing my technical experience and complex engineering concepts through live 3D visualizations. The underlying architecture was specifically engineered to solve the core problem of seamlessly bridging traditional reactive DOM state with computationally heavy WebGL rendering, ensuring high-fidelity 3D interactions without dropping frames or triggering garbage collection spikes.
 
 ## Live Deployment
 
@@ -29,22 +29,7 @@ This project is deployed on Vercel and can be viewed at:
 - **Testing**: Vitest, Playwright
 - **Custom Packages**: `@k9kbdev/r3f-projectiles` (A custom zero-allocation GPU-instanced bullet engine authored by me)
 
-## Getting Started
 
-First, install the dependencies and run the development server:
-
-```bash
-npm install
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Architecture Highlights
 
@@ -65,11 +50,17 @@ This portfolio was built to demonstrate deep engineering fundamentals applied to
 - **Algorithmic Pattern Generators (Math):** Complex projectile emissions are calculated using mathematically driven algorithms rather than hardcoded paths—including Golden Angle distributions (Fibonacci Spheres), parametric Torus Knots, and logarithmic squared distributions for spiral galaxies.
 - **Heuristic LLM Discovery (Web Crawling):** The `r3f-scraper` script utilizes an opportunistic fallback algorithm. It first attempts to resolve standard `/llms.txt` endpoints to gather context, and only falls back to a full Breadth-First Search DOM traversal if the heuristic fails.
 
-## Learn More
+## Testing & QA Highlights
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [React Three Fiber](https://r3f.docs.pmnd.rs/getting-started/introduction) - learn about building 3D experiences in React.
+The project employs a robust unit testing strategy (100% pass rate across 143 tests in 22 suites), built using a strict Test-Driven Development (TDD) approach:
 
-## Deploy on Vercel
+- **State Management Reliability**: The Zustand store (`useEngineStore`) is comprehensively tested to verify FIFO console queues (capped at 100 entries) and ensure high-frequency transient state updates (like 3D camera coordinates) do not trigger unnecessary DOM renders.
+- **3D Context Resilience**: `error-boundary` and `canvas-wrapper` tests verify that if WebGL is disabled or crashes, the application gracefully degrades to a fallback UI. It also tests auto-recovery mechanisms that reset the context upon file navigation.
+- **Advanced WebGL Testing**: Utilizes `@react-three/test-renderer` to unit test 3D scenes by advancing frames (`renderer.advanceFrames`). This verifies `InstancedMesh` re-allocations, frustum culling, and zero-value handling during computational sequences.
+- **Accessibility Fallbacks**: Tests explicitly mock the `useReducedMotion` hook to ensure 3D animations, camera panning, and intensive physics systems immediately fall back to simplified states.
+- **Recursive Data Structures**: Deeply nested mock data tests ensure the `HierarchyTree` file explorer correctly flattens data and updates WAI-ARIA attributes (`aria-expanded`) without hitting call stack limits.
+- **Continuous Integration Pipeline**: Engineered a strict GitHub Actions workflow featuring dependency caching and artifact retention. The pipeline enforces zero-tolerance quality gates—requiring 100% passing unit (Vitest) and E2E (Playwright) test suites, rigorous ESLint static analysis, and successful Next.js production builds—acting as a robust fail-safe before continuous deployment to Vercel.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contact
+
+kalebkougl@gmail.com

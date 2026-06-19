@@ -69,6 +69,8 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
     if (!mesh) return;
 
     activeBulletCount.current = 0;
+    if (maxBullets <= 0 || isNaN(maxBullets)) return;
+    
     // Allocate the CPU-side bullet state array ONCE
     const pool: BulletState[] = new Array(maxBullets);
     for (let i = 0; i < maxBullets; i++) {
@@ -178,7 +180,9 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
       if (!reducedMotionSpawned.current) {
         reducedMotionSpawned.current = true;
         _sourcePos.set(0, SPAWN_CENTER_Y, 0);
-        const spawnData = PATTERN_REGISTRY[combatSystemPattern]();
+        const patternFactory = PATTERN_REGISTRY[combatSystemPattern as keyof typeof PATTERN_REGISTRY];
+        if (!patternFactory) return;
+        const spawnData = patternFactory();
         spawnBullets(mesh, bullets, _sourcePos, spawnData, true, REDUCED_MOTION_MAX);
         releaseSpawnData(spawnData);
 
@@ -208,7 +212,9 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
         Math.sin(rot) * 2,
       );
 
-      const spawnData = PATTERN_REGISTRY[combatSystemPattern]();
+      const patternFactory = PATTERN_REGISTRY[combatSystemPattern as keyof typeof PATTERN_REGISTRY];
+      if (!patternFactory) return;
+      const spawnData = patternFactory();
       spawnBullets(mesh, bullets, _sourcePos, spawnData, false);
       releaseSpawnData(spawnData);
     }
