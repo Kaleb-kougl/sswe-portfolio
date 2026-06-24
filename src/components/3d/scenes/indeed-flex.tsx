@@ -12,16 +12,16 @@ import { useSceneGroup } from '../scene-orchestrator';
 /*  Constants                                                         */
 /* ------------------------------------------------------------------ */
 
-/** Catppuccin accent palette — one per block */
+/** Neo-brutalist accent palette — one per block */
 const BLOCK_COLORS = [
-  '#89b4fa', // Blue
-  '#a6e3a1', // Green
-  '#f9e2af', // Yellow
-  '#fab387', // Peach
-  '#f38ba8', // Red / Maroon
-  '#cba6f7', // Mauve
-  '#94e2d5', // Teal
-  '#74c7ec', // Sapphire
+  '#1F3BE0',
+  '#BFF03A',
+  '#FF5E1A',
+  '#1F3BE0',
+  '#BFF03A',
+  '#FF5E1A',
+  '#1F3BE0',
+  '#BFF03A',
 ] as const;
 
 /** 2×4 grid centered at origin, spacing ~0.8 */
@@ -53,7 +53,7 @@ function makeScatteredPositions(): Vector3[] {
 /** Default light colour */
 const WHITE = new Color('#ffffff');
 /** SLO incident light colour */
-const RED = new Color('#f38ba8');
+const RED = new Color('#ff5e1a');
 
 /** Damp speed constants */
 const POSITION_LAMBDA = 3;
@@ -206,7 +206,7 @@ export default function IndeedFlexScene() {
           <div className="-translate-y-16 md:translate-y-0">
             <div
               ref={pillRef}
-              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl md:rounded-full px-4 py-2 text-white text-sm font-medium text-center max-w-[90vw] md:max-w-none md:whitespace-nowrap shadow-lg pointer-events-none select-none"
+              className="pointer-events-none max-w-[90vw] select-none border-[3px] border-[#161310] bg-[#1F3BE0] px-4 py-2 text-center font-mono text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[6px_6px_0_#161310] md:max-w-none md:whitespace-nowrap"
               style={{ opacity: 0 }}
             >
               Remotes dynamically plug into the Host Shell at runtime.

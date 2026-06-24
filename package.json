@@ -13,7 +13,7 @@
     "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {
-    "@k9kbdev/r3f-projectiles": "^0.1.4",
+    "@k9kbdev/r3f-projectiles": "^0.3.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",

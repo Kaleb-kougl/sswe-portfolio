@@ -29,19 +29,19 @@ const MemoizedCanvasWrapper = dynamic(
         <div className="flex flex-col items-center gap-2">
           <div className="flex gap-1">
             <div
-              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              className="h-2 w-2 border-2 border-border bg-cobalt animate-bounce"
               style={{ animationDelay: '0ms' }}
             />
             <div
-              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              className="h-2 w-2 border-2 border-border bg-tangerine animate-bounce"
               style={{ animationDelay: '150ms' }}
             />
             <div
-              className="h-1.5 w-1.5 rounded-full bg-text-accent animate-bounce"
+              className="h-2 w-2 border-2 border-border bg-lime animate-bounce"
               style={{ animationDelay: '300ms' }}
             />
           </div>
-          <p className="font-mono text-[10px] text-text-muted">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
             Initializing 3D engine...
           </p>
         </div>
@@ -55,7 +55,7 @@ const MobileLayout = dynamic(() => import('./mobile/mobile-layout'), {
   ssr: false,
   loading: () => (
     <div className="flex h-dvh w-full items-center justify-center bg-bg-editor">
-      <p className="font-mono text-xs text-text-muted animate-pulse">
+      <p className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-text-muted animate-pulse">
         Loading mobile layout...
       </p>
     </div>
@@ -116,7 +116,7 @@ function DesktopLayout() {
                 </Panel>
 
                 <Separator
-                  className="w-px bg-border transition-colors data-[state=hover]:bg-resize-handle data-[state=drag]:bg-text-accent"
+                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
                   aria-label="Resize hierarchy panel"
                 />
 
@@ -136,7 +136,7 @@ function DesktopLayout() {
                 </Panel>
 
                 <Separator
-                  className="w-px bg-border transition-colors data-[state=hover]:bg-resize-handle data-[state=drag]:bg-text-accent"
+                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
                   aria-label="Resize inspector panel"
                 />
 
@@ -149,7 +149,7 @@ function DesktopLayout() {
           </Panel>
 
           <Separator
-            className="h-px bg-border transition-colors data-[state=hover]:bg-resize-handle data-[state=drag]:bg-text-accent"
+            className="h-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
             aria-label="Resize console panel"
           />
 
@@ -162,4 +162,3 @@ function DesktopLayout() {
     </LucideProvider>
   );
 }
-

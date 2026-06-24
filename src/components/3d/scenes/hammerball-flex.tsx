@@ -6,12 +6,13 @@ import { useFrame } from '@react-three/fiber';
 import { Color, type Mesh, type MeshStandardMaterial } from 'three';
 import { useEngineStore } from '@/store/useEngineStore';
 import { useSceneGroup } from '../scene-orchestrator';
+import { PALETTE } from '../colors';
 
 // --- Reusable color objects (module scope — never allocate in useFrame) ---
-const COLOR_PATROL = new Color('#a6e3a1');
-const COLOR_AGGRO = new Color('#f38ba8');
-const COLOR_FLEE = new Color('#f9e2af');
-const COLOR_DEFAULT_FLOOR = new Color('#313244');
+const COLOR_PATROL = new Color(PALETTE.lime);
+const COLOR_AGGRO = new Color(PALETTE.tangerine);
+const COLOR_FLEE = new Color(PALETTE.cobalt);
+const COLOR_DEFAULT_FLOOR = new Color(PALETTE.darkSurface);
 
 const AI_COLORS: Record<string, Color> = {
   Patrol: COLOR_PATROL,
@@ -137,7 +138,7 @@ export function HammerBallFlex() {
         visible={false}
       >
         <planeGeometry args={[8, 8, 16, 16]} />
-        <meshBasicMaterial wireframe color="#89b4fa" transparent opacity={0.3} />
+        <meshBasicMaterial wireframe color={PALETTE.lime} transparent opacity={0.35} />
       </mesh>
 
       {/* AI Orb 1 */}

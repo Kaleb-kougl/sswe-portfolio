@@ -22,8 +22,8 @@ const DAMP_FACTOR = 3; // speed of the damp interpolation
 // Module-scope reusable objects — NEVER allocate inside useFrame
 // ---------------------------------------------------------------------------
 const _color = new Color();
-const _colorStart = new Color('#f38ba8'); // red  (6.0 MB)
-const _colorEnd = new Color('#a6e3a1');   // green (0.3 MB)
+const _colorStart = new Color('#FF5E1A'); // tangerine (6.0 MB)
+const _colorEnd = new Color('#BFF03A');   // lime (0.3 MB)
 
 // ---------------------------------------------------------------------------
 // Helpers

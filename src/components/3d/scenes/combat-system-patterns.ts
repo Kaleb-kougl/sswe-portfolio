@@ -1,5 +1,6 @@
 import { Vector3, Quaternion } from 'three';
 import type { CombatSystemPattern } from './combat-system-types';
+import { PALETTE } from '../colors';
 
 const _pool: BulletSpawnData[] = [];
 const _maxPoolSize = 20000;
@@ -14,7 +15,7 @@ export interface BulletSpawnData {
   velocity: Vector3;
   acceleration: Vector3;
   delay: number;
-  color: number | null;
+  color: string | null;
   life: number;
 }
 
@@ -175,7 +176,7 @@ type Modifier = (spawns: BulletSpawnData[]) => BulletSpawnData[];
 
 export const mod = {
   color:
-    (col: number): Modifier =>
+    (col: string): Modifier =>
     (spawns: BulletSpawnData[]) => {
       spawns.forEach((s) => (s.color = col));
       return spawns;
@@ -229,10 +230,10 @@ export const compose = (generatorResult: BulletSpawnData[], ...modifiers: Modifi
 };
 
 export const PATTERN_REGISTRY = {
-  fibonacciSphere: () => compose(gen.fibonacciSphere(200, 2), mod.color(0x39FF14)),
-  torusKnot: () => compose(gen.torusKnot(300), mod.color(0xFF3333)),
-  galaxy: () => compose(gen.galaxy(250), mod.color(0x6666FF)),
-  helix: () => compose(gen.helix(200), mod.color(0xFF66FF)),
-  rose3D: () => compose(gen.rose3D(200), mod.color(0xFFFF33)),
-  ring: () => compose(gen.ring(100), mod.color(0x33FFFF)),
+  fibonacciSphere: () => compose(gen.fibonacciSphere(200, 2), mod.color(PALETTE.lime)),
+  torusKnot:       () => compose(gen.torusKnot(300),           mod.color(PALETTE.tangerine)),
+  galaxy:          () => compose(gen.galaxy(250),               mod.color(PALETTE.cobalt)),
+  helix:           () => compose(gen.helix(200),                mod.color(PALETTE.tangerine)),
+  rose3D:          () => compose(gen.rose3D(200),               mod.color(PALETTE.lime)),
+  ring:            () => compose(gen.ring(100),                  mod.color(PALETTE.cobalt)),
 } as const satisfies Record<CombatSystemPattern, () => BulletSpawnData[]>;

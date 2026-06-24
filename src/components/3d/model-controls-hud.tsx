@@ -53,20 +53,20 @@ export function ModelControlsHUD() {
             key="controls-hud"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+            exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5, delay: 0.8 }}
             className="absolute bottom-[18dvh] sm:bottom-8 left-1/2 -translate-x-1/2 z-[60] flex items-center justify-center pointer-events-none"
           >
             <div className="flex flex-col items-center gap-3">
               {/* Desktop WASD Controls - hides after interaction */}
               {!hasInteracted && (
-                <div className="hidden sm:flex items-center gap-3 rounded-full border border-border/40 bg-bg-panel/80 px-4 py-2.5 backdrop-blur-md shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]">
-                  <span className="font-mono text-[11px] uppercase tracking-wider text-text-muted">Walk</span>
+                <div className="hidden sm:flex items-center gap-3 border-[3px] border-border bg-bg-panel px-4 py-2.5 shadow-[6px_6px_0_#161310]">
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-text-muted">Walk</span>
                   <div className="flex gap-1.5">
                     {['W', 'A', 'S', 'D'].map((key) => (
                       <div
                         key={key}
-                        className="flex h-6 w-6 items-center justify-center rounded bg-bg-editor font-mono text-[11px] font-bold text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_1px_2px_rgba(0,0,0,0.4)] ring-1 ring-border/50"
+                        className="flex h-6 w-6 items-center justify-center border-2 border-border bg-lime font-mono text-[11px] font-bold text-ink shadow-[3px_3px_0_#161310]"
                       >
                         {key}
                       </div>
@@ -174,7 +174,7 @@ function VirtualDPad() {
 
   return (
     <div
-      className="sm:hidden flex items-center justify-center gap-1 rounded-3xl border border-border/40 bg-bg-panel/80 p-3 backdrop-blur-md shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)] pointer-events-auto touch-none select-none"
+      className="sm:hidden flex items-center justify-center gap-1 border-[3px] border-border bg-bg-panel p-3 shadow-[6px_6px_0_#161310] pointer-events-auto touch-none select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -200,10 +200,10 @@ function DPadButton({ directionKey, label, isActive }: { directionKey: string; l
   return (
     <button
       data-direction={directionKey}
-      className={`flex h-8 w-8 items-center justify-center rounded-lg font-mono text-xs font-bold text-text-primary ring-1 ring-border/50 touch-none select-none transition-all duration-75 ${
+      className={`flex h-8 w-8 items-center justify-center border-2 border-border font-mono text-xs font-bold text-text-primary touch-none select-none transition-transform duration-75 ${
         isActive
-          ? 'bg-bg-editor/70 translate-y-[1px] shadow-none'
-          : 'bg-bg-editor shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_2px_4px_rgba(0,0,0,0.5)]'
+          ? 'translate-x-[2px] translate-y-[2px] bg-cobalt text-white shadow-none'
+          : 'bg-bg-editor shadow-[3px_3px_0_#161310]'
       }`}
     >
       {label}

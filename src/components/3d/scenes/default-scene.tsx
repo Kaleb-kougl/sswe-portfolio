@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { Matrix4, Vector3 } from 'three';
 import type { InstancedMesh, Mesh } from 'three';
 import { useSceneGroup } from '../scene-orchestrator';
+import { PALETTE } from '../colors';
 
 // ---------------------------------------------------------------------------
 // Particles sub-component — 50 ambient floating spheres
@@ -83,7 +84,7 @@ function Particles() {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, PARTICLE_COUNT]}>
       <sphereGeometry args={[0.02, 6, 6]} />
-      <meshBasicMaterial color="#89b4fa" transparent opacity={0.6} />
+      <meshBasicMaterial color={PALETTE.cobalt} transparent opacity={0.6} />
     </instancedMesh>
   );
 }
@@ -105,7 +106,7 @@ function WireframeIcosahedron() {
   return (
     <mesh ref={meshRef}>
       <icosahedronGeometry args={[1.2, 1]} />
-      <meshBasicMaterial wireframe color="#89b4fa" />
+      <meshBasicMaterial wireframe color={PALETTE.cobalt} />
     </mesh>
   );
 }

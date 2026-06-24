@@ -111,10 +111,10 @@ function TreeNode({
         type="button"
         onClick={handleClick}
         tabIndex={isFocused ? 0 : -1}
-        className={`flex w-full items-center gap-1.5 rounded-sm px-1 text-left font-mono text-[13px] transition-colors min-h-[44px] min-w-[44px] ${
+        className={`flex w-full items-center gap-1.5 border-2 px-1 text-left font-mono text-[13px] font-bold uppercase tracking-[0.03em] transition-transform min-h-[44px] min-w-[44px] ${
           isActive
-            ? 'bg-bg-active text-text-accent'
-            : 'text-text-primary hover:bg-bg-hover'
+            ? 'border-border bg-cobalt text-white shadow-[3px_3px_0_#161310]'
+            : 'border-transparent text-text-primary hover:border-border hover:bg-lime hover:text-ink'
         }`}
         style={{ paddingLeft: `${level * 12 + 4}px` }}
         aria-label={
@@ -143,7 +143,7 @@ function TreeNode({
         <Icon
           size={16}
           strokeWidth={1.5}
-          className={`shrink-0 ${isActive ? 'text-text-accent' : 'text-text-muted'}`}
+          className={`shrink-0 ${isActive ? 'text-white' : 'text-text-muted'}`}
         />
         <span className="truncate">{node.label}</span>
       </button>
@@ -318,12 +318,12 @@ export function HierarchyTree() {
       className="flex h-full flex-col overflow-hidden bg-bg-sidebar"
       aria-label="Project hierarchy"
     >
-      <div className="flex h-[var(--toolbar-height)] items-center border-b border-border px-3">
-        <span className="font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+      <div className="flex h-[var(--toolbar-height)] items-center border-b-[3px] border-border bg-lime px-3">
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-ink">
           Hierarchy
         </span>
       </div>
-      <div className="flex-1 overflow-y-auto p-1" onKeyDown={handleTreeKeyDown}>
+      <div className="flex-1 overflow-y-auto p-2" onKeyDown={handleTreeKeyDown}>
         <ul
           role="tree"
           className="space-y-0.5"
