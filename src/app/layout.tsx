@@ -1,16 +1,25 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Bricolage_Grotesque, Manrope, Space_Mono } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-ui',
+  variable: '--font-bricolage',
+  weight: '800',
   display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const body = Manrope({
   subsets: ['latin'],
-  variable: '--font-mono',
+  variable: '--font-manrope',
+  weight: ['400', '500', '600'],
+  display: 'swap',
+});
+
+const label = Space_Mono({
+  subsets: ['latin'],
+  variable: '--font-space-mono',
+  weight: '700',
   display: 'swap',
 });
 
@@ -34,7 +43,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: 'cover',
-  themeColor: '#1e1e2e',
+  themeColor: '#FFFDF7',
 };
 
 export default function RootLayout({
@@ -45,7 +54,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${display.variable} ${body.variable} ${label.variable}`}
     >
       <head>
         {/* Preload the 3D model during HTML parsing — before JS hydration.

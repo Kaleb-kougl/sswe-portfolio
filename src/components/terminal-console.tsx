@@ -44,11 +44,11 @@ export function TerminalConsole() {
       className="flex h-full flex-col overflow-hidden bg-bg-panel"
       aria-label="Console output"
     >
-      <div className="flex h-[var(--toolbar-height)] items-center border-t border-border px-3">
-        <span className="font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+      <div className="flex h-[var(--toolbar-height)] items-center border-t-[3px] border-border bg-ink px-3">
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-dark-ink">
           Console
         </span>
-        <span className="ml-2 rounded-full bg-bg-hover px-1.5 py-0.5 font-mono text-[10px] text-text-muted">
+        <span className="ml-2 border-2 border-dark-ink bg-lime px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink">
           {deferredLogs.length}
         </span>
       </div>
@@ -65,7 +65,7 @@ export function TerminalConsole() {
         ) : (
           <ul className="space-y-0.5">
             {deferredLogs.map((log) => (
-              <li key={log.id} className="font-mono text-xs leading-relaxed">
+              <li key={log.id} className="border-b-2 border-border/20 pb-1 font-mono text-xs font-bold leading-relaxed last:border-b-0">
                 <LogLine text={log.msg} />
               </li>
             ))}
@@ -82,16 +82,16 @@ function LogLine({ text }: { text: string }) {
   // Color-code log prefixes
   let prefixColor = 'text-text-muted';
 
-  if (text.includes('[SYSTEM]')) prefixColor = 'text-text-accent';
-  else if (text.includes('[WEBPACK')) prefixColor = 'text-text-yellow';
-  else if (text.includes('[PERF]')) prefixColor = 'text-text-peach';
-  else if (text.includes('[NETWORK]')) prefixColor = 'text-text-green';
-  else if (text.includes('[SLO]')) prefixColor = 'text-text-green';
-  else if (text.includes('[SERVER]')) prefixColor = 'text-text-red';
-  else if (text.includes('[GRAPHQL]')) prefixColor = 'text-text-accent';
-  else if (text.includes('[MOBILE]')) prefixColor = 'text-text-peach';
-  else if (text.includes('[EXTENSION]')) prefixColor = 'text-text-yellow';
-  else if (text.includes('[ERROR]')) prefixColor = 'text-text-red';
+  if (text.includes('[SYSTEM]')) prefixColor = 'text-cobalt';
+  else if (text.includes('[WEBPACK')) prefixColor = 'text-tangerine';
+  else if (text.includes('[PERF]')) prefixColor = 'text-tangerine';
+  else if (text.includes('[NETWORK]')) prefixColor = 'text-cobalt';
+  else if (text.includes('[SLO]')) prefixColor = 'text-cobalt';
+  else if (text.includes('[SERVER]')) prefixColor = 'text-tangerine';
+  else if (text.includes('[GRAPHQL]')) prefixColor = 'text-cobalt';
+  else if (text.includes('[MOBILE]')) prefixColor = 'text-tangerine';
+  else if (text.includes('[EXTENSION]')) prefixColor = 'text-tangerine';
+  else if (text.includes('[ERROR]')) prefixColor = 'text-tangerine';
 
   // Split at the first ']' to color the prefix
   const bracketEnd = text.indexOf(']');

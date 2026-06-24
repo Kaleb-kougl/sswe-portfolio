@@ -1,12 +1,14 @@
 'use client';
 'use no memo';
 
-import { memo, Suspense, useRef, useCallback } from 'react';
+import { memo, Suspense, useRef, useCallback, useEffect, useMemo } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
-import { Stats, OrbitControls, PerformanceMonitor } from '@react-three/drei';
+import { OrbitControls, PerformanceMonitor } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import type { BloomEffect } from 'postprocessing';
-import { ACESFilmicToneMapping } from 'three';
+import { ACESFilmicToneMapping, Color } from 'three';
+import { PALETTE } from './colors';
+import { DesignStats } from './design-stats';
 import { useViewportRef } from '../viewport-ref-context';
 import { WebGLErrorBoundary, type WebGLFallbackProps } from './error-boundary';
 import { SceneOrchestrator, getSceneKey } from './scene-orchestrator';
@@ -30,13 +32,13 @@ function WebGLFallback() {
   return (
     <div className="flex h-full items-center justify-center bg-bg-editor p-4 text-center">
       <div className="space-y-2">
-        <p className="font-mono text-sm text-text-muted">
+        <p className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-text-muted">
           WebGL is not supported on this device.
         </p>
         <a
           href="/KalebK_Resume.pdf"
           download
-          className="inline-flex items-center gap-2 rounded-md bg-text-accent px-3 py-1.5 text-sm font-medium text-bg-editor transition-all hover:brightness-110"
+          className="inline-flex items-center gap-2 border-[3px] border-border bg-cobalt px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[5px_5px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#161310]"
         >
           Download Resume PDF
         </a>
@@ -134,20 +136,20 @@ function WebGLFallbackAlert({ error, reset }: WebGLFallbackProps) {
       role="alert"
       className="flex h-full flex-col items-center justify-center gap-3 bg-bg-editor p-6 text-center"
     >
-      <p className="font-mono text-sm text-text-red">
+      <p className="max-w-md border-[3px] border-border bg-tangerine p-3 font-mono text-sm font-bold uppercase tracking-[0.06em] text-white shadow-[6px_6px_0_#161310]">
         3D visualization unavailable: {error.message}
       </p>
       <div className="flex gap-3">
         <button
           onClick={reset}
-          className="rounded-md bg-bg-hover px-3 py-1.5 font-mono text-sm text-text-primary transition-colors hover:bg-bg-active"
+          className="border-[3px] border-border bg-lime px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-ink shadow-[4px_4px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
         >
           Retry
         </button>
         <a
           href="/KalebK_Resume.pdf"
           download
-          className="rounded-md bg-text-accent px-3 py-1.5 text-sm font-medium text-bg-editor transition-all hover:brightness-110"
+          className="border-[3px] border-border bg-cobalt px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[4px_4px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
         >
           Download Resume Instead
         </a>
@@ -184,6 +186,33 @@ const DprController = memo(function DprController() {
       onFallback={() => setDpr(1)}
     />
   );
+});
+
+/**
+ * SceneBackground — sets scene.background imperatively per active scene.
+ * Subscribes to activeFileId via Zustand; renders nothing.
+ */
+const SceneBackground = memo(function SceneBackground() {
+  const scene = useThree((s) => s.scene);
+  const colors = useMemo(
+    () => ({ lime: new Color(PALETTE.lime), darkPaper: new Color(PALETTE.darkPaper) }),
+    [],
+  );
+
+  useEffect(() => {
+    return useEngineStore.subscribe(
+      (state) => state.activeFileId,
+      (activeFileId) => {
+        const key = getSceneKey(activeFileId);
+        if (key === 'about-me') scene.background = colors.lime;
+        else if (key === 'combat_system') scene.background = colors.darkPaper;
+        else scene.background = null;
+      },
+      { fireImmediately: true },
+    );
+  }, [scene, colors]);
+
+  return null;
 });
 
 /**
@@ -224,11 +253,12 @@ function CanvasWrapperInner() {
             <DefaultScene />
           </Suspense>
         </SceneOrchestrator>
+        <SceneBackground />
         <DprController />
         <ConditionalBloom />
         <OrbitControlsWithGestureGuard />
         <AdaptivePixelRatio />
-        <Stats className="stats-panel" parent={viewportRef as React.RefObject<HTMLElement>} />
+        <DesignStats className="stats-panel" parent={viewportRef as React.RefObject<HTMLElement>} />
       </Canvas>
     </WebGLErrorBoundary>
   );
@@ -236,4 +266,3 @@ function CanvasWrapperInner() {
 
 export const MemoizedCanvasWrapper = memo(CanvasWrapperInner);
 MemoizedCanvasWrapper.displayName = 'MemoizedCanvasWrapper';
-

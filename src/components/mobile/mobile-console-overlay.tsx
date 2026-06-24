@@ -41,12 +41,12 @@ export function MobileConsoleOverlay() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.3 }}
-          className="pointer-events-none fixed bottom-2 left-2 right-2 z-10 rounded-lg bg-bg-panel/50 px-3 py-2 backdrop-blur-sm"
+          className="pointer-events-none fixed bottom-2 left-2 right-2 z-10 border-[3px] border-border bg-bg-panel px-3 py-2 shadow-[5px_5px_0_#161310]"
           role="log"
           aria-live="polite"
         >
           {lastTwo.map((log) => (
-            <p key={log.id} className="truncate font-mono text-[10px] leading-relaxed text-text-muted">
+            <p key={log.id} className="truncate font-mono text-[10px] font-bold uppercase leading-relaxed tracking-[0.04em] text-text-muted">
               {log.msg}
             </p>
           ))}

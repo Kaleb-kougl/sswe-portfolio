@@ -7,6 +7,7 @@ import { type Mesh, Vector3, Quaternion } from 'three';
 import { useSceneGroup } from '../scene-orchestrator';
 import { AboutMeWalker, SPHERE_ROTATION_SPEED } from './about-me-walker';
 import { useEngineStore } from '@/store/useEngineStore';
+import { PALETTE } from '../colors';
 
 function useCharacterMovement(activeFileId: string | null) {
   const [prevActiveFileId, setPrevActiveFileId] = useState(activeFileId);
@@ -156,7 +157,7 @@ export function AboutMeFlex() {
     <group ref={groupRef}>
       <mesh ref={sphereRef}>
         <icosahedronGeometry args={[1.2, 1]} />
-        <meshBasicMaterial wireframe color="#89b4fa" />
+        <meshBasicMaterial wireframe color={PALETTE.ink} />
       </mesh>
       
       <AboutMeWalker sphereRadius={1.2} animationName={animationName} targetYRotation={targetYRotation} />

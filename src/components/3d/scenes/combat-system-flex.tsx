@@ -5,6 +5,7 @@ import { useSceneGroup } from '../scene-orchestrator';
 import { BulletManager } from './combat-system-bullets';
 import { BulletTelemetry } from '../bullet-telemetry';
 import { useEngineStore } from '@/store/useEngineStore';
+import { PALETTE } from '../colors';
 
 /**
  * CombatSystemFlex — The CombatSystem combat scene.
@@ -22,11 +23,11 @@ export function CombatSystemFlex() {
   return (
     <group ref={groupRef}>
       {/* Fog — requires Fog extended in three-setup.ts */}
-      <fog attach="fog" args={['#050505', 5, 25]} />
+      <fog attach="fog" args={[PALETTE.darkPaper, 5, 25]} />
 
       {/* Lighting */}
       <ambientLight args={[0x404040, 0.5]} />
-      <pointLight position={[0, 5, 0]} args={[0x00cccc, 1, 20]} />
+      <pointLight position={[0, 5, 0]} args={[PALETTE.lime, 1, 20]} />
 
       {/* Floor plane — static, disable auto matrix updates */}
       <mesh
@@ -39,7 +40,7 @@ export function CombatSystemFlex() {
         }}
       >
         <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#050505" />
+        <meshStandardMaterial color={PALETTE.darkPaper} />
       </mesh>
 
       {/* Grid overlay — static wireframe */}
@@ -54,7 +55,7 @@ export function CombatSystemFlex() {
         }}
       >
         <planeGeometry args={[20, 20, 20, 20]} />
-        <meshBasicMaterial wireframe color="#39FF14" transparent opacity={0.15} />
+        <meshBasicMaterial wireframe color={PALETTE.lime} transparent opacity={0.15} />
       </mesh>
 
       {/* Bullet system */}

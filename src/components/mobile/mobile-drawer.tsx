@@ -80,20 +80,20 @@ export function MobileDrawer() {
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              className="fixed left-0 top-0 z-50 flex h-dvh w-72 flex-col bg-bg-sidebar shadow-2xl"
+              className="fixed left-0 top-0 z-50 flex h-dvh w-72 flex-col border-r-[3px] border-border bg-bg-sidebar shadow-[9px_0_0_#161310]"
             >
               {/* Header */}
-              <div className="flex h-[var(--toolbar-height)] items-center justify-between border-b border-border px-3">
-                <span className="font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+              <div className="flex h-[var(--toolbar-height)] items-center justify-between border-b-[3px] border-border bg-lime px-3">
+                <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-ink">
                   Hierarchy
                 </span>
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex h-[44px] w-[44px] items-center justify-center rounded-lg transition-colors hover:bg-bg-hover"
+                  className="flex h-[44px] w-[44px] items-center justify-center border-2 border-border bg-bg-editor transition-colors hover:bg-tangerine"
                   aria-label="Close hierarchy drawer"
                 >
-                  <X size={18} strokeWidth={1.5} className="text-text-muted" />
+                  <X size={18} strokeWidth={2} className="text-text-primary" />
                 </button>
               </div>
 
@@ -171,17 +171,17 @@ function MobileTreeNode({
       <button
         type="button"
         onClick={handleClick}
-        className={`flex w-full items-center gap-2 rounded-md px-2 text-left font-mono text-sm transition-colors min-h-[48px] ${
+        className={`flex w-full items-center gap-2 border-2 px-2 text-left font-mono text-sm font-bold uppercase tracking-[0.03em] transition-colors min-h-[48px] ${
           isActive
-            ? 'bg-bg-active text-text-accent'
-            : 'text-text-primary hover:bg-bg-hover active:bg-bg-active'
+            ? 'border-border bg-cobalt text-white shadow-[3px_3px_0_#161310]'
+            : 'border-transparent text-text-primary hover:border-border hover:bg-lime active:bg-cobalt active:text-white'
         }`}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
       >
         <Icon
           size={18}
           strokeWidth={1.5}
-          className={`shrink-0 ${isActive ? 'text-text-accent' : 'text-text-muted'}`}
+          className={`shrink-0 ${isActive ? 'text-white' : 'text-text-muted'}`}
         />
         <span className="truncate">{node.label}</span>
       </button>
@@ -202,4 +202,3 @@ function MobileTreeNode({
     </li>
   );
 }
-

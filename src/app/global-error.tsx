@@ -11,9 +11,9 @@ export default function GlobalError({
     <html lang="en">
       <body
         style={{
-          backgroundColor: '#1e1e2e',
-          color: '#cdd6f4',
-          fontFamily: 'Inter, system-ui, sans-serif',
+          backgroundColor: '#FFFDF7',
+          color: '#161310',
+          fontFamily: 'Manrope, system-ui, sans-serif',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -27,19 +27,20 @@ export default function GlobalError({
             maxWidth: '28rem',
             padding: '2rem',
             textAlign: 'center',
-            border: '1px solid #313244',
-            borderRadius: '0.5rem',
-            backgroundColor: '#11111b',
+            border: '3px solid #161310',
+            borderRadius: 0,
+            backgroundColor: '#FFFFFF',
+            boxShadow: '9px 9px 0 #161310',
           }}
         >
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-0.025em', textTransform: 'uppercase' }}>
             Critical Error
           </h2>
           <p
             style={{
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "'Space Mono', monospace",
               fontSize: '0.875rem',
-              color: '#6c7086',
+              color: '#6B6358',
               marginBottom: '1.5rem',
             }}
           >
@@ -49,13 +50,17 @@ export default function GlobalError({
             <button
               onClick={reset}
               style={{
-                backgroundColor: '#89b4fa',
-                color: '#1e1e2e',
-                border: 'none',
-                borderRadius: '0.375rem',
+                backgroundColor: '#1F3BE0',
+                color: '#FFFFFF',
+                border: '3px solid #161310',
+                borderRadius: 0,
                 padding: '0.5rem 1rem',
-                fontSize: '0.875rem',
-                fontWeight: 500,
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                boxShadow: '5px 5px 0 #161310',
                 cursor: 'pointer',
               }}
             >
@@ -65,9 +70,15 @@ export default function GlobalError({
               href="/KalebK_Resume.pdf"
               download
               style={{
-                color: '#89b4fa',
-                fontSize: '0.875rem',
+                color: '#1F3BE0',
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
                 textDecoration: 'underline',
+                textDecorationThickness: '3px',
+                textUnderlineOffset: '4px',
               }}
             >
               Download Resume PDF

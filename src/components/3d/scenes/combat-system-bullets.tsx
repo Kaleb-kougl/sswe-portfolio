@@ -13,6 +13,7 @@ import {
 import { useEngineStore } from '@/store/useEngineStore';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { PATTERN_REGISTRY, releaseSpawnData } from './combat-system-patterns';
+import { PALETTE } from '../colors';
 import type { CombatSystemPattern } from './combat-system-types';
 
 // ---------------------------------------------------------------------------
@@ -142,7 +143,7 @@ export function BulletManager({ maxBullets = 2000 }: BulletManagerProps) {
         }
 
         // Zero-allocation color set — reuse _tempColor scratch object
-        _tempColor.set(data.color ?? 0xff3333);
+        _tempColor.set(data.color ?? PALETTE.tangerine);
         mesh.setColorAt(slotIdx, _tempColor);
 
         // If no delay, position immediately; otherwise hide at -999

@@ -116,7 +116,7 @@ export function MobileBottomSheet() {
           dragElastic={0.2}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
-          className="mobile-safe-bottom fixed inset-x-0 z-50 flex flex-col rounded-t-2xl bg-bg-panel shadow-[0_-4px_30px_rgba(0,0,0,0.3)]"
+          className="mobile-safe-bottom fixed inset-x-0 z-50 flex flex-col border-t-[3px] border-border bg-bg-panel shadow-[0_-9px_0_#161310]"
           style={{ top: '25dvh', bottom: 0 }}
           role="dialog"
           aria-label={activeTab === 'inspector' ? 'Inspector panel' : 'Console output'}
@@ -139,7 +139,7 @@ export function MobileBottomSheet() {
           {/* Row 2: Tab bar — left-aligned to prevent accidental taps */}
           <div className="shrink-0 px-3 pb-2">
             <div
-              className="inline-flex gap-0.5 rounded-lg bg-bg-editor/60 p-0.5"
+              className="inline-flex gap-1 border-[3px] border-border bg-bg-editor p-1 shadow-[4px_4px_0_#161310]"
               role="tablist"
               aria-label="Sheet tabs"
             >
@@ -204,10 +204,10 @@ function TabButton({
       aria-selected={isActive}
       aria-controls={controls}
       onClick={onClick}
-      className={`rounded-md px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide transition-all ${
+      className={`border-2 border-border px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors ${
         isActive
-          ? 'bg-bg-panel text-text-accent shadow-sm'
-          : 'text-text-muted hover:text-text-primary'
+          ? 'bg-cobalt text-white'
+          : 'bg-bg-panel text-text-muted hover:bg-lime hover:text-ink'
       }`}
     >
       {label}

@@ -26,14 +26,14 @@ function LinkifiedText({ text }: { text: string }) {
           return <strong key={i} className="font-semibold text-text-primary">{part.slice(2, -2)}</strong>;
         } else if (part.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$/)) {
           return (
-            <a key={i} href={`mailto:${part}`} className="text-text-accent hover:underline">
+            <a key={i} href={`mailto:${part}`} className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">
               {part}
             </a>
           );
         } else if (part.match(/^(https?:\/\/|linkedin\.com)/)) {
           const href = part.startsWith('http') ? part : `https://${part}`;
           return (
-            <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">
+            <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">
               {part}
             </a>
           );
@@ -147,8 +147,8 @@ export function InspectorPanel() {
       className="flex h-full flex-col overflow-hidden bg-bg-panel"
       aria-label="Inspector panel"
     >
-      <div className="flex h-[var(--toolbar-height)] items-center border-b border-border px-3">
-        <span className="font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+      <div className="flex h-[var(--toolbar-height)] items-center border-b-[3px] border-border bg-cobalt px-3">
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-white">
           Inspector
         </span>
       </div>
@@ -198,24 +198,26 @@ function WelcomeView() {
   return (
     <div className="flex min-h-full flex-col items-center gap-4 py-6 text-center">
       <div className="space-y-2">
-        <h1 className="font-ui text-xl font-semibold text-text-primary">
+        <h1 className="font-display text-3xl font-black uppercase tracking-[-0.025em] text-text-primary">
           {CONTACT_INFO.name}
         </h1>
-        <p className="font-ui text-sm text-text-accent">{CONTACT_INFO.title}</p>
+        <p className="border-[3px] border-border bg-lime px-3 py-1 font-mono text-xs font-bold uppercase tracking-[0.1em] text-ink shadow-[4px_4px_0_#161310]">
+          {CONTACT_INFO.title}
+        </p>
       </div>
-      <p className="max-w-sm font-ui text-sm leading-relaxed text-text-muted">
+      <p className="max-w-sm border-[3px] border-border bg-surface p-3 font-ui text-[15px] font-medium leading-relaxed text-text-primary shadow-[6px_6px_0_#161310]">
         {SUMMARY}
       </p>
       <div className="mt-4 space-y-1 text-left font-mono text-xs text-text-muted">
         <p>📍 {CONTACT_INFO.location}</p>
         <p>
-          📧 <a href={`mailto:${CONTACT_INFO.email}`} className="text-text-accent hover:underline">{CONTACT_INFO.email}</a>
+          📧 <a href={`mailto:${CONTACT_INFO.email}`} className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.email}</a>
         </p>
         <p>
-          🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">{CONTACT_INFO.linkedin}</a>
+          🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.linkedin}</a>
         </p>
         <p>
-          🐙 <a href={CONTACT_INFO.github} target="_blank" rel="noopener noreferrer" className="text-text-accent hover:underline">{CONTACT_INFO.github.replace('https://', '')}</a>
+          🐙 <a href={CONTACT_INFO.github} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.github.replace('https://', '')}</a>
         </p>
       </div>
       <div className="mt-4">
@@ -224,13 +226,13 @@ function WelcomeView() {
         </p>
       </div>
       <div className="mt-4 w-full">
-        <p className="mb-2 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+        <p className="mb-2 inline-block border-2 border-border bg-tangerine px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white">
           Education
         </p>
         <div className="space-y-2">
           {EDUCATION.map((edu) => (
-            <div key={edu.school} className="rounded-md border border-border bg-bg-editor p-3">
-              <p className="font-ui text-sm text-text-primary">
+            <div key={edu.school} className="border-[3px] border-border bg-bg-editor p-3 shadow-[4px_4px_0_#161310]">
+              <p className="font-display text-xl font-black tracking-[-0.02em] text-text-primary">
                 {edu.school}
               </p>
               <p className="font-mono text-xs text-text-muted">
@@ -242,14 +244,14 @@ function WelcomeView() {
         </div>
       </div>
       <div className="mt-4 w-full">
-        <p className="mb-2 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+        <p className="mb-2 inline-block border-2 border-border bg-cobalt px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white">
           Core Skills
         </p>
         <div className="flex flex-wrap gap-1.5">
           {SKILLS.map((skill) => (
             <span
               key={skill}
-              className="rounded-sm border border-border bg-bg-editor px-2 py-0.5 font-mono text-[11px] text-text-muted"
+              className="border-2 border-border bg-bg-editor px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-text-primary"
             >
               {skill}
             </span>
@@ -288,33 +290,33 @@ function FileEntryView({
   const disableCombatControls = (entry.fileId === 'combat_system' || entry.fileId === 'r3f-projectiles') && prefersReduced;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="space-y-1">
+      <div className="border-[3px] border-border bg-bg-editor p-4 shadow-[6px_6px_0_#161310]">
         <h2
           ref={headingRef}
           tabIndex={-1}
-          className="font-ui text-lg font-semibold text-text-primary outline-none focus-visible:ring-2 focus-visible:ring-text-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-panel rounded-sm"
+          className="font-display text-2xl font-black uppercase tracking-[-0.025em] text-text-primary outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-cobalt"
         >
           {entry.title}
         </h2>
         {entry.company && (
-          <p className="font-ui text-sm text-text-accent">{entry.company}</p>
+          <p className="mt-1 font-ui text-[15px] font-semibold text-text-accent">{entry.company}</p>
         )}
         {entry.dates && (
-          <p className="font-mono text-xs text-text-muted">{entry.dates}</p>
+          <p className="mt-1 font-mono text-xs uppercase tracking-[0.08em] text-text-muted">{entry.dates}</p>
         )}
         <span
-          className={`inline-block rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider ${
+          className={`mt-3 inline-block border-2 border-border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] ${
             entry.type === 'work'
-              ? 'bg-text-accent/10 text-text-accent'
+              ? 'bg-cobalt text-white'
               : entry.type === 'project'
-                ? 'bg-text-green/10 text-text-green'
+                ? 'bg-lime text-ink'
                 : entry.type === 'skill'
-                  ? 'bg-text-peach/10 text-text-peach'
+                  ? 'bg-tangerine text-white'
                   : entry.type === 'contact'
-                    ? 'bg-text-yellow/10 text-text-yellow'
-                    : 'bg-text-muted/10 text-text-muted'
+                    ? 'bg-lime text-ink'
+                    : 'bg-bg-editor text-text-primary'
           }`}
         >
           {entry.type}
@@ -327,7 +329,7 @@ function FileEntryView({
           {entry.skills.map((skill) => (
             <span
               key={skill}
-              className="rounded-sm border border-border bg-bg-editor px-2 py-0.5 font-mono text-[11px] text-text-muted"
+              className="border-2 border-border bg-bg-editor px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-text-primary"
             >
               {skill}
             </span>
@@ -340,9 +342,9 @@ function FileEntryView({
         {entry.bullets.map((bullet, i) => (
           <li
             key={`${entry.fileId}-bullet-${i}`}
-            className="flex gap-2 font-ui text-sm leading-relaxed text-text-primary"
+            className="flex gap-3 border-b-2 border-border pb-3 font-ui text-[15px] font-medium leading-relaxed text-text-primary last:border-b-0"
           >
-            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-accent" />
+            <span className="mt-1.5 h-3 w-3 shrink-0 border-2 border-border bg-tangerine shadow-[2px_2px_0_#161310]" />
             <span className="break-words">
               <LinkifiedText text={bullet} />
             </span>
@@ -352,12 +354,12 @@ function FileEntryView({
 
       {/* Interactive Controls */}
       {entry.controls && entry.controls.length > 0 && (
-        <div className="mt-6 rounded-md border border-border/50 bg-bg-editor p-3">
-          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-wider text-text-muted">
+        <div className="mt-6 border-[3px] border-border bg-bg-editor p-3 shadow-[6px_6px_0_#161310]">
+          <p className="mb-3 inline-block border-2 border-border bg-lime px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink">
             Interactive Controls
           </p>
           {disableCombatControls && (
-            <div className="mb-4 rounded border border-text-accent/30 bg-text-accent/10 p-2 text-xs text-text-primary">
+            <div className="mb-4 border-[3px] border-border bg-lime p-2 text-xs font-semibold text-ink">
               <strong>Reduced Motion Active:</strong> The bullet system has been automatically paused and capped to 200 instances for accessibility. Controls are disabled.
             </div>
           )}
@@ -428,11 +430,11 @@ function SliderControl({
       <div className="flex items-center justify-between">
         <label
           htmlFor={sliderId}
-          className="font-mono text-xs text-text-muted"
+          className="font-mono text-xs font-bold uppercase tracking-[0.08em] text-text-muted"
         >
           {spec.label}
         </label>
-        <span className="font-mono text-xs font-medium text-text-accent">
+        <span className="border-2 border-border bg-cobalt px-1.5 py-0.5 font-mono text-xs font-bold text-white">
           {spec.formatValue ? spec.formatValue(value) : value}
         </span>
       </div>
@@ -449,13 +451,13 @@ function SliderControl({
             [spec.field]: parseFloat(e.target.value),
           } as TransientUpdates)
         }
-        className={`w-full accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-full accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         aria-valuemin={spec.min}
         aria-valuemax={spec.max}
         aria-valuenow={value}
         aria-valuetext={spec.formatValue ? spec.formatValue(value) : `${value}`}
       />
-      <div className="flex justify-between font-mono text-[10px] text-text-muted">
+      <div className="flex justify-between font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-text-muted">
         <span>
           {spec.formatValue ? spec.formatValue(spec.min) : spec.min}
         </span>
@@ -494,11 +496,11 @@ function ToggleControl({
             [spec.field]: e.target.checked,
           } as TransientUpdates)
         }
-        className={`h-4 w-4 rounded border-border bg-bg-panel text-text-accent accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`h-5 w-5 border-2 border-border bg-bg-panel text-cobalt accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       />
       <label
         htmlFor={checkboxId}
-        className={`font-mono text-xs select-none ${disabled ? 'text-text-muted/50 cursor-not-allowed' : 'text-text-muted cursor-pointer'}`}
+        className={`font-mono text-xs font-bold uppercase tracking-[0.08em] select-none ${disabled ? 'text-text-muted/50 cursor-not-allowed' : 'text-text-muted cursor-pointer'}`}
       >
         {spec.label}
       </label>
@@ -523,7 +525,7 @@ function RadioGroupControl({
 
   return (
     <fieldset className="space-y-2">
-      <legend className="font-mono text-xs text-text-muted">{spec.label}</legend>
+      <legend className="font-mono text-xs font-bold uppercase tracking-[0.08em] text-text-muted">{spec.label}</legend>
       <div className="flex flex-wrap gap-3" role="radiogroup" aria-label={spec.label}>
         {spec.options.map((option) => {
           const radioId = `${groupId}-${option}`;
@@ -542,13 +544,13 @@ function RadioGroupControl({
                   } as TransientUpdates)
                 }
                 aria-label={spec.formatLabel ? spec.formatLabel(option) : option}
-                className={`h-4 w-4 border-border bg-bg-panel text-text-accent accent-text-accent ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`h-5 w-5 border-2 border-border bg-bg-panel text-cobalt accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               />
               <label
                 htmlFor={radioId}
                 className={`font-mono text-xs select-none ${
                   disabled ? 'text-text-muted/50 cursor-not-allowed' :
-                  value === option ? 'text-text-accent cursor-pointer' : 'text-text-muted cursor-pointer'
+                  value === option ? 'bg-lime px-1 text-ink cursor-pointer' : 'text-text-muted cursor-pointer'
                 }`}
               >
                 {spec.formatLabel ? spec.formatLabel(option) : option}
