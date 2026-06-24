@@ -175,6 +175,7 @@ body {
   display: flex !important;
   flex-direction: column;
   align-items: flex-start;
+  inset: 4.5rem .75rem auto .75rem !important;
 }
 
 .bullet-stats-panel::before {
@@ -203,7 +204,7 @@ body {
 
 /* --- Mobile Glassmorphic Surfaces --- */
 .glass-surface {
-  background: var(--color-bg-panel);
+  background: var(--color-tangerine);
   border: 3px solid var(--color-border);
   box-shadow: 6px 6px 0 var(--color-border);
 }
