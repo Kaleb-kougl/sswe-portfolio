@@ -1,13 +1,15 @@
-import React from 'react';
 import { Html } from '@react-three/drei';
 import { ProjectileTelemetry } from '@k9kbdev/r3f-projectiles';
 import { activeBulletCount } from './scenes/combat-system-bullets';
 import { useEngineStore } from '@/store/useEngineStore';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { PALETTE } from './colors';
 
 export function BulletTelemetry() {
   const activeFileId = useEngineStore((s) => s.activeFileId);
+  const isMobile = useIsMobile();
   const isVisible = activeFileId === 'combat_system' || activeFileId === 'r3f-projectiles';
+  const telemetryInset = isMobile ? '4.5rem .75rem auto .75rem' : '4px 4px auto auto';
 
   if (!isVisible) return null;
 
@@ -18,7 +20,7 @@ export function BulletTelemetry() {
         style={{
           position: 'absolute',
           pointerEvents: 'none',
-          inset: '4.5rem .75rem auto .75rem',
+          inset: telemetryInset,
           color: PALETTE.paper,
           backgroundColor: PALETTE.cobalt,
           right: 'auto',
@@ -33,4 +35,3 @@ export function BulletTelemetry() {
     </Html>
   );
 }
-
