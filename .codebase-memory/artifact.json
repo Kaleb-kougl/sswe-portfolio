@@ -1,11 +1,11 @@
 {
     "schema_version": 1,
-    "commit": "f22e9bff3ef3fa3378399e331709298fe27499c5",
-    "indexed_at": "2026-06-24T17:43:55Z",
+    "commit": "9c5b9f79b8779687846d8b8acc850d650cfcf3b5",
+    "indexed_at": "2026-06-25T19:02:03Z",
     "project": "Users-kalebmon-Documents-sswe-portfolio",
-    "nodes": 2075,
-    "edges": 19465,
-    "original_size": 14417920,
-    "compressed_size": 2251789,
+    "nodes": 0,
+    "edges": 0,
+    "original_size": 102400,
+    "compressed_size": 1396,
     "compression_level": 3
 }

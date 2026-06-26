@@ -121,7 +121,7 @@ export function AboutMeFlex() {
       }
 
       if (currentIsMoving) {
-        _axis.set(currentDz, 0, -currentDx).normalize();
+        _axis.set(-currentDz, 0, -currentDx).normalize();
         _q.setFromAxisAngle(_axis, SPHERE_ROTATION_SPEED * delta);
         sphereRef.current.quaternion.premultiply(_q);
       }

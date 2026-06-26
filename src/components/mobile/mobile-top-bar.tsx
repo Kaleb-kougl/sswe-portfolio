@@ -25,7 +25,8 @@ export function MobileTopBar() {
 
   return (
     <header
-      className="glass-surface mobile-safe-top fixed top-3 left-3 right-3 z-50 flex h-12 items-center justify-between px-1.5"
+      className="glass-surface fixed left-3 right-3 z-50 flex h-12 items-center justify-between px-1.5"
+      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
       aria-label="Application toolbar"
     >
       {/* Left: Hamburger — toggles drawer open/closed */}
@@ -43,9 +44,9 @@ export function MobileTopBar() {
       </button>
 
       {/* Center: App title */}
-      <div className="flex flex-1 items-center justify-center gap-1.5 px-2">
+      <div className="flex min-w-0 flex-1 items-center justify-center gap-1.5 px-1">
         <Terminal size={14} strokeWidth={2} className="text-text-accent shrink-0" />
-        <span className="truncate font-mono text-[13px] font-bold uppercase tracking-[0.06em] text-text-primary">
+        <span className="truncate font-mono text-[11px] font-bold uppercase tracking-[0.03em] text-text-primary">
           portfolio.kaleb.kougl
         </span>
       </div>
@@ -54,7 +55,7 @@ export function MobileTopBar() {
       <a
         href="/KalebK_Resume.pdf"
         download
-        className="flex h-10 w-10 shrink-0 flex-col items-center justify-center border-2 border-border bg-cobalt text-white shadow-[3px_3px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#161310] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_#161310]"
+        className="mr-1 flex h-10 w-10 shrink-0 flex-col items-center justify-center border-2 border-border bg-cobalt text-white shadow-[3px_3px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#161310] active:translate-x-0 active:translate-y-0 active:shadow-[2px_2px_0_#161310]"
         aria-label="Download resume"
       >
         <Download size={14} strokeWidth={2.5} className="text-white" />
