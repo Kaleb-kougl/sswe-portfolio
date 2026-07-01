@@ -1,4 +1,5 @@
 import { IDELayoutWrapper } from '@/components/ide-layout-wrapper';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
         Skip to main content
       </a>
       <IDELayoutWrapper />
+      <SpeedInsights />
     </>
   );
 }
