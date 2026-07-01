@@ -19,6 +19,8 @@ This project is deployed on Vercel and can be viewed at:
 - **Responsive "Spatial Map"**: Mobile fallback drops the IDE panes into sliding drawers and bottom sheets, covering the background in the 3D canvas.
 - **Accessibility (A11y)**: Supports `prefers-reduced-motion`, ARIA tree keyboard navigation, and screen-reader announcements.
 
+![Speed Metrics](/Resume/Screenshot%202026-07-01%20at%208.59.45 AM.png)
+
 ## Tech Stack
 
 - **Framework**: Next.js 16.2.7 (App Router), React 19.2.4 (React Compiler)
