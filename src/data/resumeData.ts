@@ -25,7 +25,7 @@ export const CONTACT_INFO: ContactInfo = {
   email: 'KalebKougl@gmail.com',
   phone: '479-283-4454',
   location: 'San Francisco, CA',
-  linkedin: 'linkedin.com/in/kaleb-kougl-7b3292151/',
+  linkedin: 'linkedin.com/in/kaleb-kougl',
   github: 'https://github.com/Kaleb-kougl',
 };
 
