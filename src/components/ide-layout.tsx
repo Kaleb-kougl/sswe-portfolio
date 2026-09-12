@@ -151,12 +151,7 @@ function DesktopLayout() {
           <Separator
             className="h-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
             aria-label="Resize console panel"
-          />
-
-          {/* Bottom Panel: Console */}
-          <Panel id="console" defaultSize="20%" minSize="10%" className="contain-content">
-            <TerminalConsole />
-          </Panel>
+          />   
         </Group>
       </div>
     </LucideProvider>
