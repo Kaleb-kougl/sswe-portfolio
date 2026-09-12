@@ -30,7 +30,7 @@ export const CONTACT_INFO: ContactInfo = {
 };
 
 export const SUMMARY =
-  'Front\u2011End Platform engineer with 8+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, GenAI, and Agentic Workflows.';
+  'Front\u2011End Platform engineer with 7+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, GenAI, and Agentic Workflows.';
 
 export const EDUCATION = [
   {
