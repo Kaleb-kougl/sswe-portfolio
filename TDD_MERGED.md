@@ -499,7 +499,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Kaleb Kougl | Senior Software Engineer',
   description:
-    'Front-End Platform engineer with 8+ years building scalable TypeScript/React web applications. Interactive IDE-themed portfolio.',
+    'Front-End Platform engineer with 7+ years building scalable TypeScript/React web applications. Interactive IDE-themed portfolio.',
   openGraph: {
     title: 'Kaleb Kougl — IDE Portfolio',
     description:
@@ -969,7 +969,7 @@ export const CONTACT_INFO: ContactInfo = {
 };
 
 export const SUMMARY =
-  'Front‑End Platform engineer with 8+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, and AI‑assisted code generation to accelerate delivery.';
+  'Front‑End Platform engineer with 7+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, and AI‑assisted code generation to accelerate delivery.';
 
 export const EDUCATION = {
   school: 'University of Arkansas',

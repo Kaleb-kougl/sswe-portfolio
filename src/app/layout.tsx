@@ -26,7 +26,7 @@ const label = Space_Mono({
 export const metadata: Metadata = {
   title: 'Kaleb Kougl | Senior Software Engineer',
   description:
-    'Front-End Platform engineer with 8+ years building scalable TypeScript/React web applications. Interactive IDE-themed portfolio.',
+    'Front-End Platform engineer with 7+ years building scalable TypeScript/React web applications. Interactive IDE-themed portfolio.',
   openGraph: {
     title: 'Kaleb Kougl — IDE Portfolio',
     description:

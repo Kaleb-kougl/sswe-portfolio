@@ -32,9 +32,9 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'overview', label: 'Overview.md', icon: Home },
-      { id: 'profile', label: 'Kaleb_Kougl_Summary.json', icon: User },
-      { id: 'contact-info', label: 'Contact_Info.grpc', icon: Globe },
+      { id: 'overview', label: 'Overview', icon: Home },
+      { id: 'profile', label: 'Kaleb_Kougl_Summary', icon: User },
+      { id: 'contact-info', label: 'Contact_Info', icon: Globe },
     ],
   },
   {
@@ -43,10 +43,10 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_Sr_SWE.config', icon: Building2 },
-      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Staff_SWE.tsx', icon: Building },
-      { id: 'ibm-swe', label: 'Level_2_IBM_SWE.gql', icon: Building },
-      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Intern.jsx', icon: Truck },
+      { id: 'indeed-sr-swe', label: 'Level_4_Indeed_Sr_SWE', icon: Building2 },
+      { id: 'ibm-staff-swe', label: 'Level_3_IBM_Staff_SWE', icon: Building },
+      { id: 'ibm-swe', label: 'Level_2_IBM_SWE', icon: Building },
+      { id: 'jbhunt-intern', label: 'Level_1_JBHunt_Intern', icon: Truck },
     ],
   },
   {
@@ -55,9 +55,9 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'hammerball', label: 'BonkBall.exe', icon: Hammer },
-      { id: 'analytics-extension', label: 'Indeed_Analytics_Chrome_Extension.crx', icon: Puzzle },
-      { id: 'combat_system', label: 'Combat_System.three', icon: Gamepad2 },
+      { id: 'hammerball', label: 'BonkBall', icon: Hammer },
+      { id: 'analytics-extension', label: 'Indeed_Analytics_Chrome_Extension', icon: Puzzle },
+      { id: 'combat_system', label: 'Combat_System', icon: Gamepad2 },
     ],
   },
   {
@@ -66,9 +66,9 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'core-skills', label: 'Core_Skills.json', icon: Code2 },
-      { id: 'webpack-federation', label: 'Webpack5_Federation.ts', icon: Settings },
-      { id: 'cwv-profiler', label: 'Core_Web_Vitals_Profiler.ts', icon: BarChart3 },
+      { id: 'core-skills', label: 'Core_Skills', icon: Code2 },
+      { id: 'webpack-federation', label: 'Webpack5_Federation', icon: Settings },
+      { id: 'cwv-profiler', label: 'Core_Web_Vitals_Profiler', icon: BarChart3 },
     ],
   },
   {
@@ -77,9 +77,9 @@ export const FILE_TREE: FileNode[] = [
     icon: Folder,
     isFolder: true,
     children: [
-      { id: 'roblox-css', label: 'Roblox_CSS_v0.1.0.npm', icon: Package },
-      { id: 'r3f-projectiles', label: 'R3F_Projectiles.npm', icon: Package },
-      { id: 'acs-microdialysis', label: 'ACS_Anal_Chem_2019.doi', icon: FlaskConical },
+      { id: 'roblox-css', label: 'Roblox_CSS_v0.1.0', icon: Package },
+      { id: 'r3f-projectiles', label: 'R3F_Projectiles', icon: Package },
+      { id: 'acs-microdialysis', label: 'ACS_Anal_Chem_2019', icon: FlaskConical },
     ],
   },
 ];
