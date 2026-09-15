@@ -13,6 +13,7 @@ import { useViewportRef } from '../viewport-ref-context';
 import { WebGLErrorBoundary, type WebGLFallbackProps } from './error-boundary';
 import { SceneOrchestrator, getSceneKey } from './scene-orchestrator';
 import { AdaptivePixelRatio } from './adaptive-pixel-ratio';
+import { MorphTransition } from './morph-transition';
 import IBMFlex from './scenes/ibm-flex';
 import IndeedFlex from './scenes/indeed-flex';
 import { HammerBallFlex } from './scenes/hammerball-flex';
@@ -101,8 +102,10 @@ const ConditionalBloom = memo(function ConditionalBloom() {
     const bloom = bloomRef.current;
     if (!bloom) return;
 
-    const { activeFileId, combatSystemBloom } = useEngineStore.getState();
-    const sceneKey = getSceneKey(activeFileId);
+    // renderedFileId (not activeFileId) so bloom stays on until the morph has
+    // snapshotted the outgoing combat scene.
+    const { renderedFileId, combatSystemBloom } = useEngineStore.getState();
+    const sceneKey = getSceneKey(renderedFileId);
     const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
     const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const shouldBeActive = sceneKey === 'combat_system' && !isMobile && !prefersReduced;
@@ -120,6 +123,8 @@ const ConditionalBloom = memo(function ConditionalBloom() {
         intensity={0}
         radius={0.5}
       />
+      {/* Must stay last: morphs the fully post-processed frame between scenes. */}
+      <MorphTransition />
     </EffectComposer>
   );
 });
@@ -189,8 +194,9 @@ const DprController = memo(function DprController() {
 });
 
 /**
- * SceneBackground — sets scene.background imperatively per active scene.
- * Subscribes to activeFileId via Zustand; renders nothing.
+ * SceneBackground — sets scene.background imperatively per rendered scene.
+ * Subscribes to renderedFileId (swapped by the morph transition) via Zustand;
+ * renders nothing.
  */
 const SceneBackground = memo(function SceneBackground() {
   const scene = useThree((s) => s.scene);
@@ -201,9 +207,9 @@ const SceneBackground = memo(function SceneBackground() {
 
   useEffect(() => {
     return useEngineStore.subscribe(
-      (state) => state.activeFileId,
-      (activeFileId) => {
-        const key = getSceneKey(activeFileId);
+      (state) => state.renderedFileId,
+      (renderedFileId) => {
+        const key = getSceneKey(renderedFileId);
         if (key === 'about-me') scene.background = colors.lime;
         else if (key === 'combat_system') scene.background = colors.darkPaper;
         else scene.background = null;

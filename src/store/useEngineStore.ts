@@ -60,7 +60,12 @@ interface EngineState {
   // Camera (plain object to avoid importing THREE in the store — preserves SSR safety)
   cameraTarget: { x: number; y: number; z: number };
 
+  // Scene transition: the file whose scene is actually on screen. Lags
+  // activeFileId by one frame (or more) while the morph transition snapshots.
+  renderedFileId: string | null;
+
   setTransientState: (updates: TransientUpdates) => void;
+  setRenderedFileId: (id: string | null) => void;
   setCameraTarget: (target: { x: number; y: number; z: number }) => void;
   resetStore: () => void;
 }
@@ -122,10 +127,13 @@ export const useEngineStore = create<EngineState>()(
       combatSystemBloom: 1.2,
       combatSystemPoolSize: 2000,
       cameraTarget: { x: 0, y: 0, z: 0 },
+      renderedFileId: 'overview' as string | null,
 
       // --- Transient actions ---
       setTransientState: (updates) =>
         set(updates, undefined, 'transient/update'),
+      setRenderedFileId: (id) =>
+        set({ renderedFileId: id }, undefined, 'transient/setRenderedFileId'),
       setCameraTarget: (target) =>
         set({ cameraTarget: { ...target } }, undefined, 'transient/setCameraTarget'),
 
