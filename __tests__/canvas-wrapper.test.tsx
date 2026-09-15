@@ -19,7 +19,7 @@ Object.defineProperty(window, 'matchMedia', {
 // Mock dependencies
 vi.mock('../src/store/useEngineStore', () => ({
   useEngineStore: Object.assign(vi.fn(), {
-    getState: vi.fn(() => ({ activeFileId: '123', combatSystemBloom: 1 })),
+    getState: vi.fn(() => ({ activeFileId: '123', renderedFileId: '123', combatSystemBloom: 1 })),
     subscribe: vi.fn(),
   }),
 }));
@@ -33,6 +33,10 @@ vi.mock('../src/components/3d/scene-orchestrator', () => ({
   SceneOrchestrator: ({ children }: any) => <div data-testid="scene-orchestrator">{children}</div>,
   getSceneKey: vi.fn(() => 'default'),
   useSceneGroup: vi.fn(),
+}));
+
+vi.mock('../src/components/3d/morph-transition', () => ({
+  MorphTransition: () => <div data-testid="morph-transition" />,
 }));
 
 vi.mock('../src/components/3d/adaptive-pixel-ratio', () => ({

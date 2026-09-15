@@ -4,6 +4,7 @@
 import { useEffect, useRef, useCallback, createContext, useContext, type ReactNode } from 'react';
 import { type Group } from 'three';
 import { useEngineStore } from '@/store/useEngineStore';
+import { sceneTransition, SCENE_ORDER } from './morph-transition';
 
 /**
  * File IDs that have dedicated 3D flex scenes.
@@ -31,7 +32,9 @@ const SceneOrchestratorContext = createContext<RegisterSceneFn>(() => {});
  *
  * All flex scenes are mounted once; this component toggles `visible` on their
  * <group> wrappers. This avoids GPU recompilation of geometries and materials
- * on every file click.
+ * on every file click. When the MorphTransition pass is mounted, the toggle is
+ * handed to it so it can snapshot the outgoing frame first and morph between
+ * the two scenes.
  *
  * Subscribes to activeFileId imperatively via useEngineStore.subscribe() with
  * { fireImmediately: true } — never uses reactive hooks for this.
@@ -45,10 +48,11 @@ export function SceneOrchestrator({ children }: { children: ReactNode }) {
     if (group) {
       groupRefs.current.set(key, group);
       
-      // Immediately set visibility to avoid all scenes showing at once 
-      // if they mount after the initial subscriber execution.
-      const currentActiveId = useEngineStore.getState().activeFileId;
-      group.visible = key === getSceneKey(currentActiveId);
+      // Immediately set visibility to avoid all scenes showing at once
+      // if they mount after the initial subscriber execution. Uses the scene
+      // that is on screen, which lags activeFileId during a morph.
+      const renderedId = useEngineStore.getState().renderedFileId;
+      group.visible = key === getSceneKey(renderedId);
     } else {
       groupRefs.current.delete(key);
     }
@@ -56,21 +60,48 @@ export function SceneOrchestrator({ children }: { children: ReactNode }) {
 
   // Subscribe imperatively to activeFileId changes
   useEffect(() => {
+    let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
+
     const unsubscribe = useEngineStore.subscribe(
       (state) => state.activeFileId,
-      (newId) => {
-        const activeKey = getSceneKey(newId);
+      (newId, prevId) => {
+        const nextKey = getSceneKey(newId);
+        const store = useEngineStore.getState();
+        const renderedKey = getSceneKey(store.renderedFileId);
 
-        groupRefs.current.forEach((group, key) => {
-          group.visible = key === activeKey;
-        });
+        const swap = () => {
+          groupRefs.current.forEach((group, key) => {
+            group.visible = key === nextKey;
+          });
+          useEngineStore.getState().setRenderedFileId(newId);
+        };
+
+        const pass = sceneTransition.current;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isInitial = newId === prevId;
+
+        if (!pass || prefersReduced || isInitial || nextKey === renderedKey) {
+          // No morph: first paint, reduced motion, no composer, or the same
+          // scene (e.g. overview -> profile). Drop any swap still waiting.
+          pass?.cancelPending();
+          swap();
+        } else {
+          const direction = SCENE_ORDER.indexOf(nextKey) >= SCENE_ORDER.indexOf(renderedKey) ? 1 : -1;
+          pass.requestTransition(swap, direction);
+          // Safety net: if no frame renders soon (context lost, paused loop), swap anyway.
+          clearTimeout(fallbackTimer);
+          fallbackTimer = setTimeout(() => pass.flushPending(swap), 1500);
+        }
 
         // Mark asset loading complete after scene swap
-        useEngineStore.getState().setAssetLoading(false);
+        store.setAssetLoading(false);
       },
       { fireImmediately: true }
     );
-    return unsubscribe;
+    return () => {
+      clearTimeout(fallbackTimer);
+      unsubscribe();
+    };
   }, []);
 
   return (
