@@ -15,6 +15,8 @@ import { HierarchyTree } from './hierarchy-tree';
 import { InspectorPanel } from './inspector-panel';
 import { TerminalConsole } from './terminal-console';
 import { ViewportRefProvider } from './viewport-ref-context';
+import { ViewportThesis } from './viewport-thesis';
+import { ScriptTab } from './script-tab';
 import { CanvasLoadingHUD } from './3d/canvas-loading-hud';
 import { ModelControlsHUD } from './3d/model-controls-hud';
 import { useIsMobile } from '@/hooks/useIsMobile';
@@ -116,27 +118,37 @@ function DesktopLayout() {
                 </Panel>
 
                 <Separator
-                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
+                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-interactive data-[state=drag]:bg-interactive"
                   aria-label="Resize hierarchy panel"
                 />
 
                 {/* Center Panel: Viewport (3D Canvas) */}
                 <Panel id="viewport" defaultSize="45%" className="relative contain-content">
                   <ViewportRefProvider value={viewportRef}>
+                    {/*
+                      `grid-texture` owns background-color (and paints the
+                      graph paper from a decorative ::before at z-index:-1),
+                      so it replaces the old `bg-bg-editor` rather than
+                      sitting alongside it.
+                    */}
                     <main
                       ref={viewportRef}
-                      className="relative h-full w-full bg-bg-editor"
+                      className="grid-texture relative h-full w-full"
                       aria-label="3D Viewport"
                     >
                       <CanvasLoadingHUD />
                       <ModelControlsHUD />
                       <MemoizedCanvasWrapper />
+                      {/* HTML overlays — readable by screen readers and crawlers,
+                          unlike anything drawn into the WebGL canvas. */}
+                      <ViewportThesis />
+                      <ScriptTab />
                     </main>
                   </ViewportRefProvider>
                 </Panel>
 
                 <Separator
-                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
+                  className="w-[3px] bg-border transition-colors data-[state=hover]:bg-interactive data-[state=drag]:bg-interactive"
                   aria-label="Resize inspector panel"
                 />
 
@@ -149,7 +161,7 @@ function DesktopLayout() {
           </Panel>
 
           <Separator
-            className="h-[3px] bg-border transition-colors data-[state=hover]:bg-tangerine data-[state=drag]:bg-cobalt"
+            className="h-[3px] bg-border transition-colors data-[state=hover]:bg-interactive data-[state=drag]:bg-interactive"
             aria-label="Resize console panel"
           />   
         </Group>
