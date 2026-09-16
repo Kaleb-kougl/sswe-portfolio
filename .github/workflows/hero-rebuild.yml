@@ -1,0 +1,87 @@
+name: Hero Asset Rebuild
+
+# Manually triggered on purpose. Rebuilding hero.glb needs Blender, which the
+# ubuntu runners do not ship; `apt install blender` is slow and pins an
+# unpredictable version. Blocking every PR on that would cost minutes per run
+# to re-derive an 8.5 KB file that almost never changes. So the committed
+# artifact is what CI guards (see the asset-budget job in ci.yml), and this
+# workflow exists for when scripts/hero.blend or the generator actually change.
+on:
+  workflow_dispatch:
+    inputs:
+      blender_version:
+        description: "Blender version to download from blender.org"
+        required: false
+        default: "5.2.0"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    name: Rebuild hero.glb from the generator
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Blender
+        env:
+          VERSION: ${{ inputs.blender_version }}
+        run: |
+          set -euo pipefail
+          SERIES="${VERSION%.*}"
+          URL="https://download.blender.org/release/Blender${SERIES}/blender-${VERSION}-linux-x64.tar.xz"
+          echo "Downloading $URL"
+          curl -fsSL "$URL" -o /tmp/blender.tar.xz
+          mkdir -p /opt/blender
+          tar -xJf /tmp/blender.tar.xz -C /opt/blender --strip-components=1
+          /opt/blender/blender --version
+
+      - name: Rebuild the asset
+        env:
+          BLENDER: /opt/blender/blender
+        run: npm run hero:build
+
+      - name: Check the rebuilt asset against its budgets
+        run: npm run hero:check
+
+      # Deliberately a report, not a gate. Blender's glTF exporter is
+      # deterministic for a given build, but a different Blender point release
+      # or platform can legitimately shift bytes (generator string, float
+      # formatting) without changing the geometry. Failing on a byte diff would
+      # be a flaky check that proves nothing; the budget check above is the
+      # real gate, and a human reads this summary.
+      - name: Report drift against the committed artifact
+        run: |
+          if git diff --quiet -- public/models/hero.glb; then
+            echo "Rebuilt hero.glb is byte-identical to the committed one." >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### hero.glb differs from the committed artifact"
+              echo ""
+              echo "Rebuilt on Blender \`${{ inputs.blender_version }}\` (linux-x64)."
+              echo "The budget check above still passed. Download the artifact below,"
+              echo "eyeball it, and commit it if the change is intended."
+              echo ""
+              git diff --stat -- public/models/hero.glb
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the rebuilt asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-glb
+          path: public/models/hero.glb
+          retention-days: 14

@@ -54,3 +54,5 @@ r3f-scraper/*
 # memory
 memory/*
 docs/*
+# hero pipeline docs (docs/* is ignored above; this one is tracked)
+!docs/hero-pipeline.md
