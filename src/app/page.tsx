@@ -8,6 +8,7 @@ import { ProcessSection } from '@/components/scroll/process-section';
 import { SiteNav } from '@/components/scroll/site-nav';
 import { WorkSection } from '@/components/scroll/work-section';
 import { CONTACT_INFO, EDUCATION, SKILLS, SUMMARY } from '@/data/resumeData';
+import { SITE_URL } from '@/data/site';
 
 /**
  * Structured data for search engines and AI crawlers. Rendered as a plain
@@ -27,7 +28,7 @@ const personJsonLd = {
   description: SUMMARY,
   email: `mailto:${CONTACT_INFO.email}`,
   telephone: CONTACT_INFO.phone,
-  url: 'https://kalebkougl.dev',
+  url: SITE_URL,
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'San Francisco',

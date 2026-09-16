@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Manrope, Space_Mono } from 'next/font/google';
+import { SITE_URL } from '@/data/site';
 import './globals.css';
 
 const display = Bricolage_Grotesque({
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     title: 'Kaleb Kougl — Senior Software Engineer',
     description:
       'I build the platform other frontend teams ship on. Selected work, career history, and how I work — on one page.',
-    url: 'https://kalebkougl.dev',
+    url: SITE_URL,
     images: [
       {
         url: '/og-image.png',
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     ],
     type: 'website',
   },
-  metadataBase: new URL('https://kalebkougl.dev'),
+  metadataBase: new URL(SITE_URL),
 };
 
 export const viewport: Viewport = {
