@@ -37,24 +37,27 @@ export const CONTACT_INFO: ContactInfo = {
   title: 'Senior Software Engineer',
   email: 'KalebKougl@gmail.com',
   phone: '479-283-4454',
-  location: 'San Francisco, CA',
+  location: 'South San Francisco, CA',
   linkedin: 'linkedin.com/in/kaleb-kougl',
   github: 'https://github.com/Kaleb-kougl',
 };
 
 export const SUMMARY =
-  'Front\u2011End Platform engineer with 7+ years building scalable TypeScript/React web applications and reusable component libraries. Experienced with Webpack, CI/CD, Core Web Vitals, Frontend SLOs, GenAI, and Agentic Workflows.';
+  'Software engineer with 7+ years making high-traffic web applications faster, more accessible and easier for others to build on. I\u2019ve focused on work that compounds such as platform migrations, shared component systems and now AI-assisted development workflows. This improves not only my work but other engineers\u2019 ability to ship features. Most recently I\u2019ve led frontend platform and AI-tooling initiatives at Indeed across software applications serving 680M+ users.';
 
 export const EDUCATION = [
   {
     school: 'Northwestern University',
+    // The current résumé prints this certificate without a date. The date below is
+    // carried over from the previous résumé rather than dropped, because
+    // CareerSection sorts EDUCATION by the years inside `graduationDate`.
     graduationDate: 'Jan 2019',
     degree: 'Full-Stack Web Development Certificate',
   },
   {
     school: 'University of Arkansas',
     graduationDate: 'Jul 2017',
-    degree: 'Bachelor of Science, Cum Laude',
+    degree: 'Bachelor of Science in Biological Sciences, Cum Laude',
     gpa: '3.9',
   },
 ];
@@ -62,34 +65,21 @@ export const EDUCATION = [
 export const SKILLS = [
   'TypeScript',
   'JavaScript',
-  'Python',
-  'Java',
   'React',
-  'Redux',
-  'Next.js',
-  'GraphQL',
-  'Apollo Client',
+  'Node.js',
+  'Python',
+  'CI/CD',
   'HTML5',
   'CSS3',
-  'Styled-Components',
-  'Webpack 5',
-  'Docker',
-  'CI/CD',
-  'Git',
-  'Cypress',
-  'DataDog',
-  'Design Systems',
-  'Design Tokens',
-  'State Management',
-  'Microfrontend Architecture',
-  'Component-Driven Development',
-  'Performance Optimization (Core Web Vitals)',
-  'System Design',
-  'TDD',
-  'Frontend Security Best Practices',
-  'Agile Methodologies',
-  'GenAI',
-  'Agentic Workflows',
+  'PostgreSQL',
+  'Web Applications',
+  'Component libraries',
+  'Datadog',
+  'Webpack',
+  'Build Systems',
+  'Performance optimization (Core Web Vitals)',
+  'AI-assisted development',
+  'Model-assisted workflows',
 ];
 
 export const RESUME_DATA: Record<string, ProjectEntry> = {
@@ -120,28 +110,57 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       `GitHub: ${CONTACT_INFO.github}`,
     ],
   },
+  /*
+   * EDITORIAL NOTE — how the résumé's bullets map onto these entries.
+   *
+   * The résumé groups bullets PER COMPANY, not per role: seven bullets sit
+   * under the two Indeed titles and five under the two IBM titles. This site
+   * renders one role per card, so the bullets have been distributed across the
+   * two entries for each company. That split is an EDITORIAL CHOICE made here —
+   * it is not present in the source résumé, and re-cutting it changes nothing
+   * else. The rule used: bullets describing lead/org-wide scope (tech lead,
+   * mentoring, cross-functional SLOs, AI tooling) go to the senior title;
+   * bullets describing shipped product work go to the earlier title. Every
+   * bullet still appears exactly once, verbatim from the résumé, and every
+   * `result` quotes a number that appears in it.
+   */
   'indeed-sr-swe': {
     fileId: 'indeed-sr-swe',
     title: 'Senior Software Engineer',
     company: 'Indeed.com',
-    dates: 'Aug 2022 \u2013 Present',
+    dates: 'Dec 2024 \u2013 Jun 2026',
     type: 'work',
-    headline: 'Led the migration to a federated microfrontend.',
+    headline: 'Tech lead on the OneHost microfrontend migration.',
     summary:
-      'Owns the OneHost module-federation platform behind Indeed consumer web, plus the Frontend SLOs that keep those features out of incident.',
-    result: 'Mentored ~12 engineers to accelerate deployment cadence.',
+      'Led the platform work at Indeed: the OneHost module-federation migration, the AI-assisted workflows that shortened delivery, and the Frontend SLOs that keep consumer features out of incident.',
+    result: 'Reduced pickup-to-merge cycle time by 10%.',
     bullets: [
-      'Migrated to OneHost microfrontend platform (Webpack 5 module federation) to enable reusable component library and scale consumer web experiences; automated CI/CD and mentored ~12 engineers to accelerate deployment cadence.',
+      'Reduced Pickup to merge cycle time by 10% through applied AI\u2011assisted code generation and workflow harnesses.',
+      'Led team migration as tech lead from monolithic architecture to OneHost micro\u2011frontend platform (Webpack 5 module federation) leveraging React Storybook and CSS Design Tokens; automated CI/CD.',
+      'Mentored ~12 engineers as team/project lead, resulting in promotions and improved onboarding.',
       'Operationalized Frontend SLOs with SRE and Product, reducing customer\u2011facing incidents for consumer features.',
-      'Applied AI\u2011assisted code generation and model\u2011assisted workflows to speed delivery.',
-      'Architected a gRPC third\u2011party integration platform.',
-      'Shipped a TypeScript/React Manifest V3 analytics troubleshooting extension.',
     ],
     controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },
+  'indeed-swe-ii': {
+    fileId: 'indeed-swe-ii',
+    title: 'Software Engineer II',
+    company: 'Indeed.com',
+    dates: 'Aug 2022 \u2013 Dec 2024',
+    type: 'work',
+    headline: 'Cut Time to Interactive 15% for 680M+ users.',
+    summary:
+      'Shipped the consumer-facing half: apply-flow performance, accessible shared React components, and the analytics extension Customer Support troubleshoots ad campaigns with.',
+    result: 'Cut Time to Interactive 15% in the apply flow.',
+    bullets: [
+      'Cut ad campaign troubleshooting time 20% for Customer Support by shipping a TypeScript/Python Manifest V3 GenAI analytics Chrome extension.',
+      'Cut Time to Interactive 15% in the apply flow, serving 680M+ users.',
+      'Spearheaded efforts to implement (WCAG) web accessibility standards across 20+ reusable React components consumed by 5 teams.',
+    ],
+  },
   'ibm-staff-swe': {
     fileId: 'ibm-staff-swe',
-    title: 'Staff Software Engineer',
+    title: 'Software Engineer II',
     company: 'IBM',
     dates: 'Sep 2021 \u2013 Aug 2022',
     type: 'work',
@@ -151,8 +170,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     result: 'Bundle 6 MB \u2192 300 KB; hot-reload 29x faster.',
     bullets: [
       'Modernized IBM Developer site (https://developer.ibm.com/) with React and Webpack, improving SEO and Core Web Vitals (TTI/FCP) across devices.',
-      'Optimized Webpack to halve build time, improve rebuild/hot\u2011reload 29x, and shrink bundle from 6 MB to 300 KB.',
-      'Designed and launched a Watson Media video upload pipeline to streamline advocate video publishing.',
+      'Optimized Webpack to halve build time, improve rebuild/hot\u2011reload 29x, and shrink bundle from 6 MB to 300 KB, reclaiming 20+ engineer hours per week across a team of 10.',
+      'Designed and launched a Node.js Watson Media video upload pipeline to streamline advocate video publishing.',
     ],
     controls: ['targetBundleSize'],
   },
@@ -162,13 +181,13 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: 'IBM',
     dates: 'May 2019 \u2013 Sep 2021',
     type: 'work',
-    headline: 'API caching cut response time by 30%.',
+    headline: 'API response 30% faster in the agent portal.',
     summary:
-      'Shipped a modernized United Airlines agent portal and the Apollo GraphQL API behind GolfTV\u2019s worldwide launch.',
-    result: 'Reduced average API response time by 30%.',
+      'Delivered a modernized customer service agent portal and the Apollo GraphQL API behind GolfTV.',
+    result: 'Agent portal: 30% faster API response.',
     bullets: [
-      'Partnered with senior engineers to deliver a modernized customer service agent portal for United Airlines; implemented API caching that reduced average response time by 30%.',
-      'Developed the GolfTV Graph API using Apollo Server and AWS to enable the worldwide launch of GolfTV.',
+      'Delivered a modernized customer service agent portal (30% faster API response).',
+      'Improved data reliability for client integrations through GolfTV Graph API (Apollo GraphQL) on AWS.',
     ],
   },
   'jbhunt-intern': {

@@ -45,5 +45,12 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Force the contact form into its unconfigured state for the whole suite.
+    // Next's dev server reads .env.local, so a developer with a real
+    // CONTACT_DELIVERY_KEY set would otherwise have these tests POST to the
+    // live Formspree endpoint — burning quota, and mailing them if it were
+    // accepted. contact-form.spec.ts asserts the 503 path by design, so the
+    // absence of a key is the condition under test, not an accident.
+    env: { CONTACT_DELIVERY_KEY: '' },
   },
 });

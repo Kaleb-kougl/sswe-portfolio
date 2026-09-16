@@ -29,10 +29,13 @@ const personJsonLd = {
   email: `mailto:${CONTACT_INFO.email}`,
   telephone: CONTACT_INFO.phone,
   url: SITE_URL,
+  // Derived, not retyped: this previously hardcoded "San Francisco" and went
+  // stale the moment the résumé said South San Francisco, leaving the
+  // structured data contradicting the visible contact block.
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'San Francisco',
-    addressRegion: 'CA',
+    addressLocality: CONTACT_INFO.location.split(',')[0].trim(),
+    addressRegion: CONTACT_INFO.location.split(',')[1]?.trim() ?? 'CA',
     addressCountry: 'US',
   },
   sameAs: [`https://${CONTACT_INFO.linkedin}`, CONTACT_INFO.github],
