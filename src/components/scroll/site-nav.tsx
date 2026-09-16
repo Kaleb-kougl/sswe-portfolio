@@ -92,10 +92,13 @@ export function SiteNav() {
 
   return (
     <header className="nav-surface fixed inset-x-0 top-0 z-[2]">
-      <div className="flex h-[var(--nav-height)] items-center justify-between gap-6 px-6 min-[900px]:px-12">
+      {/* Tight gap/padding below 900px: at 375px the wordmark, the 44px toggle
+          and the CTA together overflow `gap-6 px-6`, and flexbox resolves that
+          by wrapping both the wordmark and the button onto two lines. */}
+      <div className="flex h-[var(--nav-height)] items-center justify-between gap-3 px-4 min-[900px]:gap-6 min-[900px]:px-12">
         <a
           href="#hero"
-          className="inline-flex min-h-[44px] items-center gap-3 font-display text-[21px] tracking-[-0.03em] text-ink"
+          className="inline-flex min-h-[44px] items-center gap-3 whitespace-nowrap font-display text-[17px] tracking-[-0.03em] text-ink min-[900px]:text-[21px]"
         >
           <BlockMark />
           Kaleb Kougl
@@ -149,7 +152,7 @@ export function SiteNav() {
 
           <a
             href="#contact"
-            className="inline-flex min-h-[44px] items-center rounded-pill bg-cta px-5 text-[15px] font-semibold text-cta-ink shadow-cta"
+            className="inline-flex min-h-[44px] shrink-0 items-center justify-center whitespace-nowrap rounded-pill bg-cta px-4 text-center text-[15px] font-semibold text-cta-ink shadow-cta min-[900px]:px-5"
           >
             Get in touch
           </a>
