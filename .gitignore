@@ -50,7 +50,10 @@ r3f-scraper/*
 
 # standalone packages (have their own repos)
 /r3f-projectiles/
+/roblox-css/
 
 # memory
 memory/*
 docs/*
+# hero pipeline docs (docs/* is ignored above; this one is tracked)
+!docs/hero-pipeline.md

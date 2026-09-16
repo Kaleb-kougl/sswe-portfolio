@@ -2,7 +2,6 @@
 'use no memo';
 
 import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { useEngineStore } from '@/store/useEngineStore';
 
 export interface WebGLFallbackProps {
   error: Error;
@@ -35,13 +34,12 @@ interface ErrorBoundaryState {
  * - Disabled/faulty GPU drivers
  * - R3F internal rendering errors
  *
- * AUTO-RECOVERY: Subscribes to activeFileId changes in the Zustand store.
- * When a scene crashes and the user clicks a different tab, the boundary
- * auto-resets so the new scene can load without a manual "Retry" click.
+ * Recovery is manual, via the fallback's own reset(). An earlier version also
+ * auto-reset on activeFileId changes — the IDE's tab-switch affordance. The
+ * scrolling page has no tabs and never sets that field, so the subscription
+ * could never fire; it was removed along with the IDE.
  */
 export class WebGLErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  private unsubscribe: (() => void) | null = null;
-
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { error: null };
@@ -49,24 +47,6 @@ export class WebGLErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { error };
-  }
-
-  componentDidMount() {
-    // Subscribe to activeFileId — when the user switches tabs while
-    // the boundary is in an error state, auto-reset to retry rendering.
-    this.unsubscribe = useEngineStore.subscribe(
-      (state) => state.activeFileId,
-      () => {
-        if (this.state.error) {
-          console.info('[WebGLErrorBoundary] Tab changed — auto-resetting after crash');
-          this.setState({ error: null });
-        }
-      }
-    );
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe?.();
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {

@@ -78,3 +78,30 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+
+  asset-budget:
+    name: Hero Asset Budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Runs in parallel with build-and-test and inherits the workflow-level
+    # concurrency group. It checks the COMMITTED public/models/hero.glb, so it
+    # needs no Blender: GitHub's ubuntu runners do not ship it, and installing
+    # it per-run is slow and version-unstable. Rebuilding from scripts/hero.blend
+    # is a local / manually-dispatched step -- see hero-rebuild.yml.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No `npm ci`: scripts/check-hero-budget.mjs parses the GLB container
+      # with node: builtins only and has zero dependencies, so installing the
+      # tree would be pure latency.
+      - name: Check hero.glb against its budgets
+        run: npm run hero:check

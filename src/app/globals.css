@@ -1,68 +1,228 @@
 @import "tailwindcss";
 
 @theme {
-  /* --- Portfolio Design Tokens: neo-brutalist --- */
-  --color-tangerine: #ff5e1a;
-  --color-cobalt: #1f3be0;
-  --color-lime: #bff03a;
+  /* ===================================================================
+     PORTFOLIO DESIGN TOKENS — soft UI
+     (replaces the retired neo-brutalist COLOR_ROLES block)
 
-  --color-paper: #fffdf7;
-  --color-surface: #ffffff;
-  --color-ink: #161310;
-  --color-muted: #6b6358;
+     ACCENT CONTRACT — one job each. Do not mix, do not borrow.
 
-  --color-dark-paper: #16130f;
-  --color-dark-surface: #211d18;
-  --color-dark-ink: #f4ecdf;
-  --color-dark-muted: #a89d8c;
+       accent  (terracotta #C2410C)
+               Section eyebrow labels ONLY — the small uppercase Space
+               Mono kicker above a section heading. Never a fill, never
+               a button, never body text. Use `.eyebrow` or
+               `text-accent`.
 
-  /* --- Legacy semantic aliases used throughout the app --- */
-  --color-bg-editor: var(--color-paper);
-  --color-bg-sidebar: var(--color-surface);
-  --color-bg-panel: var(--color-surface);
-  --color-bg-toolbar: var(--color-surface);
-  --color-bg-hover: var(--color-lime);
-  --color-bg-active: var(--color-cobalt);
+       cta     (orange #FF5E1A)
+               The primary button fill ONLY. Always paired with INK
+               text (`text-cta-ink`), never white — white on this
+               orange is 3.06:1 and fails AA. Never a panel/section
+               background.
 
-  /* --- Text --- */
-  --color-text-primary: var(--color-ink);
-  --color-text-muted: var(--color-muted);
-  --color-text-accent: var(--color-cobalt);
-  --color-text-green: var(--color-lime);
-  --color-text-red: var(--color-tangerine);
-  --color-text-yellow: var(--color-lime);
-  --color-text-peach: var(--color-tangerine);
+       link    (blue #1F3BE0, hover #1530B0)
+               Inline links, link-styled buttons, and the focus ring.
+               Nothing else. Hover state is `--color-link-hover`.
 
-  /* --- Borders & Dividers --- */
-  --color-border: var(--color-ink);
-  --color-resize-handle: var(--color-ink);
+       lime    (#BFF03A)
+               Small status pills ONLY (e.g. the CURRENT badge). Never
+               a large fill, never text, never a border on a large
+               surface. Text on it is ink.
 
-  /* --- Typography --- */
+       badge-* (lime / blue / neutral tints)
+               Quiet metadata chips. Each tint ships a matching `-ink`
+               = the legible text color to place on that tint.
+
+       success (#2F7D1B)
+               Affirmative inline text only (shipped, passing, live).
+
+     Everything structural is a surface token (paper / surface / panel)
+     plus a text token (ink / body / body-soft / muted / faint) plus a
+     border token (hairline / control). Style against these, not raw
+     hex.
+     =================================================================== */
+
+  /* --- Surfaces ---------------------------------------------------- */
+  --color-paper: #fffdf7;          /* page background */
+  --color-surface: #ffffff;        /* card surface */
+  --color-panel: #f6f2e8;          /* tinted panel */
+  --color-panel-subtle: #f1ece1;   /* subtler tint */
+
+  /* --- Text -------------------------------------------------------- */
+  --color-ink: #161310;            /* headings, primary text */
+  --color-body: #3a342c;           /* body copy */
+  --color-body-soft: #4a443b;      /* secondary body */
+  --color-muted: #5f584e;          /* muted */
+  --color-faint: #8a8275;          /* faint — large/secondary text only, see NOTE */
+
+  /* NOTE: --color-faint is 3.78:1 on paper. It passes AA only at large
+     text size (>=24px, or >=18.66px bold) or as non-text UI. For body
+     copy use --color-muted (6.90:1). */
+
+  /* --- Borders ----------------------------------------------------- */
+  --color-hairline: #e6e0d2;       /* default hairline border */
+  --color-control: #d8d0be;        /* stronger control border */
+
+  /* --- Accents (one job each — see contract above) ------------------ */
+  --color-accent: #c2410c;         /* eyebrow labels ONLY */
+
+  --color-cta: #ff5e1a;            /* primary button fill ONLY */
+  --color-cta-ink: #161310;        /* ink on orange — NOT white */
+
+  --color-link: #1f3be0;           /* inline links + focus ring */
+  --color-link-hover: #1530b0;
+
+  --color-lime: #bff03a;           /* small status pills ONLY */
+  --color-lime-ink: #161310;
+
+  --color-success: #2f7d1b;        /* affirmative inline text */
+
+  /* --- Badge tints (bg + matching ink) ------------------------------ */
+  --color-badge-lime: #eaf7c4;
+  --color-badge-lime-ink: #33420a;
+  --color-badge-blue: #e4e8fc;
+  --color-badge-blue-ink: #1a2c9e;
+  --color-badge-neutral: #f1ece1;
+  --color-badge-neutral-ink: #4a443b;
+
+  /* --- Sticky nav surface ------------------------------------------ */
+  --color-nav: rgba(255, 253, 247, 0.86);
+  --color-nav-opaque: rgba(255, 253, 247, 0.98); /* no-backdrop-filter fallback */
+
+  /* --- Radii -------------------------------------------------------- */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
+  --radius-pill: 999px;
+
+  /* --- Shadows ------------------------------------------------------ */
+  --shadow-hairline: 0 1px 0 rgba(22, 19, 16, 0.04);
+  --shadow-card:
+    0 1px 0 rgba(22, 19, 16, 0.04),
+    0 18px 36px -24px rgba(22, 19, 16, 0.35);
+  --shadow-raised:
+    0 1px 0 rgba(22, 19, 16, 0.04),
+    0 30px 60px -36px rgba(22, 19, 16, 0.45);
+  --shadow-cta:
+    0 1px 0 rgba(22, 19, 16, 0.2),
+    0 10px 24px -12px rgba(255, 94, 26, 0.9);
+  --shadow-popover: 0 8px 18px -12px rgba(22, 19, 16, 0.4);
+
+  /* --- Typography (fonts wired in src/app/layout.tsx) --------------- */
   --font-display: var(--font-bricolage), 'Arial Black', system-ui, sans-serif;
-  --font-mono: var(--font-space-mono), 'Space Mono', monospace;
   --font-ui: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), 'Space Mono', monospace;
 
-  /* --- Spacing (panel defaults) --- */
-  --panel-padding: 1rem;
-  --toolbar-height: 3rem;
+  --tracking-display: -0.03em;   /* Bricolage 800 headings */
+  --tracking-eyebrow: 0.12em;    /* Space Mono uppercase labels */
+
+  /* --- Layout ------------------------------------------------------- */
+  --nav-height: 4.5rem;
+  --section-scroll-offset: 6rem; /* nav height + breathing room */
 }
 
-/* --- Base Styles --- */
+/* --- Base Styles ---------------------------------------------------- */
 html {
-  background: var(--color-bg-editor);
+  background: var(--color-paper);
+  /* The page itself is the scroll container. */
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-bg-editor);
-  color: var(--color-text-primary);
+  background: var(--color-paper);
+  color: var(--color-body);
   font-family: var(--font-ui);
   font-weight: 500;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- Scrollbar Styling --- */
+h1, h2, h3 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: var(--tracking-display);
+}
+
+/* --- Reduced Motion: never animate the scroll ----------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Anchor targets clear the fixed nav ----------------------------- */
+section[id],
+.section-anchor {
+  scroll-margin-top: var(--section-scroll-offset);
+}
+
+/* --- Focus Ring ------------------------------------------------------
+   One ring for the whole site. `link` blue, 3px, 2px offset. Anything
+   that needs a custom ring should still start from these two tokens.
+   --------------------------------------------------------------------- */
+:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+/* --- Sticky Nav Surface ----------------------------------------------
+   Put `nav-surface` on the sticky header element. Translucent paper +
+   10px blur + a single hairline underline. The @supports fallback
+   raises the background to near-opaque so the nav is never unreadable
+   text over live page content.
+   --------------------------------------------------------------------- */
+.nav-surface {
+  background: var(--color-nav);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+@supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
+  .nav-surface {
+    background: var(--color-nav-opaque);
+  }
+}
+
+/* --- Eyebrow ---------------------------------------------------------
+   The ONLY place `accent` terracotta is allowed. Small uppercase Space
+   Mono kicker above a section heading.
+   --------------------------------------------------------------------- */
+.eyebrow {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+}
+
+/* --- Inline Links ----------------------------------------------------- */
+a:not([class]) {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+a:not([class]):hover {
+  color: var(--color-link-hover);
+}
+
+/* --- Scrollbar Styling ------------------------------------------------ */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -70,160 +230,48 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: 0;
+  background: var(--color-control);
+  border: 3px solid var(--color-paper);
+  border-radius: var(--radius-pill);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-primary);
+  background: var(--color-faint);
 }
 
-/* --- Skip Link --- */
+/* --- Selection -------------------------------------------------------- */
+::selection {
+  background: var(--color-lime);
+  color: var(--color-lime-ink);
+}
+
+/* --- Skip Link -------------------------------------------------------- */
 .skip-link {
   position: absolute;
   top: -100%;
-  left: 0;
+  left: 0.75rem;
   z-index: 100;
-  padding: 0.5rem 1rem;
-  background: var(--color-cobalt);
-  color: var(--color-surface);
+  padding: 0.625rem 1.125rem;
+  background: var(--color-link);
+  color: #ffffff;
   font-family: var(--font-mono);
+  font-size: 0.75rem;
   font-weight: 700;
   text-decoration: none;
-  border: 3px solid var(--color-ink);
-  border-top: 0;
-  border-radius: 0;
-  box-shadow: 5px 5px 0 var(--color-ink);
+  border: 1px solid var(--color-link-hover);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-popover);
 }
 
 .skip-link:focus {
-  top: 0;
+  top: 0.75rem;
 }
 
-/* --- Selection --- */
-::selection {
-  background: var(--color-lime);
-  color: var(--color-ink);
-}
-
-/* --- R3F Stats Panel Positioning --- */
-.stats-panel {
-  position: absolute !important;
-  top: 4px !important;
-  bottom: auto !important;
-  left: auto !important;
-  right: 4px !important;
-  z-index: 20 !important;
-  opacity: 0.8;
-  display: flex !important;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.stats-panel canvas {
-  width: 100% !important;
-}
-
-.stats-panel::before {
-  content: 'PERFORMANCE';
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-text);
-  background: var(--color-cobalt);
-  padding: 0 4px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.stats-panel:has(canvas:nth-child(1)[style*="block"])::before,
-.stats-panel:has(canvas:nth-child(1):not([style*="none"])):not(:has(canvas[style*="block"]))::before {
-  content: 'FRAMERATE';
-}
-
-.stats-panel:has(canvas:nth-child(2)[style*="block"])::before {
-  content: 'RENDER TIME (MS)';
-}
-
-.stats-panel:has(canvas:nth-child(3)[style*="block"])::before {
-  content: 'MEMORY (MB)';
-}
-
-@media (max-width: 767px) {
-  .stats-panel {
-    top: 4.5rem !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: 0.75rem !important;
-    opacity: 0.6;
-  }
-}
-
-/* --- Bullet Telemetry Positioning --- */
-.bullet-stats-panel {
-  position: absolute !important;
-  top: 4px !important;
-  bottom: auto !important;
-  left: 4px !important;
-  right: auto !important;
-  z-index: 20 !important;
-  opacity: 0.8;
-  display: flex !important;
-  flex-direction: column;
-  align-items: flex-start;
-  inset: 4.5rem .75rem auto .75rem !important;
-}
-
-.bullet-stats-panel::before {
-  content: 'PARTICLE SYSTEM';
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-  text-align: left;
-  padding-left: 3px;
-  margin-bottom: 2px;
-  line-height: 16px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-@media (max-width: 767px) {
-  .bullet-stats-panel {
-    top: 4.5rem !important;
-    left: 0.75rem !important;
-    opacity: 0.6;
-  }
-}
-
-/* --- Mobile Glassmorphic Surfaces --- */
-.glass-surface {
-  background: var(--color-tangerine);
-  border: 3px solid var(--color-border);
-  box-shadow: 6px 6px 0 var(--color-border);
-}
-
-/* --- Mobile Bottom Sheet --- */
-.sheet-handle {
-  width: 3rem;
-  height: 0.375rem;
-  border-radius: 0;
-  background: var(--color-cobalt);
-  border: 2px solid var(--color-ink);
-  margin: 0.5rem auto 0;
-}
-
-/* --- Mobile Touch Behavior --- */
+/* --- Mobile Touch Behavior -------------------------------------------- */
 @media (max-width: 767px) {
   /* Prevent overscroll bounce on iOS */
   html, body {
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
   }
 
   /* Safe area insets for notch devices */
@@ -236,24 +284,7 @@ body {
   }
 }
 
-/* --- Tree Stagger Entrance (pure CSS, no JS orchestration) --- */
-@keyframes tree-fade-in {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.tree-stagger-item {
-  opacity: 0;
-  animation: tree-fade-in 0.3s ease forwards;
-}
-
-/* --- Screen Reader Only (visually hidden, accessible to AT) --- */
+/* --- Screen Reader Only (visually hidden, accessible to AT) ----------- */
 .sr-only {
   position: absolute;
   width: 1px;
