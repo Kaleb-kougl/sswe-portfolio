@@ -16,22 +16,58 @@
   --color-dark-ink: #f4ecdf;
   --color-dark-muted: #a89d8c;
 
+  /* ---------------------------------------------------------------
+     COLOR ROLES — one job each. Do not mix.
+     Every brand color is kept, but each has exactly one assignment:
+
+       action      (tangerine) THE single primary call-to-action, and
+                   nothing else. Never a panel/background fill.
+       interactive (cobalt)    Anything the user can act on or has acted
+                   on: active file in the Hierarchy, links, focus rings,
+                   separator drag state, Inspector eyebrow label.
+       status      (lime)      Live status ONLY: "Open to roles" chip,
+                   running/success console lines, hover highlight.
+                   Never a large fill.
+       header      (paper/ink) Panel headers are paper background, ink
+                   text, 3px ink bottom border. Headers are never a
+                   colored fill.
+
+     Style against these role tokens, not the raw brand colors.
+     Each role ships an `-ink` companion = the legible text color to
+     place on top of that role's fill.
+     --------------------------------------------------------------- */
+  --color-action: var(--color-tangerine);
+  --color-action-ink: #ffffff;
+
+  --color-interactive: var(--color-cobalt);
+  --color-interactive-ink: #ffffff;
+
+  --color-status: var(--color-lime);
+  --color-status-ink: var(--color-ink);
+
+  --color-header-bg: var(--color-paper);
+  --color-header-ink: var(--color-ink);
+
+  /* --- Scene grid texture (see .grid-texture) --- */
+  --grid-size: 22px;
+  --grid-line: color-mix(in srgb, var(--color-ink) 6%, transparent);
+
   /* --- Legacy semantic aliases used throughout the app --- */
   --color-bg-editor: var(--color-paper);
   --color-bg-sidebar: var(--color-surface);
   --color-bg-panel: var(--color-surface);
   --color-bg-toolbar: var(--color-surface);
-  --color-bg-hover: var(--color-lime);
-  --color-bg-active: var(--color-cobalt);
+  --color-bg-hover: var(--color-status);
+  --color-bg-active: var(--color-interactive);
 
   /* --- Text --- */
   --color-text-primary: var(--color-ink);
   --color-text-muted: var(--color-muted);
-  --color-text-accent: var(--color-cobalt);
-  --color-text-green: var(--color-lime);
-  --color-text-red: var(--color-tangerine);
-  --color-text-yellow: var(--color-lime);
-  --color-text-peach: var(--color-tangerine);
+  --color-text-accent: var(--color-interactive);
+  --color-text-green: var(--color-status);
+  --color-text-red: var(--color-action);
+  --color-text-yellow: var(--color-status);
+  --color-text-peach: var(--color-action);
 
   /* --- Borders & Dividers --- */
   --color-border: var(--color-ink);
@@ -85,8 +121,8 @@ body {
   left: 0;
   z-index: 100;
   padding: 0.5rem 1rem;
-  background: var(--color-cobalt);
-  color: var(--color-surface);
+  background: var(--color-interactive);
+  color: var(--color-interactive-ink);
   font-family: var(--font-mono);
   font-weight: 700;
   text-decoration: none;
@@ -133,8 +169,14 @@ body {
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--color-text);
-  background: var(--color-cobalt);
+  /* Decorative telemetry caption, not an interactive element — it takes the
+     neutral `header` recipe (paper fill, ink text, ink underline). It must
+     never use `interactive`/cobalt. NOTE: this previously read
+     `var(--color-text)`, which is not a token in @theme, so the label silently
+     inherited its color instead of taking a deliberate one. */
+  color: var(--color-header-ink);
+  background: var(--color-header-bg);
+  border-bottom: 2px solid var(--color-header-ink);
   padding: 0 4px;
   white-space: nowrap;
   pointer-events: none;
@@ -202,19 +244,12 @@ body {
   }
 }
 
-/* --- Mobile Glassmorphic Surfaces --- */
-.glass-surface {
-  background: var(--color-tangerine);
-  border: 3px solid var(--color-border);
-  box-shadow: 6px 6px 0 var(--color-border);
-}
-
 /* --- Mobile Bottom Sheet --- */
 .sheet-handle {
   width: 3rem;
   height: 0.375rem;
   border-radius: 0;
-  background: var(--color-cobalt);
+  background: var(--color-interactive);
   border: 2px solid var(--color-ink);
   margin: 0.5rem auto 0;
 }
@@ -236,6 +271,41 @@ body {
   }
 }
 
+/* --- Scene Grid Texture -------------------------------------------
+   Reusable, standalone: put `grid-texture` on any panel container to
+   get the faint editor graph-paper backdrop (22px squares, ink @ 6%,
+   on the paper background). Flat and hard-edged — no glow, ever.
+   The grid is painted by a decorative ::before, so it never enters the
+   accessibility tree and never intercepts pointer events. `isolation`
+   keeps the negative-z layer above the element's own background but
+   below all of its content.
+   ------------------------------------------------------------------ */
+.grid-texture {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-paper);
+}
+
+.grid-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--grid-line) 0 1px,
+      transparent 1px var(--grid-size)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--grid-line) 0 1px,
+      transparent 1px var(--grid-size)
+    );
+  background-position: 0 0;
+}
+
 /* --- Tree Stagger Entrance (pure CSS, no JS orchestration) --- */
 @keyframes tree-fade-in {
   from {
@@ -251,6 +321,15 @@ body {
 .tree-stagger-item {
   opacity: 0;
   animation: tree-fade-in 0.3s ease forwards;
+}
+
+/* --- Reduced Motion: show tree rows instantly, no slide/fade --- */
+@media (prefers-reduced-motion: reduce) {
+  .tree-stagger-item {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
 }
 
 /* --- Screen Reader Only (visually hidden, accessible to AT) --- */

@@ -44,11 +44,11 @@ export function TerminalConsole() {
       className="flex h-full flex-col overflow-hidden bg-bg-panel"
       aria-label="Console output"
     >
-      <div className="flex h-[var(--toolbar-height)] items-center border-t-[3px] border-border bg-ink px-3">
-        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-dark-ink">
+      <div className="flex h-[var(--toolbar-height)] items-center border-t-[3px] border-header-ink bg-header-bg px-3">
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-header-ink">
           Console
         </span>
-        <span className="ml-2 border-2 border-dark-ink bg-lime px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink">
+        <span className="ml-2 border-2 border-header-ink bg-status px-1.5 py-0.5 font-mono text-[10px] font-bold text-status-ink">
           {deferredLogs.length}
         </span>
       </div>
@@ -76,22 +76,35 @@ export function TerminalConsole() {
   );
 }
 
+// Console lines only ever carry two accents, per the COLOR_ROLES rule in
+// globals.css: `status` (lime) for running/succeeded work, `action`
+// (tangerine) for failures. Everything else stays paper-and-ink.
+type LogTone = 'success' | 'error' | 'neutral';
+
+function classifyLog(text: string): LogTone {
+  const upper = text.toUpperCase();
+  if (upper.includes('[ERROR]') || upper.includes('FAIL')) return 'error';
+  if (
+    upper.includes('[PASS]') ||
+    upper.includes('SUCCESS') ||
+    upper.includes('DONE IN') ||
+    /\bOK\b/.test(upper)
+  ) {
+    return 'success';
+  }
+  return 'neutral';
+}
+
+const TONE_CLASS: Record<LogTone, string> = {
+  success: 'bg-status px-1 text-status-ink',
+  error: 'text-action',
+  neutral: 'text-text-primary',
+};
+
 function LogLine({ text }: { text: string }) {
   const [timestamp] = useState(() => getTimestamp());
 
-  // Color-code log prefixes
-  let prefixColor = 'text-text-muted';
-
-  if (text.includes('[SYSTEM]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[WEBPACK')) prefixColor = 'text-tangerine';
-  else if (text.includes('[PERF]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[NETWORK]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[SLO]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[SERVER]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[GRAPHQL]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[MOBILE]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[EXTENSION]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[ERROR]')) prefixColor = 'text-tangerine';
+  const prefixColor = TONE_CLASS[classifyLog(text)];
 
   // Split at the first ']' to color the prefix
   const bracketEnd = text.indexOf(']');
