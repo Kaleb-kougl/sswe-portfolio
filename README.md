@@ -1,67 +1,74 @@
-# Kaleb Kougl - Senior Frontend Architect Portfolio
+# Kaleb Kougl — Senior Software Engineer Portfolio
 
-An interactive, IDE-themed portfolio built with Next.js App Router, React 19, and React Three Fiber. This project maps my resume data into a simulated Integrated Development Environment (IDE) interface, showcasing technical experience and engineering concepts through live 3D visualizations. The architecture bridges traditional reactive DOM state with computationally heavy WebGL rendering, maintaining high-fidelity 3D interactions without dropping frames or triggering garbage collection spikes.
+A single scrolling portfolio page built with the Next.js App Router, React 19 and React Three Fiber. Five sections — intro, work, experience, process, contact — scroll over one fixed 3D background whose 112 blocks rearrange into a different arrangement for each section: the letters **KK**, a fibonacci sphere, a career bar chart, an exploded wireframe, and a receding floor.
 
-## Live Deployment
+## Live deployment
 
-This project is deployed on Vercel and can be viewed at:
 [https://kalebkougl-portfolio.vercel.app/](https://kalebkougl-portfolio.vercel.app/)
 
-## Key Features
+## Key features
 
-- **IDE Architecture**: 4-pane layout containing a File Hierarchy, Inspector Panel, Terminal Console, and a central WebGL Canvas.
-- **Interactive 3D Visualizations**: 
-  - **IBM**: Visualizes bundle optimization by compressing a chaotic 3D sphere into a diamond.
-  - **Indeed**: Demonstrates Webpack Module Federation as 3D blocks snap together.
-  - **HammerBall**: Visualizes Finite State Machine (FSM) AI pathfinding in 3D.
-  - **Combat System**: Uses my custom GPU-instanced library for rendering complex bullet patterns.
-- **Strict Performance Architecture**: Zero DOM props passed into the canvas; zero-allocation `useFrame` loops to prevent garbage collection spikes.
-- **Responsive "Spatial Map"**: Mobile fallback drops the IDE panes into sliding drawers and bottom sheets, covering the background in the 3D canvas.
-- **Accessibility (A11y)**: Supports `prefers-reduced-motion`, ARIA tree keyboard navigation, and screen-reader announcements.
+- **Server-rendered.** Every section is a React Server Component, so the whole page — headings, résumé copy, contact details, JSON-LD — is in the HTML before any JavaScript runs. Only the scrollspy, the contact form and the WebGL background are client components.
+- **One instanced draw call.** The background's 112 blocks share a single geometry and material and render through one `InstancedMesh`. Measured at **1.00 draw call per frame**, idle and mid-scroll.
+- **A real asset pipeline.** The blocks come from `scripts/hero.blend`. A Python script run through Blender generates them and exports `public/models/hero.glb` (8,672 bytes), which CI checks against a 500 KB budget on every run. See [`docs/hero-pipeline.md`](docs/hero-pipeline.md).
+- **Degrades deliberately.** `prefers-reduced-motion` and touch devices get a static arrangement with no scroll listener and no frame loop; without WebGL the background renders nothing at all and the page stands on its own.
+- **A contact form that cannot lie.** It posts to a route handler that validates server-side and carries a honeypot. With no mail provider configured it returns HTTP 503 and says so, pointing at the email address instead — no code path reports success for a message that went nowhere.
 
-![Speed Metrics](/Resume/Screenshot%202026-07-01%20at%208.59.45 AM.png)
+## Tech stack
 
-## Tech Stack
-
-- **Framework**: Next.js 16.2.7 (App Router), React 19.2.4 (React Compiler)
-- **3D / WebGL**: `three` (v0.174), `@react-three/fiber` (v9.6), `@react-three/drei`, `@react-three/postprocessing`
-- **Styling**: Tailwind CSS v4, `lucide-react`
-- **State Management**: `zustand` (v5) utilizing `subscribeWithSelector`
-- **Layout & Animations**: `react-resizable-panels`, Framer Motion v12
+- **Framework**: Next.js 16.2.7 (App Router, Turbopack), React 19.2.4 with the React Compiler
+- **3D / WebGL**: `three` v0.174, `@react-three/fiber` v9, `@react-three/drei` (`useGLTF`)
+- **Styling**: Tailwind CSS v4 (CSS-first `@theme`, no config file), `lucide-react`
+- **Asset pipeline**: Blender 5.2 LTS headless + a Python generator script
 - **Testing**: Vitest, Playwright
-- **Custom Packages**: `@k9kbdev/r3f-projectiles` (A custom zero-allocation GPU-instanced bullet engine authored by me)
 
+Nine runtime dependencies. The site loads no state-management library, no animation library and no postprocessing stack.
 
+## Architecture
 
-## Architecture Highlights
+### The morphing background
 
-- **Modern React (v19)**: Built with the React Compiler to automatically handle component memoization, improving rendering performance.
-- **Server Components & Suspense**: Uses the Next.js App Router RSC architecture, dynamically lazy-loading heavy 3D assets inside `<Suspense>` boundaries without blocking the main thread.
-- **State Bifurcation**: The `useEngineStore` separates "Reactive" state (DOM renders) from "Transient" state (bypasses React, polled imperatively in WebGL).
-- **GPU Instancing**: The included `r3f-projectiles` library (which I authored) powers a custom 3D projectile engine capable of rendering 20,000 entities at 120 FPS.
-- **Scene Orchestration**: Scenes are mounted once to prevent expensive GPU recompilations, controlled imperatively via `scene-orchestrator.tsx`.
+`src/components/3d/morph-layouts.ts` bakes all five arrangements into flat typed arrays at module load (`position`, `scale`, `alpha`, `color`, stage-major). Per frame the morph is a lerp over contiguous memory — no objects, no property lookups, no allocation. Scroll position is written into a plain mutable object by a passive listener and read inside `useFrame`, so scrolling never triggers a React render.
 
-## Data Structures & Algorithms in Practice
+Per-instance opacity does not exist in three.js, and the layouts need it (the sphere's depth fade, the back exploded layer, the receding floor). Rather than a material per opacity — which would mean a draw call per opacity — there is one `instanceAlpha` attribute and a small `onBeforeCompile` patch on the basic material, with both replacement anchors checked first so a future three.js release degrades to opaque instead of failing to compile.
 
-This portfolio was built to demonstrate deep engineering fundamentals applied to modern web environments:
+`ssr: false` lives **inside** `morph-scene.tsx`, not in `page.tsx`: Next 16 does not allow it in a Server Component, and `page.tsx` has to stay one.
 
-- **Pre-allocated Object Pools (Memory Management):** The `r3f-projectiles` engine avoids Garbage Collection (GC) stutters by instantiating a fixed-size pool of 20,000 `BulletSpawnData` objects on mount. It uses an `acquire()` / `release()` algorithm to recycle instances, maintaining a strictly zero-allocation `useFrame` physics loop.
-- **Recursive Tree Flattening (A11y Traversal):** The IDE File Explorer uses a recursive algorithm to flatten the deep `FileNode` tree structure into a 1D array on the fly. This enables WAI-ARIA compliant up/down keyboard navigation that logically skips over collapsed directories.
-- **Ring Buffers (Queue Management):** The Terminal Console manages its data via a sliding-window ring buffer (`.slice(-100)`). This bounds the `ConsoleLogEntry` array, preventing DOM bloat and memory leaks during long, heavily logged 3D sessions.
-- **Euler Integration (Physics):** The particle system calculates movement using frame-rate independent Euler integration (`addScaledVector(v, dt)`). By clamping the delta-time, it guarantees deterministic speeds and prevents spiral-of-death lag spikes across both 60Hz and 144Hz monitors.
-- **Algorithmic Pattern Generators (Math):** Complex projectile emissions are calculated using mathematically driven algorithms rather than hardcoded paths - including Golden Angle distributions (Fibonacci Spheres), parametric Torus Knots, and logarithmic squared distributions for spiral galaxies.
-- **Heuristic LLM Discovery (Web Crawling):** The `r3f-scraper` script uses an opportunistic fallback algorithm. It first attempts to resolve standard `/llms.txt` endpoints to gather context, falling back to a full Breadth-First Search DOM traversal if the heuristic fails.
+### The hero asset
 
-## Testing & QA Highlights
+`scripts/build_hero_glb.py` derives the block set from a 5×7 `K` glyph mask stamped twice, each lit cell subdivided 2×2 — 14 × 2 × 4 = 112 — and exports them as individually named parts (`block_000` … `block_111`) sharing one mesh and one material. The count is derived from the mask, not hardcoded; two runs produce a byte-identical GLB.
 
-The project has a strict unit testing strategy (100% pass rate across 143 tests in 22 suites), built using Test-Driven Development (TDD):
+`__tests__/morph-layouts.test.ts` parses the committed GLB and checks every block's position against the layout arrays, so a re-export in a different order fails the suite instead of silently addressing the wrong blocks.
 
-- **State Management**: The Zustand store (`useEngineStore`) is tested to verify FIFO console queues (capped at 100 entries) and ensure high-frequency transient state updates (like 3D camera coordinates) do not trigger unnecessary DOM renders.
-- **3D Context Resilience**: `error-boundary` and `canvas-wrapper` tests verify that if WebGL is disabled or crashes, the application falls back to a 2D UI. It also tests auto-recovery mechanisms that reset the context upon file navigation.
-- **WebGL Testing**: Uses `@react-three/test-renderer` to unit test 3D scenes by advancing frames (`renderer.advanceFrames`). This verifies `InstancedMesh` re-allocations, frustum culling, and zero-value handling during computational sequences.
-- **Accessibility Fallbacks**: Tests explicitly mock the `useReducedMotion` hook to ensure 3D animations, camera panning, and intensive physics systems immediately fall back to simplified states.
-- **Recursive Data Structures**: Deeply nested mock data tests ensure the `HierarchyTree` file explorer correctly flattens data and updates WAI-ARIA attributes (`aria-expanded`) without hitting call stack limits.
-- **Continuous Integration**: GitHub Actions workflow featuring dependency caching and artifact retention. The pipeline requires 100% passing unit (Vitest) and E2E (Playwright) test suites, ESLint static analysis, and successful Next.js production builds before continuous deployment to Vercel.
+### Content
+
+All résumé copy is derived from `src/data/resumeData.ts` at runtime rather than retyped into components — the years-of-experience figure, the company list, the career rows and the education line included. Editing the data updates the page.
+
+## Testing
+
+- **Unit (Vitest)** — 22 tests across 3 spec files, covering the layout math, the GLB contract and the responsive/motion hooks. The suite also runs the vendored `r3f-projectiles/` package's own 203 tests.
+- **End-to-end (Playwright)** — 81 passing across 6 spec files on desktop and mobile projects, with 15 skipped by breakpoint gating. Coverage includes server-rendered HTML with JavaScript disabled, scrollspy, the collapsed mobile menu, the contact form's 503 and honeypot paths, keyboard and focus behaviour, and reduced motion.
+- **Visual regression** — five section snapshots plus the open mobile menu, captured with reduced motion forced and the canvas hidden so the animated background cannot make them flaky.
+- **Asset budget** — `npm run hero:check` validates the GLB container, its size against the 500 KB budget, the part naming and contiguity, and that the parts are instanceable. It reports the minimum draw calls the asset *permits* and states plainly that it cannot verify what the renderer actually does.
+- **CI** — GitHub Actions runs lint, unit, build and e2e, with the asset budget as a parallel job.
+
+### Reduced motion is verified by counting draw calls
+
+Screenshot diffing a WebGL surface through the compositor is not stable enough to prove "does not animate". The reduced-motion spec instead wraps the WebGL2 draw entry points and counts them: reduced motion measures 1 draw at load and 0 over a 2s idle window, against roughly 190 per 2s with motion allowed. A control test asserts the live loop really does run, so the assertion is not vacuous.
+
+## Local development
+
+```bash
+npm install
+npm run dev          # http://localhost:3000
+
+npm run lint
+npm run test:unit
+npm run test:e2e
+
+npm run hero:check   # validate the committed hero.glb against its budgets
+npm run hero:build   # regenerate it (requires Blender; see docs/hero-pipeline.md)
+```
 
 ## Contact
 

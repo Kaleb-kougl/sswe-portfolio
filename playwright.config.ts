@@ -1,10 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright configuration for the IDE-themed portfolio.
- * - Desktop: Chromium at 1280×720
- * - Mobile: Chromium (iPhone-like) at 375×812
+ * Playwright configuration for the single-page scrolling portfolio.
+ * - Desktop: Chromium at 1280×720 — above the 900px nav breakpoint
+ * - Mobile: Chromium (Pixel 5) at 375×812 — below it, so the nav is collapsed
  * - Visual regression with maxDiffPixelRatio: 0.01
+ *
+ * Both projects run every spec; the ones that only make sense on one side of
+ * the 900px breakpoint skip themselves based on `viewport.width`.
  */
 export default defineConfig({
   testDir: './e2e',
