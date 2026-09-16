@@ -14,6 +14,11 @@ export default defineConfig({
       'e2e/**',
       '**/node_modules/**',
       'r3f-scraper/**',
+      // roblox-css compiles to Luau and its specs run under TestEZ inside
+      // Roblox — they import `@rbxts/*` and reach for `game.WaitForChild`,
+      // so vitest can only fail to load them. Counting its assertions is
+      // `npm run roblox-css:check`, not this suite.
+      'roblox-css/**',
     ],
   },
 });

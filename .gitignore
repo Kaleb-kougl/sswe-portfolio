@@ -50,6 +50,7 @@ r3f-scraper/*
 
 # standalone packages (have their own repos)
 /r3f-projectiles/
+/roblox-css/
 
 # memory
 memory/*

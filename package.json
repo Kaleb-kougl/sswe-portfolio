@@ -12,6 +12,7 @@
     "test:unit": "vitest run",
     "hero:build": "\"${BLENDER:-/Applications/Blender.app/Contents/MacOS/Blender}\" --background --factory-startup --python scripts/build_hero_glb.py -- --out public/models/hero.glb --blend scripts/hero.blend",
     "hero:check": "node scripts/check-hero-budget.mjs",
+    "roblox-css:check": "node scripts/check-roblox-css-claims.mjs",
     "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {

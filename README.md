@@ -46,10 +46,11 @@ All résumé copy is derived from `src/data/resumeData.ts` at runtime rather tha
 
 ## Testing
 
-- **Unit (Vitest)** — 22 tests across 3 spec files, covering the layout math, the GLB contract and the responsive/motion hooks. The suite also runs the vendored `r3f-projectiles/` package's own 203 tests.
+- **Unit (Vitest)** — 45 tests across 4 spec files, covering the layout math, the GLB contract, the projectile pattern generators and pool, and the responsive/motion hooks. If `r3f-projectiles/` is cloned alongside (see below) its own 203 tests run too, bringing the local total to 248; CI sees only the portfolio's 45.
 - **End-to-end (Playwright)** — 81 passing across 6 spec files on desktop and mobile projects, with 15 skipped by breakpoint gating. Coverage includes server-rendered HTML with JavaScript disabled, scrollspy, the collapsed mobile menu, the contact form's 503 and honeypot paths, keyboard and focus behaviour, and reduced motion.
 - **Visual regression** — five section snapshots plus the open mobile menu, captured with reduced motion forced and the canvas hidden so the animated background cannot make them flaky.
 - **Asset budget** — `npm run hero:check` validates the GLB container, its size against the 500 KB budget, the part naming and contiguity, and that the parts are instanceable. It reports the minimum draw calls the asset *permits* and states plainly that it cannot verify what the renderer actually does.
+- **Published claims** — `npm run roblox-css:check` re-derives the coverage figure the Work section states for `@k9kbdev/roblox-css` and fails if it drifts. It counts *distinct* assertions: at v0.1.1 eight of that package's spec files are byte-identical duplicates, so a naive count reports 1,926 across 17 files where only 1,298 across 9 are real.
 - **CI** — GitHub Actions runs lint, unit, build and e2e, with the asset budget as a parallel job.
 
 ### Reduced motion is verified by counting draw calls
@@ -69,6 +70,19 @@ npm run test:e2e
 npm run hero:check   # validate the committed hero.glb against its budgets
 npm run hero:build   # regenerate it (requires Blender; see docs/hero-pipeline.md)
 ```
+
+### Sibling packages
+
+Two of the projects on this page are published packages with their own repos. They are gitignored here rather than vendored, so clone them alongside if you want their claims re-derivable locally:
+
+```bash
+git clone https://github.com/Kaleb-kougl/r3f-projectiles.git r3f-projectiles
+git clone https://github.com/Kaleb-kougl/roblox-css.git roblox-css
+
+npm run roblox-css:check   # skips cleanly when the clone is absent
+```
+
+The r3f-projectiles demo on the Work card does **not** depend on either clone — it is a self-contained implementation in `src/components/demos/projectiles/`.
 
 ## Contact
 

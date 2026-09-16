@@ -12,8 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Ignore custom project directories
+    // Ignore custom project directories.
+    // These are sibling packages with their own repos, cloned alongside and
+    // gitignored. Each one must be registered in FOUR places or it leaks into
+    // the portfolio's tooling: .gitignore, this list, tsconfig "exclude", and
+    // vitest.config.ts "exclude".
     "r3f-projectiles/**",
+    "roblox-css/**",
     "r3f-scraper/**",
     "public/draco-gltf/**",
   ]),

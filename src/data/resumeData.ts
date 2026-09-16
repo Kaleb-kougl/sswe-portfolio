@@ -293,11 +293,11 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     type: 'project',
     headline: 'Write CSS, get native Roblox UI.',
     summary:
-      'A published CSS-to-Roblox translation middleware for roblox-ts, covered by 1,419 test assertions across 24 spec files.',
+      'A published CSS-to-Roblox translation middleware for roblox-ts, covered by 1,298 distinct test assertions across 9 spec files.',
     bullets: [
       'Designed and shipped a CSS\u2011to\u2011Roblox UI translation middleware for roblox\u2011ts — write familiar CSS props (flex, grid, gradients, calc) and get native Roblox engine primitives automatically.',
       'Built a branded type system, three specialized parsers (color, dimension, gradient), and Framer\u2011Motion\u2011inspired variant\u2011driven animation primitives powered by @rbxts/ripple.',
-      '1,419 test assertions across 24 spec files. Published as @k9kbdev/roblox-css under LGPL\u20113.0. NPM: https://www.npmjs.com/package/@k9kbdev/roblox-css',
+      '1,298 distinct test assertions across 9 spec files. Published as @k9kbdev/roblox-css under LGPL\u20113.0. NPM: https://www.npmjs.com/package/@k9kbdev/roblox-css',
     ],
     controls: ['githubLink'],
     skills: ['TypeScript', 'Roblox-TS', 'CSS-in-JS', 'AST Parsing'],

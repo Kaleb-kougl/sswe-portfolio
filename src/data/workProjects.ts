@@ -9,6 +9,26 @@
  * `src/components/scroll/work-section.tsx` — data here, drawing there.
  */
 
+/**
+ * roblox-css coverage, re-derived rather than quoted.
+ *
+ * The package has its own repo, so `npm run roblox-css:check` measures this
+ * against a local clone and fails if it drifts. Keep these two numbers as the
+ * single source — the card's copy is built from them.
+ *
+ * DISTINCT, not total. At v0.1.1 eight spec files are byte-identical duplicates
+ * between src/tests/ and src/tests/<subdir>/; both copies compile and run, so a
+ * raw count reports 1,926 assertions across 17 files. We publish what is
+ * actually distinct.
+ *
+ * The package's own README and CHANGELOG still say "1,419 assertions across 24
+ * spec files", which matches neither figure. Worth correcting upstream.
+ */
+export const ROBLOX_CSS_COVERAGE = {
+  assertions: 1298,
+  specFiles: 9,
+} as const;
+
 /** Which badge tint a card's chip uses. Each tint ships its own legible ink. */
 export type WorkBadgeTone = 'lime' | 'blue' | 'neutral';
 
@@ -80,13 +100,12 @@ export const WORK_PROJECTS: readonly WorkProject[] = [
     id: 'roblox-css',
     name: 'roblox-css',
     badge: { label: 'NPM · LGPL-3.0', tone: 'lime' },
-    // Sourced from src/data/resumeData.ts → RESUME_DATA['roblox-css'].
-    // The 1,419/24 figure cannot be re-derived here (the package is not
-    // vendored into this repo the way r3f-projectiles is); it is published on
-    // the author's confirmation. Re-count it against the real source if that
-    // package is ever vendored.
+    // Prose from src/data/resumeData.ts → RESUME_DATA['roblox-css']; the
+    // coverage figure from ROBLOX_CSS_COVERAGE above, which
+    // `npm run roblox-css:check` re-derives from a clone of the real repo.
     description:
-      'Write familiar CSS — flex, grid, gradients, calc — and get native Roblox UI primitives. A translation middleware for roblox-ts, built on a branded type system, three specialized parsers, and variant-driven animation, held in place by 1,419 assertions across 24 spec files.',
+      'Write familiar CSS — flex, grid, gradients, calc — and get native Roblox UI primitives. A translation middleware for roblox-ts, built on a branded type system, three specialized parsers, and variant-driven animation, held in place by ' +
+      `${ROBLOX_CSS_COVERAGE.assertions.toLocaleString('en-US')} assertions across ${ROBLOX_CSS_COVERAGE.specFiles} spec files.`,
     links: [
       {
         label: 'npm',
