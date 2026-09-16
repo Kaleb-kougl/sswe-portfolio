@@ -10,6 +10,8 @@ Delivery is **Formspree** — a plain `fetch`, no SDK, no new dependency, and no
 
 **2. Copy the endpoint.** It looks like `https://formspree.io/f/abcdwxyz`. Either the full URL or the bare id (`abcdwxyz`) works — `resolveEndpoint()` accepts both, because the dashboard shows both and it's genuinely ambiguous which to paste.
 
+> The real id is deliberately **not** in this repo. Formspree's own guides embed it in client-side HTML or JS, where scrapers harvest it and spam it directly. Because this site posts from the server, the id never reaches the browser — so keep it in the environment and out of version control, and that advantage holds.
+
 **3. Set it on Vercel.** Project → Settings → Environment Variables:
 
 | | |
