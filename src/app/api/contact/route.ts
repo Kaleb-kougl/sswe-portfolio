@@ -54,29 +54,56 @@ export type ContactMessage = {
   message: string;
 };
 
+/** How long to wait on the delivery provider before giving up. */
+const DELIVERY_TIMEOUT_MS = 10_000;
+
+/**
+ * Resolve `CONTACT_DELIVERY_KEY` into a Formspree endpoint.
+ *
+ * Accepts either the full endpoint (`https://formspree.io/f/abcdwxyz`) or the
+ * bare form id (`abcdwxyz`), because the Formspree dashboard shows both and it
+ * is genuinely ambiguous which one to paste. Anything else is treated as
+ * unconfigured rather than fired blindly at an arbitrary URL — an env var typo
+ * should not become an outbound request to someone else's server.
+ */
+function resolveEndpoint(raw: string): string | null {
+  const value = raw.trim();
+  if (!value) return null;
+
+  if (/^[A-Za-z0-9]{6,}$/.test(value)) return `https://formspree.io/f/${value}`;
+
+  try {
+    const url = new URL(value);
+    const isFormspree =
+      url.protocol === 'https:' &&
+      (url.hostname === 'formspree.io' || url.hostname.endsWith('.formspree.io'));
+    return isFormspree ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * The single integration point where a message actually leaves the building.
  *
- * TODO: wire up real delivery. Two realistic options, neither of which is
- * installed in this repo today:
+ * Delivery is Formspree (https://formspree.io): a plain POST, no SDK, no new
+ * dependency, and no DNS to configure — which is why it was chosen over Resend,
+ * whose domain verification needs records on a domain that has to exist first.
  *
- *   1. Resend (https://resend.com) — `npm i resend`, then
- *      `await new Resend(key).emails.send({ from, to, replyTo: msg.email, ... })`.
- *      `CONTACT_DELIVERY_KEY` would hold the `re_...` API key.
- *   2. Formspree (https://formspree.io) — no dependency at all; POST the
- *      payload as JSON to `https://formspree.io/f/<form-id>` and check the
- *      response. `CONTACT_DELIVERY_KEY` would hold that endpoint URL.
+ * `CONTACT_DELIVERY_KEY` holds the form endpoint or its id. Formspree treats
+ * the `email` field as the reply-to, so replying to the notification reaches
+ * the sender directly.
  *
- * Until one of those exists, this function reports `not_configured` rather
- * than pretending the message was sent. A contact form that swallows mail is
- * worse than no contact form, because the sender stops looking for you.
+ * The contract this function must never break: it reports `sent` only when the
+ * provider accepted the message. A contact form that swallows mail is worse
+ * than no contact form, because the sender stops looking for you.
  */
 async function deliverContactMessage(
   message: ContactMessage,
 ): Promise<ContactResult> {
-  const deliveryKey = process.env.CONTACT_DELIVERY_KEY;
+  const endpoint = resolveEndpoint(process.env.CONTACT_DELIVERY_KEY ?? '');
 
-  if (!deliveryKey) {
+  if (!endpoint) {
     return {
       ok: false,
       code: 'not_configured',
@@ -86,17 +113,82 @@ async function deliverContactMessage(
     };
   }
 
-  // TODO: replace with the Resend or Formspree call described above.
-  // `message` is already validated and length-capped by the time it lands here.
-  void message;
+  // Never let the visitor wait on a hung provider.
+  const timeout = AbortSignal.timeout(DELIVERY_TIMEOUT_MS);
 
-  return {
-    ok: false,
-    code: 'not_configured',
-    message:
-      `Mail delivery isn't implemented yet, so nothing was sent. ` +
-      `Please email ${CONTACT_INFO.email} directly.`,
-  };
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Without this Formspree replies with an HTML redirect page.
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        name: message.name,
+        email: message.email,
+        message: message.message,
+        // Surfaced in the notification's subject line, so the inbox is triageable.
+        _subject: `Portfolio contact — ${message.reason} — ${message.name}`,
+        reason: message.reason,
+      }),
+      signal: timeout,
+      cache: 'no-store',
+    });
+
+    if (response.ok) {
+      return {
+        ok: true,
+        code: 'sent',
+        message: `Thanks — that reached me. I'll reply to ${message.email}.`,
+      };
+    }
+
+    // Log the provider's own words server-side; show the visitor something
+    // actionable instead. Formspree's errors ("form not found", "inactive",
+    // monthly cap reached) are the site owner's problem, not the sender's.
+    let detail = `HTTP ${response.status}`;
+    try {
+      const body: unknown = await response.json();
+      if (typeof body === 'object' && body !== null) {
+        const parsed = body as { error?: unknown; errors?: unknown };
+        if (typeof parsed.error === 'string') detail = parsed.error;
+        else if (Array.isArray(parsed.errors)) {
+          detail = parsed.errors
+            .map((e) =>
+              typeof e === 'object' && e !== null && 'message' in e
+                ? String((e as { message: unknown }).message)
+                : String(e),
+            )
+            .join('; ');
+        }
+      }
+    } catch {
+      // Body wasn't JSON. `detail` keeps the status code.
+    }
+    console.error('[contact] delivery rejected by provider:', detail);
+
+    return {
+      ok: false,
+      code: 'delivery_failed',
+      message:
+        `The message couldn't be delivered just now, so it was not sent. ` +
+        `Please email ${CONTACT_INFO.email} directly.`,
+    };
+  } catch (error) {
+    const timedOut = error instanceof Error && error.name === 'TimeoutError';
+    console.error('[contact] delivery threw:', error);
+
+    return {
+      ok: false,
+      code: 'delivery_failed',
+      message:
+        (timedOut
+          ? `The mail service didn't respond in time, so nothing was sent. `
+          : `The message couldn't be delivered just now, so it was not sent. `) +
+        `Please email ${CONTACT_INFO.email} directly.`,
+    };
+  }
 }
 
 /** FormData may carry several `reason` entries (see the no-JS fallback). */

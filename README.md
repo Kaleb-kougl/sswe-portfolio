@@ -12,7 +12,7 @@ A single scrolling portfolio page built with the Next.js App Router, React 19 an
 - **One instanced draw call.** The background's 112 blocks share a single geometry and material and render through one `InstancedMesh`. Measured at **1.00 draw call per frame**, idle and mid-scroll.
 - **A real asset pipeline.** The blocks come from `scripts/hero.blend`. A Python script run through Blender generates them and exports `public/models/hero.glb` (8,672 bytes), which CI checks against a 500 KB budget on every run. See [`docs/hero-pipeline.md`](docs/hero-pipeline.md).
 - **Degrades deliberately.** `prefers-reduced-motion` and touch devices get a static arrangement with no scroll listener and no frame loop; without WebGL the background renders nothing at all and the page stands on its own.
-- **A contact form that cannot lie.** It posts to a route handler that validates server-side and carries a honeypot. With no mail provider configured it returns HTTP 503 and says so, pointing at the email address instead — no code path reports success for a message that went nowhere.
+- **A contact form that cannot lie.** It posts to a route handler that validates server-side and carries a honeypot, and delivers through Formspree with no SDK and no DNS. With no provider configured it returns HTTP 503 and says so; if the provider rejects the message it returns 502 and says that — no code path reports success for a message that went nowhere. Setup: [`docs/contact-delivery.md`](docs/contact-delivery.md).
 
 ## Tech stack
 
