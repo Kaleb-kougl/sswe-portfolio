@@ -198,7 +198,8 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Architected a high-paced, objective-based multiplayer Roblox game in strict TypeScript using Flamework DI and an Entity-Component-System (ECS) pattern to enforce client-server separation.',
       'Engineered a scalable hybrid PvPvE environment featuring intelligent NPC bots driven by a custom Finite State Machine (FSM), optimized with pre-computed spatial queries and SimplePath pathfinding.',
       'Implemented a reactive, unidirectional state management architecture using Reflex to synchronize match phases across 20+ decoupled micro-services and programmatic HUD controllers.',
-      'Designed a unified ICombatant interface, abstracting physical entities to allow complex hit-detection and objective mechanics to seamlessly interact with both human players and AI agents.'
+      'Designed a unified ICombatant interface, abstracting physical entities to allow complex hit-detection and objective mechanics to seamlessly interact with both human players and AI agents.',
+      'Playable on Roblox: https://www.roblox.com/games/125331448291741/BonkBall'
     ],
     controls: ['forceAiState', 'showNavMesh'],
     skills: ['TypeScript', 'Roblox-TS', 'Flamework', 'Reflex', 'FSM AI'],

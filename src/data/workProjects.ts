@@ -119,13 +119,19 @@ export const WORK_PROJECTS: readonly WorkProject[] = [
     name: 'BonkBall',
     badge: { label: 'ROBLOX GAME', tone: 'neutral' },
     // Sourced from src/data/resumeData.ts → RESUME_DATA['hammerball'].
-    // NO LINK: there is no case-study page on this site and no public Roblox
-    // URL anywhere in resumeData, so this card ships without one rather than
-    // pointing at a 404.
+    // The Roblox link is the live game, verified HTTP 200 with the title
+    // "BonkBall | Play on Roblox". It is the only public artifact for this
+    // project — there is no repo and no case-study page — so it is the one
+    // link the card carries.
     description:
       'A PvPvE multiplayer Roblox game in strict TypeScript. An Entity-Component-System boundary keeps client and server apart, with Finite-State-Machine bots and match phases synchronized across 20+ decoupled services.',
-    links: [],
-    linkNote: 'No public link yet',
+    links: [
+      {
+        label: 'Play on Roblox',
+        href: 'https://www.roblox.com/games/125331448291741/BonkBall',
+        screenReaderSuffix: ' — BonkBall on Roblox',
+      },
+    ],
   },
   {
     id: 'analytics-extension',
