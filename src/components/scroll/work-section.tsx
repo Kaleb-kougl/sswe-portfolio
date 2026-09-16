@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ProjectileDemoLauncher } from '@/components/scroll/projectile-demo-launcher';
 import { WORK_PROJECTS, type WorkBadgeTone, type WorkProjectId } from '@/data/workProjects';
 
 /**
@@ -12,8 +13,13 @@ import { WORK_PROJECTS, type WorkBadgeTone, type WorkProjectId } from '@/data/wo
  * belongs to the page background and nowhere else.
  *
  * This is a Server Component on purpose. There is no state, no event handler
- * and no browser API on this page, so per the Next.js server/client guide it
- * stays on the server and ships zero JavaScript.
+ * and no browser API in this file, so per the Next.js server/client guide it
+ * stays on the server and ships (almost) zero JavaScript. The one exception is
+ * `ProjectileDemoLauncher`, a Client Component imported into the
+ * r3f-projectiles card: a Server Component may not call
+ * `dynamic(..., { ssr: false })`, so that boundary lives in its own file and
+ * everything it defers — the dialog, the canvas, three, R3F — stays out of the
+ * initial payload until the button is pressed.
  *
  * Every drawing is deterministic — no Math.random, no Date — so the markup is
  * byte-identical on every render.
@@ -235,7 +241,10 @@ export function WorkSection() {
               </p>
 
               {project.links.length > 0 ? (
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 border-t border-hairline pt-1">
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-1">
+                  {/* Only this card has something live to run. */}
+                  {project.id === 'r3f-projectiles' ? <ProjectileDemoLauncher /> : null}
+
                   {project.links.map((link) => (
                     <a
                       key={link.href}

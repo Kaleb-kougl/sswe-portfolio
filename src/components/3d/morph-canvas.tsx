@@ -11,6 +11,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -31,6 +32,11 @@ import {
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
+import {
+  backdropNeverSuspendedOnServer,
+  isBackdropSuspended,
+  subscribeBackdropPower,
+} from './backdrop-power';
 import { detectWebGL2 } from './viewport-fallback';
 import { WebGLErrorBoundary } from './error-boundary';
 import {
@@ -79,6 +85,8 @@ import {
  *   touch      -> a still hero arrangement, `frameloop="demand"`, no listeners
  *   reduced    -> same still arrangement
  *   tab hidden -> `frameloop="never"`, the render loop stops entirely
+ *   demo open  -> `frameloop="never"`, same lever, pulled by `backdrop-power.ts`
+ *                 so the projectiles demo's WebGL context is the only live one
  */
 
 // ---------------------------------------------------------------------------
@@ -604,6 +612,10 @@ const SilentFallback = () => null;
  * True while the backdrop is worth rendering at all: the tab is visible AND the
  * host element is on screen. Flips at most a handful of times per session, so
  * holding it in React state costs nothing.
+ *
+ * A third condition — "nothing has suspended the backdrop" — is ANDed on at the
+ * call site rather than folded in here, because it arrives from a module-level
+ * signal (`backdrop-power.ts`) rather than from a DOM listener.
  */
 function useRenderActive(hostRef: React.RefObject<HTMLDivElement | null>, enabled: boolean): boolean {
   const [active, setActive] = useState(true);
@@ -644,7 +656,19 @@ export default function MorphCanvas() {
   const prefersReducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
   const animated = !prefersReducedMotion && !isMobile;
-  const active = useRenderActive(hostRef, animated);
+  /**
+   * Set while the projectiles demo (or anything else that opens a second WebGL
+   * context) is on screen. On the `animated` path this drops `frameloop` to
+   * `"never"` and the loop stops; on the still path `frameloop` is already
+   * `"demand"`, which renders nothing at all unless something asks, so there is
+   * no loop left to stop and the value is simply not consulted.
+   */
+  const suspended = useSyncExternalStore(
+    subscribeBackdropPower,
+    isBackdropSuspended,
+    backdropNeverSuspendedOnServer,
+  );
+  const active = useRenderActive(hostRef, animated) && !suspended;
 
   // Memoized module-level probe; returns false only when WebGL2 definitively
   // failed. No WebGL means no backdrop, and the sections stand on their own.
