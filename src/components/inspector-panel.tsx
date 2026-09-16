@@ -1,7 +1,9 @@
 'use client';
 
-import { useRef, useEffect, useId } from 'react';
+import { useRef, useEffect, useId, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { LazyMotion, domAnimation } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useEngineStore, type TransientUpdates } from '@/store/useEngineStore';
 import {
   RESUME_DATA,
@@ -11,8 +13,87 @@ import {
   SKILLS,
   type ProjectEntry,
 } from '@/data/resumeData';
+import { FILE_TREE, type FileNode } from '@/data/fileTree';
 import { COMBAT_SYSTEM_PATTERN_LABELS, type CombatSystemPattern } from '@/components/3d/scenes/combat-system-types';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { LevelTimeline, EXPERIENCE_FILE_IDS } from '@/components/level-timeline';
+
+// --- Eyebrow paths, derived from the Hierarchy file tree --------------------
+// The eyebrow must read exactly like the Hierarchy, so it is built by walking
+// FILE_TREE once at module load instead of being hand-maintained.
+const FILE_PATH_MAP: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  const walk = (nodes: FileNode[], trail: string[]) => {
+    for (const node of nodes) {
+      const next = [...trail, node.label];
+      if (node.isFolder && node.children) {
+        walk(node.children, next);
+      } else {
+        map[node.id] = next.join(' / ').toUpperCase();
+      }
+    }
+  };
+  walk(FILE_TREE, []);
+  return map;
+})();
+
+function filePathFor(entry: ProjectEntry): string {
+  return (
+    FILE_PATH_MAP[entry.fileId] ??
+    `${entry.type ?? 'FILE'} / ${entry.fileId}`.toUpperCase()
+  );
+}
+
+// --- COMPILE_IN timings (whole sequence stays under 500ms) ------------------
+const SCRAMBLE_MS = 240;
+const BULLET_STAGGER_S = 0.07;
+const BULLET_MAX_DELAY_S = 0.28;
+const BULLET_DURATION_S = 0.18;
+const SCRAMBLE_CHARS = '!<>-_\\/[]{}=+*^?#0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+/**
+ * Scrambles `finalText` through random characters once, then settles.
+ *
+ * Starts — and server-renders — as the real string, so the first paint is
+ * always readable content; the scramble only begins in an effect, after paint.
+ * Returns `finalText` untouched when motion is reduced.
+ */
+function useScrambledText(finalText: string, enabled: boolean): string {
+  const [text, setText] = useState(finalText);
+  const [lastText, setLastText] = useState(finalText);
+
+  // Re-sync during render (not in an effect) so a newly selected file never
+  // paints the previous file's path for a frame.
+  if (lastText !== finalText) {
+    setLastText(finalText);
+    setText(finalText);
+  }
+
+  useEffect(() => {
+    if (!enabled) return;
+    const start = performance.now();
+    let raf = requestAnimationFrame(function tick(now: number) {
+      const progress = Math.min(1, (now - start) / SCRAMBLE_MS);
+      const settled = Math.floor(finalText.length * progress);
+      let out = finalText.slice(0, settled);
+      for (let i = settled; i < finalText.length; i++) {
+        out +=
+          finalText[i] === ' '
+            ? ' '
+            : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      }
+      setText(out);
+      if (progress < 1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setText(finalText);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [finalText, enabled]);
+
+  return text;
+}
 
 // --- Helper for Linkifying Text ---
 function LinkifiedText({ text }: { text: string }) {
@@ -26,14 +107,14 @@ function LinkifiedText({ text }: { text: string }) {
           return <strong key={i} className="font-semibold text-text-primary">{part.slice(2, -2)}</strong>;
         } else if (part.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+$/)) {
           return (
-            <a key={i} href={`mailto:${part}`} className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">
+            <a key={i} href={`mailto:${part}`} className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-status hover:text-status-ink">
               {part}
             </a>
           );
         } else if (part.match(/^(https?:\/\/|linkedin\.com)/)) {
           const href = part.startsWith('http') ? part : `https://${part}`;
           return (
-            <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">
+            <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-status hover:text-status-ink">
               {part}
             </a>
           );
@@ -147,8 +228,8 @@ export function InspectorPanel() {
       className="flex h-full flex-col overflow-hidden bg-bg-panel"
       aria-label="Inspector panel"
     >
-      <div className="flex h-[var(--toolbar-height)] items-center border-b-[3px] border-border bg-cobalt px-3">
-        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-white">
+      <div className="flex h-[var(--toolbar-height)] items-center border-b-[3px] border-header-ink bg-header-bg px-3">
+        <span className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-header-ink">
           Inspector
         </span>
       </div>
@@ -201,7 +282,7 @@ function WelcomeView() {
         <h1 className="font-display text-3xl font-black uppercase tracking-[-0.025em] text-text-primary">
           {CONTACT_INFO.name}
         </h1>
-        <p className="border-[3px] border-border bg-lime px-3 py-1 font-mono text-xs font-bold uppercase tracking-[0.1em] text-ink shadow-[4px_4px_0_#161310]">
+        <p className="border-[3px] border-border bg-bg-editor px-3 py-1 font-mono text-xs font-bold uppercase tracking-[0.1em] text-text-primary shadow-[4px_4px_0_#161310]">
           {CONTACT_INFO.title}
         </p>
       </div>
@@ -211,13 +292,13 @@ function WelcomeView() {
       <div className="mt-4 space-y-1 text-left font-mono text-xs text-text-muted">
         <p>📍 {CONTACT_INFO.location}</p>
         <p>
-          📧 <a href={`mailto:${CONTACT_INFO.email}`} className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.email}</a>
+          📧 <a href={`mailto:${CONTACT_INFO.email}`} className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-status hover:text-status-ink">{CONTACT_INFO.email}</a>
         </p>
         <p>
-          🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.linkedin}</a>
+          🔗 <a href={`https://${CONTACT_INFO.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-status hover:text-status-ink">{CONTACT_INFO.linkedin}</a>
         </p>
         <p>
-          🐙 <a href={CONTACT_INFO.github} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-lime hover:text-ink">{CONTACT_INFO.github.replace('https://', '')}</a>
+          🐙 <a href={CONTACT_INFO.github} target="_blank" rel="noopener noreferrer" className="text-text-accent underline decoration-[3px] underline-offset-4 hover:bg-status hover:text-status-ink">{CONTACT_INFO.github.replace('https://', '')}</a>
         </p>
       </div>
       <div className="mt-4">
@@ -226,7 +307,7 @@ function WelcomeView() {
         </p>
       </div>
       <div className="mt-4 w-full">
-        <p className="mb-2 inline-block border-2 border-border bg-tangerine px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white">
+        <p className="mb-2 inline-block border-2 border-border bg-bg-editor px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-text-primary">
           Education
         </p>
         <div className="space-y-2">
@@ -244,7 +325,7 @@ function WelcomeView() {
         </div>
       </div>
       <div className="mt-4 w-full">
-        <p className="mb-2 inline-block border-2 border-border bg-cobalt px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-white">
+        <p className="mb-2 inline-block border-2 border-border bg-bg-editor px-2 py-0.5 font-mono text-xs font-bold uppercase tracking-[0.14em] text-text-primary">
           Core Skills
         </p>
         <div className="flex flex-wrap gap-1.5">
@@ -289,38 +370,62 @@ function FileEntryView({
   const prefersReduced = useReducedMotion();
   const disableCombatControls = (entry.fileId === 'combat_system' || entry.fileId === 'r3f-projectiles') && prefersReduced;
 
+  const animate = !prefersReduced;
+  const filePath = filePathFor(entry);
+  const eyebrow = useScrambledText(filePath, animate);
+  // Only hide the label from assistive tech while it is still garbled.
+  const isScrambling = eyebrow !== filePath;
+  const showsTimeline = EXPERIENCE_FILE_IDS.includes(entry.fileId);
+
   return (
     <div className="space-y-5">
+      {/* 02_Experience: the level progression sits above the entry itself.
+          Folders in the Hierarchy only expand/collapse — they never become the
+          active file — so the timeline is mounted on the experience entries. */}
+      {showsTimeline && <LevelTimeline />}
+
       {/* Header */}
       <div className="border-[3px] border-border bg-bg-editor p-4 shadow-[6px_6px_0_#161310]">
+        {/* Eyebrow — the file's Hierarchy path */}
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-interactive">
+          <span className="sr-only">File path: </span>
+          <span aria-hidden={isScrambling ? 'true' : undefined}>{eyebrow}</span>
+          {isScrambling && <span className="sr-only">{filePath}</span>}
+        </p>
+
+        {/* Headline — the point, not the job title */}
         <h2
           ref={headingRef}
           tabIndex={-1}
-          className="font-display text-2xl font-black uppercase tracking-[-0.025em] text-text-primary outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-cobalt"
+          className="mt-2 font-display text-[28px] font-black leading-[1.05] tracking-[-0.03em] text-text-primary outline-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-interactive"
         >
-          {entry.title}
+          {entry.headline || entry.title}
         </h2>
-        {entry.company && (
-          <p className="mt-1 font-ui text-[15px] font-semibold text-text-accent">{entry.company}</p>
+
+        {/* One-sentence summary */}
+        {entry.summary && (
+          <p className="mt-2 font-ui text-[15px] font-medium leading-relaxed text-text-primary">
+            {entry.summary}
+          </p>
         )}
-        {entry.dates && (
-          <p className="mt-1 font-mono text-xs uppercase tracking-[0.08em] text-text-muted">{entry.dates}</p>
-        )}
-        <span
-          className={`mt-3 inline-block border-2 border-border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] ${
-            entry.type === 'work'
-              ? 'bg-cobalt text-white'
-              : entry.type === 'project'
-                ? 'bg-lime text-ink'
-                : entry.type === 'skill'
-                  ? 'bg-tangerine text-white'
-                  : entry.type === 'contact'
-                    ? 'bg-lime text-ink'
-                    : 'bg-bg-editor text-text-primary'
-          }`}
-        >
-          {entry.type}
-        </span>
+
+        {/* Metadata row */}
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-[0.08em] text-text-muted">
+          {entry.headline && (
+            <h3 className="font-mono text-xs font-bold uppercase tracking-[0.08em] text-text-primary">
+              {entry.title}
+            </h3>
+          )}
+          {entry.headline && entry.company && <span aria-hidden="true">/</span>}
+          {entry.company && <span className="text-text-accent">{entry.company}</span>}
+          {entry.dates && (entry.company || entry.headline) && (
+            <span aria-hidden="true">/</span>
+          )}
+          {entry.dates && <span>{entry.dates}</span>}
+          <span className="border-2 border-border bg-bg-editor px-2 py-0.5 text-[10px] font-bold tracking-[0.14em] text-text-primary">
+            {entry.type}
+          </span>
+        </div>
       </div>
 
       {/* Tech Stack / Skills */}
@@ -337,30 +442,61 @@ function FileEntryView({
         </div>
       )}
 
-      {/* Bullets */}
-      <ul className="space-y-3">
-        {entry.bullets.map((bullet, i) => (
-          <li
-            key={`${entry.fileId}-bullet-${i}`}
-            className="flex gap-3 border-b-2 border-border pb-3 font-ui text-[15px] font-medium leading-relaxed text-text-primary last:border-b-0"
-          >
-            <span className="mt-1.5 h-3 w-3 shrink-0 border-2 border-border bg-tangerine shadow-[2px_2px_0_#161310]" />
-            <span className="break-words">
-              <LinkifiedText text={bullet} />
-            </span>
-          </li>
-        ))}
-      </ul>
+      {/* Bullets — compile in one after another, from a visible state */}
+      <LazyMotion features={domAnimation}>
+        <ul className="space-y-3" key={entry.fileId}>
+          {entry.bullets.map((bullet, i) => {
+            const content = (
+              <>
+                <span className="mt-1.5 h-3 w-3 shrink-0 border-2 border-border bg-ink shadow-[2px_2px_0_#161310]" />
+                <span className="break-words">
+                  <LinkifiedText text={bullet} />
+                </span>
+              </>
+            );
+            const className =
+              'flex gap-3 border-b-2 border-border pb-3 font-ui text-[15px] font-medium leading-relaxed text-text-primary last:border-b-0';
+
+            if (!animate) {
+              return (
+                <li key={`${entry.fileId}-bullet-${i}`} className={className}>
+                  {content}
+                </li>
+              );
+            }
+
+            return (
+              <m.li
+                key={`${entry.fileId}-bullet-${i}`}
+                className={className}
+                // Never from opacity 0 — the text is legible on first paint.
+                initial={{ opacity: 0.15, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: BULLET_DURATION_S,
+                  delay: Math.min(i * BULLET_STAGGER_S, BULLET_MAX_DELAY_S),
+                  ease: 'easeOut',
+                }}
+              >
+                {content}
+              </m.li>
+            );
+          })}
+        </ul>
+      </LazyMotion>
 
       {/* Interactive Controls */}
       {entry.controls && entry.controls.length > 0 && (
         <div className="mt-6 border-[3px] border-border bg-bg-editor p-3 shadow-[6px_6px_0_#161310]">
-          <p className="mb-3 inline-block border-2 border-border bg-lime px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink">
+          <p className="mb-3 inline-block border-2 border-border bg-bg-editor px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-text-primary">
             Interactive Controls
           </p>
           {disableCombatControls && (
-            <div className="mb-4 border-[3px] border-border bg-lime p-2 text-xs font-semibold text-ink">
-              <strong>Reduced Motion Active:</strong> The bullet system has been automatically paused and capped to 200 instances for accessibility. Controls are disabled.
+            <div className="mb-4 border-[3px] border-border bg-bg-panel p-2 text-xs font-semibold text-text-primary">
+              <span className="mr-1.5 inline-block border-2 border-border bg-status px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-status-ink">
+                Reduced Motion Active
+              </span>
+              The bullet system has been automatically paused and capped to 200 instances for accessibility. Controls are disabled.
             </div>
           )}
           <div className="space-y-4">
@@ -434,7 +570,7 @@ function SliderControl({
         >
           {spec.label}
         </label>
-        <span className="border-2 border-border bg-cobalt px-1.5 py-0.5 font-mono text-xs font-bold text-white">
+        <span className="border-2 border-border bg-interactive px-1.5 py-0.5 font-mono text-xs font-bold text-interactive-ink">
           {spec.formatValue ? spec.formatValue(value) : value}
         </span>
       </div>
@@ -451,7 +587,7 @@ function SliderControl({
             [spec.field]: parseFloat(e.target.value),
           } as TransientUpdates)
         }
-        className={`w-full accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-full accent-interactive ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         aria-valuemin={spec.min}
         aria-valuemax={spec.max}
         aria-valuenow={value}
@@ -496,7 +632,7 @@ function ToggleControl({
             [spec.field]: e.target.checked,
           } as TransientUpdates)
         }
-        className={`h-5 w-5 border-2 border-border bg-bg-panel text-cobalt accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`h-5 w-5 border-2 border-border bg-bg-panel text-interactive accent-interactive ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       />
       <label
         htmlFor={checkboxId}
@@ -544,13 +680,13 @@ function RadioGroupControl({
                   } as TransientUpdates)
                 }
                 aria-label={spec.formatLabel ? spec.formatLabel(option) : option}
-                className={`h-5 w-5 border-2 border-border bg-bg-panel text-cobalt accent-cobalt ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`h-5 w-5 border-2 border-border bg-bg-panel text-interactive accent-interactive ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               />
               <label
                 htmlFor={radioId}
                 className={`font-mono text-xs select-none ${
                   disabled ? 'text-text-muted/50 cursor-not-allowed' :
-                  value === option ? 'bg-lime px-1 text-ink cursor-pointer' : 'text-text-muted cursor-pointer'
+                  value === option ? 'bg-interactive px-1 text-interactive-ink cursor-pointer' : 'text-text-muted cursor-pointer'
                 }`}
               >
                 {spec.formatLabel ? spec.formatLabel(option) : option}
