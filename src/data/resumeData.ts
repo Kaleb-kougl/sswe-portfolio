@@ -99,7 +99,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: '',
     dates: '',
     type: 'profile',
-    headline: '8+ years building front-end platforms.',
+    headline: '7+ years building front-end platforms.',
     summary:
       'Front-end platform engineer who builds the component libraries, build pipelines, and SLOs that other product teams ship on.',
     bullets: [SUMMARY],
@@ -209,12 +209,12 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: 'Personal Project',
     dates: '',
     type: 'project',
-    headline: '10,000 bullets at 120 fps.',
+    headline: '20,000 bullets at 120 fps.',
     summary:
-      'A composable bullet-hell engine: 15 pattern generators, 9 modifiers, and a zero-allocation GPU-instanced renderer.',
+      'A composable bullet-hell engine: 7 pattern generators, 6 modifiers, and a zero-allocation GPU-instanced renderer.',
     bullets: [
-      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
-      'GPU-instanced bullet renderer using InstancedMesh with a 10,000-bullet pool running at 120fps, zero-allocation physics loop, and per-instance color via setColorAt.',
+      'Composable bullet-pattern system with 7 generators, 6 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
+      'GPU-instanced bullet renderer using InstancedMesh with a 20,000-bullet pool running at 120fps, zero-allocation physics loop, and per-instance color via setColorAt.',
       'Procedural IK spider/centipede enemies and multi-phase boss AI with state-machine-driven attack patterns.',
       'Source Code: https://github.com/Kaleb-kougl/r3f-projectiles',
       'NPM: https://www.npmjs.com/package/@k9kbdev/r3f-projectiles',
@@ -308,13 +308,13 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: 'Published npm Package',
     dates: '',
     type: 'project',
-    headline: '10,000 bullets at 120 fps.',
+    headline: '20,000 bullets at 120 fps.',
     summary:
       'A published bullet-hell and projectile engine for React Three Fiber, MIT licensed and installable from npm.',
     bullets: [
       'A high-performance bullet-hell and projectile engine for React Three Fiber (R3F).',
-      'Composable bullet-pattern system with 15 generators, 9 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
-      'GPU-instanced bullet renderer using InstancedMesh with a 10,000-bullet pool running at 120fps, zero-allocation physics loop, and per-instance color via setColorAt.',
+      'Composable bullet-pattern system with 7 generators, 6 modifiers, and functional composition — each pattern is a pure function returning spawn data.',
+      'GPU-instanced bullet renderer using InstancedMesh with a 20,000-bullet pool running at 120fps, zero-allocation physics loop, and per-instance color via setColorAt.',
       'Published under MIT License. NPM: https://www.npmjs.com/package/@k9kbdev/r3f-projectiles',
     ],
     controls: ['githubLink', 'combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom', 'combatSystemPoolSize'],
