@@ -19,6 +19,12 @@ interface DesignStatsProps {
  */
 export function DesignStats({ className, parent, showPanel = 0 }: DesignStatsProps) {
   useEffect(() => {
+    // stats.js paints its panels into a 2D canvas. Headless environments
+    // (jsdom in the test suite, some locked-down embeds) hand back a null
+    // context, and stats.js then throws on `context.font = ...`. Bail out
+    // instead — the panel is telemetry, never load-bearing.
+    if (!document.createElement('canvas').getContext('2d')) return;
+
     const container = document.createElement('div');
     container.style.cssText = `position:absolute;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000;border:3px solid ${PALETTE.ink};box-shadow:5px 5px 0 ${PALETTE.ink}`;
 

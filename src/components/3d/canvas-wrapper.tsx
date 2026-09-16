@@ -1,7 +1,7 @@
 'use client';
 'use no memo';
 
-import { memo, Suspense, useRef, useCallback, useEffect, useMemo } from 'react';
+import { memo, Suspense, useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerformanceMonitor } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -9,8 +9,10 @@ import type { BloomEffect } from 'postprocessing';
 import { ACESFilmicToneMapping, Color } from 'three';
 import { PALETTE } from './colors';
 import { DesignStats } from './design-stats';
+import { RendererStats } from './renderer-stats';
+import { ViewportStill, ViewportTextCard, detectWebGL2 } from './viewport-fallback';
 import { useViewportRef } from '../viewport-ref-context';
-import { WebGLErrorBoundary, type WebGLFallbackProps } from './error-boundary';
+import { WebGLErrorBoundary } from './error-boundary';
 import { SceneOrchestrator, getSceneKey } from './scene-orchestrator';
 import { AdaptivePixelRatio } from './adaptive-pixel-ratio';
 import { MorphTransition } from './morph-transition';
@@ -21,32 +23,24 @@ import { CombatSystemFlex } from './scenes/combat-system-flex';
 import { AboutMeFlex } from './scenes/about-me-flex';
 import DefaultScene from './scenes/default-scene';
 import { useEngineStore } from '@/store/useEngineStore';
+import { useViewportStore } from '@/store/useViewportStore';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 // Side-effect: registers Three.js classes for tree-shaking
 import './three-setup';
 
 /**
- * WebGL fallback for systems without WebGL support.
- * Shown via Canvas's `fallback` prop when WebGL is unavailable.
+ * Drag momentum decay. OrbitControls' damping multiplies its pending rotation
+ * by `(1 - dampingFactor)` on every update() — so 0.08 here *is* the
+ * `spin *= 0.92` decay: let go of a drag and the scene spins down smoothly
+ * instead of stopping dead. PauseController raises this to 1 while paused
+ * (`spin *= 0`), which is the only way motion ever halts instantly.
  */
-function WebGLFallback() {
-  return (
-    <div className="flex h-full items-center justify-center bg-bg-editor p-4 text-center">
-      <div className="space-y-2">
-        <p className="font-mono text-sm font-bold uppercase tracking-[0.08em] text-text-muted">
-          WebGL is not supported on this device.
-        </p>
-        <a
-          href="/KalebK_Resume.pdf"
-          download
-          className="inline-flex items-center gap-2 border-[3px] border-border bg-cobalt px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[5px_5px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#161310]"
-        >
-          Download Resume PDF
-        </a>
-      </div>
-    </div>
-  );
-}
+const DAMPING_FACTOR = 0.08;
+
+/** A press counts as a click only if the pointer moved less than this. */
+const CLICK_SLOP_PX = 5;
 
 /**
  * OrbitControlsWithGestureGuard — disables touch events when mobile
@@ -67,10 +61,135 @@ const OrbitControlsWithGestureGuard = memo(function OrbitControlsWithGestureGuar
       enablePan={false}
       enableZoom={true}
       enableRotate={true}
+      enableDamping
+      dampingFactor={DAMPING_FACTOR}
       makeDefault
       onChange={handleChange}
     />
   );
+});
+
+/**
+ * PauseController — the single place motion stops.
+ *
+ * Reads `paused` with `getState()` inside useFrame, never with the reactive
+ * hook: a re-render next to the Canvas is what triggers React 19 dev-mode's
+ * circular-structure profiler crash documented below.
+ *
+ * Two levers, no scene edits required:
+ *  1. The shared three.js Clock is stopped, so every scene's `useFrame(delta)`
+ *     sees delta 0 and every `clock.elapsedTime` reader freezes in place.
+ *     `autoStart` is disabled first, otherwise `Clock.getDelta()` restarts the
+ *     clock (and zeroes elapsedTime) the moment R3F asks for the next delta.
+ *     Resuming restores the banked elapsedTime so scenes continue rather than
+ *     jumping back to t=0 — which is also why `setFrameloop('never')` is NOT
+ *     used here: R3F's implementation resets `clock.elapsedTime` to 0.
+ *  2. OrbitControls' damping factor becomes 1, zeroing any leftover drag
+ *     momentum (`spin *= paused ? 0 : 0.92`).
+ */
+const PauseController = memo(function PauseController() {
+  useFrame((state) => {
+    const { paused } = useViewportStore.getState();
+    const clock = state.clock;
+
+    if (paused && clock.running) {
+      clock.autoStart = false;
+      clock.stop();
+    } else if (!paused && !clock.running) {
+      const banked = clock.elapsedTime;
+      clock.autoStart = true;
+      clock.start();
+      clock.elapsedTime = banked;
+    }
+
+    const controls = state.controls as unknown as { dampingFactor?: number } | null;
+    if (controls && typeof controls.dampingFactor === 'number') {
+      controls.dampingFactor = paused ? 1 : DAMPING_FACTOR;
+    }
+  });
+
+  return null;
+});
+
+/**
+ * PointerGrammar — click-vs-drag discrimination for the whole viewport.
+ *
+ * R3F hands scenes an `event.delta` but does not itself swallow a click that
+ * was really a drag (it only suppresses `onPointerMissed` past 2px), so
+ * rotating the camera can read as "the viewer clicked that object". This
+ * listens in the CAPTURE phase on the very element R3F is connected to: a
+ * capture listener on that node runs before the node's own bubble-phase
+ * listeners, so `stopPropagation()` here means R3F never sees the click at all.
+ *
+ * A press is a click only when `Math.hypot(up.x - down.x, up.y - down.y) < 5`.
+ * Real clicks are re-broadcast as a `viewport:click` CustomEvent (carrying the
+ * original MouseEvent) so DOM-side listeners can act on them.
+ *
+ * Nothing here touches wheel or scroll events, so scrolling never disturbs
+ * camera rotation.
+ */
+const PointerGrammar = memo(function PointerGrammar() {
+  const gl = useThree((s) => s.gl);
+  const connected = useThree((s) => s.events?.connected);
+
+  useEffect(() => {
+    const target =
+      ((connected as HTMLElement | undefined) ??
+        gl?.domElement?.parentElement ??
+        gl?.domElement) || null;
+    if (!target || typeof target.addEventListener !== 'function') return;
+
+    let downX = 0;
+    let downY = 0;
+    let pressed = false;
+    let dragged = false;
+
+    const onDown = (e: PointerEvent) => {
+      downX = e.clientX;
+      downY = e.clientY;
+      pressed = true;
+      dragged = false;
+    };
+
+    const onMove = (e: PointerEvent) => {
+      if (!pressed || dragged) return;
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) >= CLICK_SLOP_PX) dragged = true;
+    };
+
+    const onUp = (e: PointerEvent) => {
+      if (!pressed) return;
+      pressed = false;
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) >= CLICK_SLOP_PX) dragged = true;
+      if (!dragged) {
+        target.dispatchEvent(
+          new CustomEvent('viewport:click', { detail: { x: e.clientX, y: e.clientY, source: e } }),
+        );
+      }
+    };
+
+    // Capture phase, same node R3F listens on → runs first, can veto.
+    const onClickCapture = (e: Event) => {
+      if (!dragged) return;
+      dragged = false;
+      e.stopPropagation();
+    };
+
+    target.addEventListener('pointerdown', onDown, { passive: true });
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp, { passive: true });
+    window.addEventListener('pointercancel', onUp, { passive: true });
+    target.addEventListener('click', onClickCapture, true);
+
+    return () => {
+      target.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      target.removeEventListener('click', onClickCapture, true);
+    };
+  }, [gl, connected]);
+
+  return null;
 });
 
 /**
@@ -128,40 +247,6 @@ const ConditionalBloom = memo(function ConditionalBloom() {
     </EffectComposer>
   );
 });
-
-/**
- * WebGLFallbackAlert — rendered when the WebGLErrorBoundary catches a GPU error.
- * Passed as `FallbackComponent={WebGLFallbackAlert}` — a stable component
- * reference that React 19 dev-mode can serialize without triggering
- * JSON.stringify on the Three.js scene graph's circular parent/children refs.
- */
-function WebGLFallbackAlert({ error, reset }: WebGLFallbackProps) {
-  return (
-    <div
-      role="alert"
-      className="flex h-full flex-col items-center justify-center gap-3 bg-bg-editor p-6 text-center"
-    >
-      <p className="max-w-md border-[3px] border-border bg-tangerine p-3 font-mono text-sm font-bold uppercase tracking-[0.06em] text-white shadow-[6px_6px_0_#161310]">
-        3D visualization unavailable: {error.message}
-      </p>
-      <div className="flex gap-3">
-        <button
-          onClick={reset}
-          className="border-[3px] border-border bg-lime px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-ink shadow-[4px_4px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-        >
-          Retry
-        </button>
-        <a
-          href="/KalebK_Resume.pdf"
-          download
-          className="border-[3px] border-border bg-cobalt px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[4px_4px_0_#161310] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-        >
-          Download Resume Instead
-        </a>
-      </div>
-    </div>
-  );
-}
 
 /**
  * DprController — manages DPR imperatively inside the Canvas.
@@ -222,7 +307,8 @@ const SceneBackground = memo(function SceneBackground() {
 });
 
 /**
- * MemoizedCanvasWrapper — the strict isolation boundary between React DOM and R3F.
+ * CanvasWrapperInner — the strict isolation boundary between React DOM and R3F.
+ * Exported to the app (via ViewportGate) as the memoized <LiveCanvas/>.
  *
  * Contract:
  * - Wrapped in React.memo() with ZERO props
@@ -237,11 +323,11 @@ function CanvasWrapperInner() {
   const viewportRef = useViewportRef();
 
   return (
-    <WebGLErrorBoundary FallbackComponent={WebGLFallbackAlert}>
+    <WebGLErrorBoundary FallbackComponent={ViewportTextCard}>
       <Canvas
         eventSource={viewportRef as React.RefObject<HTMLElement>}
         eventPrefix="offset"
-        fallback={<WebGLFallback />}
+        fallback={<ViewportTextCard />}
         dpr={[1, 1.5]}
         gl={{
           antialias: true,
@@ -263,12 +349,89 @@ function CanvasWrapperInner() {
         <DprController />
         <ConditionalBloom />
         <OrbitControlsWithGestureGuard />
+        <PauseController />
+        <PointerGrammar />
         <AdaptivePixelRatio />
         <DesignStats className="stats-panel" parent={viewportRef as React.RefObject<HTMLElement>} />
+        <RendererStats parent={viewportRef as React.RefObject<HTMLElement>} />
       </Canvas>
     </WebGLErrorBoundary>
   );
 }
 
-export const MemoizedCanvasWrapper = memo(CanvasWrapperInner);
+/**
+ * LiveCanvas — memoized with ZERO props, so ViewportGate re-rendering (media
+ * query flips, the WebGL probe resolving, the viewer tapping "load 3D") bails
+ * out of the memo instead of producing a fresh element tree for React 19's
+ * dev-mode profiler to diff. CanvasWrapperInner therefore still renders
+ * exactly once per mount.
+ */
+const LiveCanvas = memo(CanvasWrapperInner);
+LiveCanvas.displayName = 'LiveCanvas';
+
+/**
+ * ViewportGate — picks one of the three explicit viewport states.
+ *
+ *   live  — WebGL 2 present, pointer device, reduced motion off. Also reached
+ *           from `still` once the viewer taps the load button.
+ *   still — touch-only (useIsMobile) or `prefers-reduced-motion: reduce`
+ *           (useReducedMotion), until promoted.
+ *   text  — the WebGL 2 probe definitively failed. The other two routes into
+ *           this same card are R3F's Canvas `fallback` and WebGLErrorBoundary,
+ *           both of which also render <ViewportTextCard/>.
+ *
+ * ALL the state lives here, deliberately *outside* the Canvas subtree — this
+ * component never renders R3F children of its own, it only chooses between
+ * <LiveCanvas/> (memoized, zero props) and plain HTML.
+ */
+function ViewportGate() {
+  const isMobile = useIsMobile();
+  const prefersReducedMotion = useReducedMotion();
+  const [promoted, setPromoted] = useState(false);
+  // Memoized module-side probe — runs at most once per page load, and returns
+  // true wherever it cannot conclude, so the canvas is never withheld from a
+  // browser the probe simply can't read.
+  const hasWebGL2 = detectWebGL2();
+
+  const needsOptIn = (isMobile || prefersReducedMotion) && !promoted;
+  const mode = !hasWebGL2 ? 'text' : needsOptIn ? 'still' : 'live';
+
+  const setMode = useViewportStore((s) => s.setMode);
+  useEffect(() => {
+    setMode(mode);
+  }, [mode, setMode]);
+
+  /**
+   * SceneOrchestrator is the only thing that clears `isAssetLoading`, and it
+   * only exists inside the Canvas. Without this, clicking a file while the
+   * still or text state is showing would leave CanvasLoadingHUD's
+   * "Loading scene…" overlay stuck on screen forever.
+   */
+  useEffect(() => {
+    if (mode === 'live') return;
+    const clear = () => {
+      const state = useEngineStore.getState();
+      if (typeof state.setAssetLoading === 'function') state.setAssetLoading(false);
+    };
+    clear();
+    return useEngineStore.subscribe((s) => s.isAssetLoading, (loading) => {
+      if (loading) clear();
+    });
+  }, [mode]);
+
+  const handleActivate = useCallback(() => setPromoted(true), []);
+
+  if (mode === 'text') return <ViewportTextCard />;
+  if (mode === 'still') {
+    return (
+      <ViewportStill
+        reason={prefersReducedMotion ? 'reduced-motion' : 'touch'}
+        onActivate={handleActivate}
+      />
+    );
+  }
+  return <LiveCanvas />;
+}
+
+export const MemoizedCanvasWrapper = memo(ViewportGate);
 MemoizedCanvasWrapper.displayName = 'MemoizedCanvasWrapper';
