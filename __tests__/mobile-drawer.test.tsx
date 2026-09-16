@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MobileDrawer } from '@/components/mobile/mobile-drawer';
+import { MobileHierarchyDropdown } from '@/components/mobile/mobile-drawer';
 import { useEngineStore } from '@/store/useEngineStore';
 import * as fileTreeData from '@/data/fileTree';
 
@@ -12,7 +12,15 @@ vi.mock('@/store/useEngineStore', () => ({
 // Mock the icon to avoid rendering issues with lucide-react
 const MockIcon = () => <div data-testid="mock-icon" />;
 
-describe('MobileDrawer', () => {
+/**
+ * The mobile Hierarchy is no longer a full-screen slide-out drawer; below 768px
+ * the page is a single scroll and the Hierarchy is a sticky dropdown parked
+ * under the top bar (MOBILE_SCROLL). The behaviour these tests protect is
+ * unchanged — open/closed tracks `isMobileDrawerOpen`, backdrop and close
+ * button dismiss, picking a file selects it and closes — so only the names and
+ * the post-selection sheet state below were updated to the new intent.
+ */
+describe('MobileHierarchyDropdown', () => {
   const mockSetDrawerOpen = vi.fn();
   const mockSetActiveFile = vi.fn();
   const mockSetSheetState = vi.fn();
@@ -51,27 +59,29 @@ describe('MobileDrawer', () => {
     });
   }
 
-  // Positive: Animates drawer states visually mapping to isMobileDrawerOpen
-  it('renders drawer when isMobileDrawerOpen is true', () => {
+  // Positive: Animates open/closed states, mapping to isMobileDrawerOpen
+  it('renders the popover when isMobileDrawerOpen is true', () => {
     setupStore(true);
-    render(<MobileDrawer />);
+    render(<MobileHierarchyDropdown />);
     
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Hierarchy')).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Project hierarchy' })).toBeInTheDocument();
+    expect(screen.getByRole('tree', { name: 'Project files' })).toBeInTheDocument();
     expect(screen.getByText('Folder 1')).toBeInTheDocument();
   });
 
-  it('does not render drawer when isMobileDrawerOpen is false', () => {
+  it('does not render the popover when isMobileDrawerOpen is false', () => {
     setupStore(false);
-    render(<MobileDrawer />);
-    
+    render(<MobileHierarchyDropdown />);
+
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    // ...but the sticky trigger is always there, so the tree stays reachable.
+    expect(screen.getByRole('button', { expanded: false })).toBeInTheDocument();
   });
 
   // Positive: Tap actions onto overlay dispatch setMobileDrawerOpen(false) effectively
   it('dispatches setMobileDrawerOpen(false) when backdrop is clicked', async () => {
     setupStore(true);
-    render(<MobileDrawer />);
+    render(<MobileHierarchyDropdown />);
     
     // The backdrop has aria-hidden="true" and no role, so we can find it by test ID or checking classes.
     // It's the first child with class bg-black
@@ -88,9 +98,9 @@ describe('MobileDrawer', () => {
 
   it('dispatches setMobileDrawerOpen(false) when close button is clicked', async () => {
     setupStore(true);
-    render(<MobileDrawer />);
+    render(<MobileHierarchyDropdown />);
     
-    const closeBtn = screen.getByRole('button', { name: 'Close hierarchy drawer' });
+    const closeBtn = screen.getByRole('button', { name: 'Close hierarchy' });
     fireEvent.click(closeBtn);
     
     await waitFor(() => {
@@ -101,7 +111,7 @@ describe('MobileDrawer', () => {
   // Positive: Selecting file sets active file, closes drawer, sets sheet state
   it('handles file selection correctly', async () => {
     setupStore(true);
-    render(<MobileDrawer />);
+    render(<MobileHierarchyDropdown />);
     
     const file1 = screen.getByText('File 1');
     fireEvent.click(file1);
@@ -109,7 +119,9 @@ describe('MobileDrawer', () => {
     await waitFor(() => {
       expect(mockSetActiveFile).toHaveBeenCalled();
       expect(mockSetDrawerOpen).toHaveBeenCalledWith(false);
-      expect(mockSetSheetState).toHaveBeenCalledWith('peek');
+      // 'expanded', not 'peek': the sheet is now DOCKED at peek for the whole
+      // session, so peeking on select would look like the tap did nothing.
+      expect(mockSetSheetState).toHaveBeenCalledWith('expanded');
     });
   });
 });

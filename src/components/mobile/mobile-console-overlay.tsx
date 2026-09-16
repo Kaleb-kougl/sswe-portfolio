@@ -41,7 +41,13 @@ export function MobileConsoleOverlay() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.3 }}
-          className="pointer-events-none fixed bottom-2 left-2 right-2 z-10 border-[3px] border-border bg-bg-panel px-3 py-2 shadow-[5px_5px_0_#161310]"
+          /*
+            bottom-[72px], not bottom-2: this only renders while the bottom
+            sheet is fully dismissed, and that is exactly when the sheet leaves
+            its "▲ Inspector" button parked in the bottom-right corner. Sitting
+            at the very bottom would put that button (z-50) on top of the log.
+          */
+          className="pointer-events-none fixed bottom-[72px] left-2 right-2 z-10 border-[3px] border-border bg-bg-panel px-3 py-2 shadow-[5px_5px_0_#161310]"
           role="log"
           aria-live="polite"
         >

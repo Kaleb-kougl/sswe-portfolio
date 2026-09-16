@@ -25,9 +25,13 @@ import { MobileConsoleContent } from './mobile-console-content';
  * - hidden:   100% → shifted fully off-screen
  *
  * States (from mobileSheetState in Zustand):
- * - hidden: fully dismissed, full canvas visible
- * - peek: handle + tab bar visible at bottom
- * - expanded: ~75% of screen with full scrollable content
+ * - hidden: fully dismissed; a small "▲ Inspector" button is left behind so the
+ *   panel can be brought back
+ * - peek: DOCKED. Handle + tab bar sit above the bottom edge for the whole
+ *   session — this is the resting state on the scrolling mobile layout, and
+ *   the reason MobileLayout pads the bottom of its scroll column.
+ * - expanded: ~75% of screen with full scrollable content, opened by tapping
+ *   the dock or by picking a file in the Hierarchy dropdown
  *
  * Uses m.* elements (parent provides LazyMotion context).
  * Focus trapped when expanded, restored on dismiss.
@@ -40,10 +44,17 @@ type SheetTab = 'inspector' | 'console';
 
 const SHEET_TRIGGER_ID = 'mobile-sheet-peek';
 
+/** `interactive` owns focus rings (see COLOR_ROLES in globals.css). */
+const FOCUS_RING =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-interactive';
+
 // translateY as percentage of the sheet's own height (75dvh).
 const Y_POSITIONS: Record<ViewState, string> = {
   hidden: '100%',
-  peek: '80%',
+  // 76% of 75dvh leaves ~18dvh on screen — enough for the 44px handle AND the
+  // 44px tab bar to clear the bottom safe area on a 667px-tall phone. The old
+  // 80% assumed 36px controls and clipped the tabs once they grew.
+  peek: '76%',
   expanded: '0%',
 };
 
@@ -59,6 +70,7 @@ export function MobileBottomSheet() {
 
   const [activeTab, setActiveTab] = useState<SheetTab>('inspector');
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const reopenRef = useRef<HTMLButtonElement>(null);
   const dragControls = useDragControls();
 
   const handleDragStart = useCallback(() => {
@@ -97,12 +109,35 @@ export function MobileBottomSheet() {
     }
   }, [sheetState, setSheetState, setCameraTarget]);
 
+  const handleReopen = useCallback(() => {
+    setSheetState('peek');
+  }, [setSheetState]);
+
   const handleExitComplete = useCallback(() => {
-    triggerRef.current?.focus();
+    // The handle is gone once the sheet unmounts — hand focus to whatever is
+    // left on screen that can bring the sheet back.
+    (triggerRef.current ?? reopenRef.current)?.focus();
   }, []);
 
   return (
-    <AnimatePresence onExitComplete={handleExitComplete}>
+    <>
+      {/*
+        The sheet is dockable, not disposable: swiping it away must not strip
+        the Inspector and the Console out of the page with no way back.
+      */}
+      {sheetState === 'hidden' && (
+        <button
+          ref={reopenRef}
+          type="button"
+          onClick={handleReopen}
+          className={`mobile-safe-bottom fixed bottom-3 right-3 z-50 flex min-h-[44px] min-w-[44px] items-center gap-2 border-[3px] border-border bg-header-bg px-3 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-header-ink shadow-[4px_4px_0_#161310] ${FOCUS_RING}`}
+        >
+          <span aria-hidden="true">▲</span>
+          Inspector
+        </button>
+      )}
+
+      <AnimatePresence onExitComplete={handleExitComplete}>
       {sheetState !== 'hidden' && (
         <m.div
           key="bottom-sheet"
@@ -129,7 +164,7 @@ export function MobileBottomSheet() {
             type="button"
             onClick={handlePeekTap}
             onPointerDown={(e) => dragControls.start(e)}
-            className="flex w-full shrink-0 cursor-grab flex-col items-center pt-2 pb-3 active:cursor-grabbing"
+            className={`flex min-h-[44px] w-full shrink-0 cursor-grab flex-col items-center justify-center pt-2 pb-3 active:cursor-grabbing ${FOCUS_RING}`}
             style={{ touchAction: 'none' }}
             aria-label={sheetState === 'peek' ? 'Expand panel' : 'Drag to resize'}
           >
@@ -177,7 +212,8 @@ export function MobileBottomSheet() {
           </FocusTrap>
         </m.div>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -204,10 +240,10 @@ function TabButton({
       aria-selected={isActive}
       aria-controls={controls}
       onClick={onClick}
-      className={`border-2 border-border px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors ${
+      className={`flex min-h-[44px] items-center border-2 border-border px-3 font-mono text-[11px] font-bold uppercase tracking-[0.08em] transition-colors ${FOCUS_RING} ${
         isActive
-          ? 'bg-cobalt text-white'
-          : 'bg-bg-panel text-text-muted hover:bg-lime hover:text-ink'
+          ? 'bg-interactive text-interactive-ink'
+          : 'bg-bg-panel text-text-muted hover:bg-status hover:text-status-ink'
       }`}
     >
       {label}

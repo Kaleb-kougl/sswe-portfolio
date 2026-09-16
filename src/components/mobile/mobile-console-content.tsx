@@ -8,8 +8,8 @@ import { useEngineStore } from '@/store/useEngineStore';
  * Mirrors the desktop TerminalConsole log rendering but without the header chrome
  * (the tab bar in MobileBottomSheet handles the label).
  *
- * Auto-scrolls to the latest entry. Color-codes log prefixes identically
- * to the desktop TerminalConsole.
+ * Auto-scrolls to the latest entry. Tone-codes log prefixes identically
+ * to the desktop TerminalConsole (see classifyLog below).
  */
 export function MobileConsoleContent() {
   const consoleLogs = useEngineStore((s) => s.consoleLogs);
@@ -48,7 +48,37 @@ export function MobileConsoleContent() {
   );
 }
 
-// --- Log line renderer (matches desktop color-coding) ---
+// --- Log line renderer (in sync with desktop TerminalConsole) ---
+//
+// The prefix used to be colored by TAG (cobalt for [SYSTEM]/[NETWORK]…,
+// tangerine for [PERF]/[SERVER]…), which handed `interactive` and `action`
+// a second job each and said nothing about whether the line was good news.
+// Desktop now classifies by TONE instead, per COLOR_ROLES: `status` (lime)
+// for succeeded work — as a small chip behind the prefix, never lime text —
+// `action` for failures, ink for everything else. Kept deliberately identical
+// to terminal-console.tsx so the two consoles cannot drift.
+
+type LogTone = 'success' | 'error' | 'neutral';
+
+function classifyLog(text: string): LogTone {
+  const upper = text.toUpperCase();
+  if (upper.includes('[ERROR]') || upper.includes('FAIL')) return 'error';
+  if (
+    upper.includes('[PASS]') ||
+    upper.includes('SUCCESS') ||
+    upper.includes('DONE IN') ||
+    /\bOK\b/.test(upper)
+  ) {
+    return 'success';
+  }
+  return 'neutral';
+}
+
+const TONE_CLASS: Record<LogTone, string> = {
+  success: 'bg-status px-1 text-status-ink',
+  error: 'text-action',
+  neutral: 'text-text-primary',
+};
 
 function getTimestamp(): string {
   const now = new Date();
@@ -63,17 +93,7 @@ function getTimestamp(): string {
 function MobileLogLine({ text }: { text: string }) {
   const [timestamp] = useState(() => getTimestamp());
 
-  let prefixColor = 'text-text-muted';
-  if (text.includes('[SYSTEM]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[WEBPACK')) prefixColor = 'text-tangerine';
-  else if (text.includes('[PERF]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[NETWORK]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[SLO]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[SERVER]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[GRAPHQL]')) prefixColor = 'text-cobalt';
-  else if (text.includes('[MOBILE]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[EXTENSION]')) prefixColor = 'text-tangerine';
-  else if (text.includes('[ERROR]')) prefixColor = 'text-tangerine';
+  const prefixColor = TONE_CLASS[classifyLog(text)];
 
   const bracketEnd = text.indexOf(']');
   if (bracketEnd !== -1) {
