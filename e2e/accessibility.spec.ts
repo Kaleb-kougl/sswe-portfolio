@@ -26,10 +26,12 @@ const focusedDescription = (page: Page) =>
 const isDevTools = (description: string) => description.startsWith('NEXTJS-PORTAL');
 
 /**
- * `src/app/loading.tsx` wraps the route in a Suspense boundary, so the first
- * thing the document paints is that fallback and `<main>` is still inside a
- * hidden container. Tab does nothing useful until React reveals the page, so
- * every keyboard test waits for the hero first.
+ * Waits for the hero before driving the keyboard. This used to be load-bearing
+ * for a different reason — a route-level `src/app/loading.tsx` wrapped the page
+ * in a Suspense boundary, so `<main>` painted inside a hidden container and Tab
+ * did nothing until React revealed it. That file is gone (it also hid the whole
+ * page from no-JS clients; see `server-rendering.spec.ts`). The wait stays
+ * because these tests still need the page interactive before pressing keys.
  */
 async function openPage(page: Page) {
   await page.goto('/');
@@ -220,5 +222,52 @@ test.describe('Decorative 3D backdrop', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     await expect(page.getByRole('heading', { level: 2 })).toHaveCount(4);
     await expect(page.getByRole('main')).toHaveCount(1);
+  });
+});
+
+test.describe('Viewport meta', () => {
+  test('does not block pinch-zoom', async ({ page }) => {
+    await openPage(page);
+
+    const content = await page
+      .locator('meta[name="viewport"]')
+      .getAttribute('content');
+
+    expect(content).toBeTruthy();
+    expect(content).toContain('width=device-width');
+
+    // WCAG 2.1 SC 1.4.4 (Resize Text). `maximum-scale=1` or
+    // `user-scalable=no` stops a low-vision visitor magnifying the page at
+    // all. Lighthouse flags either one.
+    //
+    // The usual reason someone adds a cap is iOS Safari zooming the viewport
+    // when a form field is focused — Safari only does that under a 16px font
+    // size, so the fix belongs on the inputs. The assertion below guards that
+    // too, so a cap cannot be reintroduced to solve a problem that is already
+    // solved elsewhere.
+    expect(content).not.toContain('maximum-scale');
+    expect(content).not.toContain('user-scalable');
+  });
+
+  test('form fields are at least 16px, so iOS has no reason to zoom them', async ({
+    page,
+  }) => {
+    await openPage(page);
+    await page.locator('#contact').scrollIntoViewIfNeeded();
+
+    const fields = page.locator('#contact input:not([type="hidden"]), #contact textarea');
+    const count = await fields.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      const field = fields.nth(i);
+      // The honeypot is off-screen and never focused by a person.
+      if (await field.evaluate((el) => el.closest('[aria-hidden="true"]') !== null)) continue;
+
+      const size = await field.evaluate((el) =>
+        Number.parseFloat(getComputedStyle(el).fontSize),
+      );
+      expect(size).toBeGreaterThanOrEqual(16);
+    }
   });
 });
