@@ -31,6 +31,7 @@ import {
 
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useSaveData } from '@/hooks/useSaveData';
 
 import {
   backdropNeverSuspendedOnServer,
@@ -80,10 +81,29 @@ import {
  * block *is* that box, scaled onto the artboard grid. Either way it is one
  * geometry on one mesh: one draw call, before and after.
  *
+ * WHO GETS THE ANIMATION
+ * ----------------------
+ * Everyone whose device does not demonstrate that it cannot cope. This used to
+ * be a width test — `(max-width: 767px)` meant "still" — which was wrong in
+ * both directions: 112 instances in one draw call is nothing to a modern phone,
+ * and a narrow desktop window was being downgraded for a reason (viewport
+ * width) that says nothing whatsoever about GPU throughput.
+ *
+ * It is deliberately NOT a capability sniff either. `navigator.deviceMemory`
+ * does not exist on iOS Safari, so any rule that requires it silently excludes
+ * every iPhone — the single largest group of phones this change is for — and
+ * `hardwareConcurrency` counts CPU cores, which is not what draws frames. So
+ * the backdrop animates by default and *measures*: `FrameWatchdog` below
+ * watches real frame times and downgrades once, permanently, if the device is
+ * sustainably too slow. Guessing is replaced by evidence, after the fact.
+ *
  * Degradation, in order:
  *   no WebGL2  -> renders nothing at all (it is decoration; failure is silent)
- *   touch      -> a still hero arrangement, `frameloop="demand"`, no listeners
- *   reduced    -> same still arrangement
+ *   reduced    -> a still hero arrangement, `frameloop="demand"`, no listeners,
+ *                 no measurement: an accessibility guarantee, never adaptive
+ *   save-data  -> same still arrangement (the visitor asked for less)
+ *   too slow   -> same still arrangement, latched for the session, once the
+ *                 frame-time watchdog has proved the device cannot keep up
  *   tab hidden -> `frameloop="never"`, the render loop stops entirely
  *   demo open  -> `frameloop="never"`, same lever, pulled by `backdrop-power.ts`
  *                 so the projectiles demo's WebGL context is the only live one
@@ -98,6 +118,29 @@ const CAMERA_FOV = 35;
 const CAMERA_Z = 80;
 /** Never pay for more than 1.5x device pixels — this is background decoration. */
 const MAX_DPR = 1.5;
+/**
+ * Small viewports get a lower cap still.
+ *
+ * The canvas is the full viewport, so what it costs is fill rate, and fill rate
+ * is the one axis where phones really are outclassed: a phone at its native
+ * DPR 3 asks for more pixels than a 1280x720 desktop does at DPR 1.5.
+ *
+ * Measured, on the Pixel 5 emulation (375x812 CSS, DPR 2.75), as sustained
+ * frames over a 2s idle window — one draw call per frame, so draws are frames:
+ *
+ *   cap 2.75  1031x2233 = 2.30 MP   91 frames   ~46fps
+ *   cap 1.50   562x1218 = 0.69 MP  240 frames  ~120fps
+ *   cap 1.25   468x1015 = 0.48 MP  224 frames  ~112fps
+ *
+ * That is the whole argument. Uncapped, this scene is fill-rate bound badly
+ * enough to halve its frame rate on a desktop GPU, which is the ceiling a
+ * phone's will never reach. Past the cap it is not bound by fill rate at all:
+ * 1.25 and 1.5 are the same number twice, inside the noise of the harness.
+ * So the choice between them is free here and pure headroom on a real phone
+ * GPU, and it is spent on headroom — 30% fewer pixels for flat untextured
+ * color, already MSAA-antialiased, sitting behind body copy as decoration.
+ */
+const MAX_DPR_SMALL = 1.25;
 /** Exponential approach rate of rendered progress toward scroll progress. */
 const MORPH_SMOOTHING = 5.5;
 /** Below this delta the instance buffers are left untouched for the frame. */
@@ -107,9 +150,73 @@ const STILL_WIDTH_FRACTION = 0.55;
 const STILL_HEIGHT_FRACTION = 0.3;
 /** Phone still: alpha multiplier, so the watermark never fights body copy. */
 const STILL_DIM = 0.3;
+/**
+ * Narrow viewports: alpha multiplier for the LIVE morph.
+ *
+ * Same problem the still solves with `compact`, and the same signal (viewport
+ * width), because it is the same cause: below the breakpoint the page is one
+ * column of running text and the "contain" fit drops the whole artboard on top
+ * of it. Screenshotted at 375px before this existed, the KK glyph landed square
+ * on the hero paragraph, black blocks over black type.
+ *
+ * It is a multiplier passed to `writeBlocks`, which already had the parameter
+ * for the still — so it is one extra multiply per instance per frame, no second
+ * material and no second pass. The morph itself is untouched: all five stages,
+ * the scroll coupling and the sway are exactly what a desktop gets. Only the
+ * ink is turned down, and only where the text is on top of it.
+ */
+const MORPH_DIM_SMALL = 0.4;
 /** Amplitude/speed of the idle sway that keeps the backdrop from feeling dead. */
 const SWAY_AMPLITUDE = 0.035;
 const SWAY_SPEED = 0.16;
+
+/**
+ * Frame-time watchdog. See `FrameWatchdog` for how these are applied.
+ *
+ * 40fps is not a guess. Measured on this scene, as sustained frames over a 2s
+ * window (one draw call per frame, so draws are frames):
+ *
+ *   desktop 1280x720            ~97fps
+ *   Pixel 5 emulation, DPR 1.25  ~112fps
+ *   ...the same, CPU throttled 4x  ~111fps
+ *   ...10x                          ~86fps
+ *   ...20x                          ~58fps
+ *   ...50x                           ~8fps
+ *
+ * The interesting result is 20x: a twentyfold CPU handicap still clears 58fps,
+ * because 112 instances written into two buffers is almost no CPU work and this
+ * scene is not CPU bound. Nothing that is merely *slow* lands near the floor —
+ * the curve falls off a cliff between 20x and 50x and skips the whole 30-50fps
+ * band. So 40 sits in an empty region: comfortably under everything healthy,
+ * comfortably over the wreckage, and there is nothing in between to misjudge.
+ */
+/** Frames the rolling window holds at most — 1s at 60fps, 1.5s at 40fps. */
+const WATCHDOG_SAMPLES = 60;
+/**
+ * Frames before the window is allowed to have an opinion.
+ *
+ * A frame count, not a duration, and that is the point: the window has to be
+ * long enough to be an average rather than a spike, but a device at 8fps takes
+ * 7.5s to produce 60 frames, and waiting that long to notice would leave the
+ * reader scrolling through the exact experience this is meant to end. 20 frames
+ * is 0.17s of evidence on a healthy device and 2.5s on a badly broken one —
+ * which is the right way round, because the broken one is the one whose frames
+ * are individually damning.
+ */
+const WATCHDOG_MIN_SAMPLES = 20;
+/** Startup jank (chunk eval, shader compile, the GLB swap) is not evidence. */
+const WATCHDOG_WARMUP_S = 1;
+/** Rolling-average frame rate below which the window counts as bad. */
+const WATCHDOG_MIN_FPS = 40;
+/** How long it has to stay bad, continuously, before the still takes over. */
+const WATCHDOG_SUSTAIN_S = 2;
+/**
+ * Any frame longer than this is read as a stall, not as a frame rate: a
+ * resumed tab, a breakpoint, a scheduler hiccup. It resets the streak rather
+ * than counting toward it, so the watchdog only ever fires on sustained,
+ * ordinary slowness — the direction that errs toward keeping the animation.
+ */
+const WATCHDOG_STALL_S = 0.5;
 
 /**
  * Each stage is named after the section it belongs to, and `page.tsx` already
@@ -497,9 +604,14 @@ const FitGroup = memo(function FitGroup({ children }: { children: React.ReactNod
  * The still arrangement: stage 0 (KK), written once and then never touched
  * again — no `useFrame`, no scroll listener, one draw call for the session.
  *
- * `compact` is the phone case. There the page is a single column, so a
- * full-strength backdrop would sit directly behind body copy; the glyph is
- * framed on its own, centered, and dimmed to a watermark instead.
+ * `compact` is the narrow-viewport case, and it stays keyed to viewport width
+ * (`useIsMobile`) even though the animation decision no longer is. The two
+ * questions are simply different questions: "can this device draw 112 instances
+ * at 60fps" is about the GPU, while "is this layout a single column of body copy
+ * with nothing beside it" is about the width of the window and nothing else. At
+ * 390px the full artboard would sit directly behind the running text, so the
+ * glyph is framed on its own, centered, and dimmed to a watermark instead — the
+ * same framing a 600px-wide desktop window gets, and correctly so.
  */
 const StaticBlocks = memo(function StaticBlocks({ compact }: { compact: boolean }) {
   const block = useBlockMesh();
@@ -549,11 +661,135 @@ const StaticBlocks = memo(function StaticBlocks({ compact }: { compact: boolean 
   );
 });
 
+// ---------------------------------------------------------------------------
+// Frame-time watchdog
+// ---------------------------------------------------------------------------
+
+/**
+ * Whether this session has already proved itself too slow to animate.
+ *
+ * Module-level rather than component state so the downgrade is a property of
+ * the session, not of a mounted tree: whatever unmounts and remounts the
+ * backdrop (a media-query flip, an error boundary reset, Fast Refresh), the
+ * scene comes back still and is never re-litigated. React state is seeded from
+ * this and set exactly once, when it flips — the watchdog runs inside
+ * `useFrame` and must never render React per frame.
+ */
+let sessionDowngraded = false;
+
+/** `useState` initialiser: has some earlier mount already downgraded? */
+const readSessionDowngrade = (): boolean => sessionDowngraded;
+
+/**
+ * Rolling frame-time window. One instance per mounted frame loop, allocated
+ * once — `sample` below touches nothing but these fields and the ring buffer,
+ * so the watchdog costs the loop no allocation and no garbage.
+ */
+interface FrameWatchdog {
+  /** Ring buffer of the last `WATCHDOG_SAMPLES` frame durations, in seconds. */
+  frames: Float32Array;
+  /** Next slot to overwrite. */
+  cursor: number;
+  /** How many slots are populated, capped at `frames.length`. */
+  filled: number;
+  /** Running sum of `frames`, so the average is O(1) per frame. */
+  sum: number;
+  /** Seconds of loop time observed, used to skip the warm-up. */
+  elapsed: number;
+  /** Seconds the rolling average has been continuously below the floor. */
+  badFor: number;
+  /** Latched: once true this watchdog is inert for good. */
+  tripped: boolean;
+}
+
+function createFrameWatchdog(): FrameWatchdog {
+  return {
+    frames: new Float32Array(WATCHDOG_SAMPLES),
+    cursor: 0,
+    filled: 0,
+    sum: 0,
+    elapsed: 0,
+    badFor: 0,
+    tripped: false,
+  };
+}
+
+/**
+ * Feeds one frame to the watchdog, and calls `onTooSlow` at most once, ever.
+ *
+ * The rule is deliberately hard to satisfy. A single bad frame proves nothing —
+ * so does a bad tenth of a second — and a backdrop that flickered between
+ * animated and still would be worse than either. What trips it is the rolling
+ * average of the window (up to `WATCHDOG_SAMPLES` frames) staying under
+ * `WATCHDOG_MIN_FPS` for `WATCHDOG_SUSTAIN_S` of continuous loop time, after
+ * the warm-up. Any single recovery above the floor resets the streak to zero.
+ *
+ * It is one-way on purpose. There is no promotion path back to the animation:
+ * the downgrade latches on the watchdog AND at module scope, so a device that
+ * has proved itself once is never re-measured and the scene cannot oscillate.
+ */
+function sampleFrame(watchdog: FrameWatchdog, delta: number, onTooSlow: () => void): void {
+  if (watchdog.tripped) return;
+
+  // A stall is not a frame rate. Drop the window on the floor and start over:
+  // the samples on either side of a multi-second gap are not a sequence.
+  if (delta > WATCHDOG_STALL_S || delta <= 0) {
+    // `fill` matters: `sum` is maintained by subtracting the slot being
+    // overwritten, so leaving stale durations in the ring while zeroing `sum`
+    // would drive it negative, and a negative sum reads as a negative frame
+    // rate — which is below any floor, and would downgrade a device whose only
+    // crime was being alt-tabbed. It is 60 floats, on an event that happens
+    // when a tab comes back.
+    watchdog.frames.fill(0);
+    watchdog.cursor = 0;
+    watchdog.filled = 0;
+    watchdog.sum = 0;
+    watchdog.badFor = 0;
+    return;
+  }
+
+  watchdog.elapsed += delta;
+  if (watchdog.elapsed < WATCHDOG_WARMUP_S) return;
+
+  const { frames } = watchdog;
+  // The slot being overwritten is 0 until the ring has wrapped once, so this
+  // keeps `sum` equal to the sum of exactly `filled` samples either way.
+  watchdog.sum += delta - frames[watchdog.cursor];
+  frames[watchdog.cursor] = delta;
+  watchdog.cursor = (watchdog.cursor + 1) % frames.length;
+  if (watchdog.filled < frames.length) watchdog.filled++;
+
+  // Judge nothing until there is enough of a window to average.
+  if (watchdog.filled < WATCHDOG_MIN_SAMPLES) return;
+
+  const averageFps = watchdog.filled / watchdog.sum;
+  if (averageFps >= WATCHDOG_MIN_FPS) {
+    watchdog.badFor = 0;
+    return;
+  }
+
+  watchdog.badFor += delta;
+  if (watchdog.badFor < WATCHDOG_SUSTAIN_S) return;
+
+  watchdog.tripped = true;
+  sessionDowngraded = true;
+  onTooSlow();
+}
+
 /** The live arrangement: scroll-driven, imperative, zero re-renders. */
-const MorphingBlocks = memo(function MorphingBlocks() {
+const MorphingBlocks = memo(function MorphingBlocks({
+  dim,
+  onTooSlow,
+}: {
+  /** Alpha multiplier for every block. See `MORPH_DIM_SMALL`. */
+  dim: number;
+  /** Called once, from the frame loop, when this device cannot keep up. */
+  onTooSlow: () => void;
+}) {
   const block = useBlockMesh();
   const groupRef = useRef<Group>(null);
   const progress = useMemo<ScrollProgress>(() => ({ target: 0 }), []);
+  const watchdog = useMemo(() => createFrameWatchdog(), []);
   const rendered = useRef(-1);
   const adoptHeroGeometry = useCallback(
     (geometry: BufferGeometry) => {
@@ -565,10 +801,20 @@ const MorphingBlocks = memo(function MorphingBlocks() {
   useEffect(() => startScrollTracking(progress), [progress]);
 
   useLayoutEffect(() => {
-    writeBlocks(block, SCRATCH, 0, 0, 0);
-  }, [block]);
+    writeBlocks(block, SCRATCH, 0, 0, 0, dim);
+    // A new `dim` has to reach the buffers even if scroll has not moved, and
+    // the epsilon test below would otherwise skip the write for as long as the
+    // page sits still. Forcing the next frame to write is one frame of work on
+    // a breakpoint crossing, which happens when a window is resized and never
+    // while scrolling.
+    rendered.current = -1;
+  }, [block, dim]);
 
   useFrame((state, delta) => {
+    // Measured before the work, on the raw delta: this is the previous frame's
+    // real duration, and clamping it for the morph must not launder it here.
+    sampleFrame(watchdog, delta, onTooSlow);
+
     // Clamp delta so a backgrounded tab resuming does not teleport the morph.
     const step = delta > 0.1 ? 0.1 : delta;
     const current = rendered.current < 0 ? progress.target : rendered.current;
@@ -580,7 +826,7 @@ const MorphingBlocks = memo(function MorphingBlocks() {
       const f = p - a;
       // Smoothstep the crossfade so blocks ease in and out of each stage
       // instead of changing direction abruptly at a section boundary.
-      writeBlocks(block, SCRATCH, a, a + 1, f * f * (3 - 2 * f));
+      writeBlocks(block, SCRATCH, a, a + 1, f * f * (3 - 2 * f), dim);
       rendered.current = next;
     }
 
@@ -654,8 +900,31 @@ function useRenderActive(hostRef: React.RefObject<HTMLDivElement | null>, enable
 export default function MorphCanvas() {
   const hostRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const isMobile = useIsMobile();
-  const animated = !prefersReducedMotion && !isMobile;
+  const saveData = useSaveData();
+  /**
+   * Viewport width, and nothing else. It no longer decides whether the scene
+   * animates — it decides two things that really are about the viewport:
+   * how many device pixels the full-screen canvas is worth (`dpr`), and how
+   * the still is framed (`compact`, below).
+   */
+  const isSmallViewport = useIsMobile();
+  /**
+   * Flipped at most once per session, by the frame-time watchdog, from inside
+   * the frame loop. This is the ONLY React state the loop can touch, and it
+   * can only touch it once — `sampleFrame` latches before it calls back.
+   */
+  const [downgraded, setDowngraded] = useState(readSessionDowngrade);
+  const onTooSlow = useCallback(() => setDowngraded(true), []);
+
+  // Animate by default; the three exits are a stated accessibility preference,
+  // a stated data preference, and a measured failure to keep up.
+  const animated = !prefersReducedMotion && !saveData && !downgraded;
+
+  // A stable tuple, so R3F is not handed a new `dpr` array on every render.
+  const dpr = useMemo<[number, number]>(
+    () => [1, isSmallViewport ? MAX_DPR_SMALL : MAX_DPR],
+    [isSmallViewport],
+  );
   /**
    * Set while the projectiles demo (or anything else that opens a second WebGL
    * context) is on screen. On the `animated` path this drops `frameloop` to
@@ -683,7 +952,7 @@ export default function MorphCanvas() {
             style={CANVAS_STYLE}
             fallback={null}
             flat
-            dpr={[1, MAX_DPR]}
+            dpr={dpr}
             frameloop={animated ? (active ? 'always' : 'never') : 'demand'}
             // react-use-measure re-measures on scroll by default; this backdrop
             // is fixed, so that is pure overhead on the hottest event we have.
@@ -693,10 +962,13 @@ export default function MorphCanvas() {
           >
             {animated ? (
               <FitGroup>
-                <MorphingBlocks />
+                <MorphingBlocks
+                  dim={isSmallViewport ? MORPH_DIM_SMALL : 1}
+                  onTooSlow={onTooSlow}
+                />
               </FitGroup>
             ) : (
-              <StaticBlocks compact={isMobile} />
+              <StaticBlocks compact={isSmallViewport} />
             )}
           </Canvas>
         </WebGLErrorBoundary>

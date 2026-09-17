@@ -118,12 +118,14 @@ test.describe('Reduced motion', () => {
 
 test.describe('Motion allowed (control)', () => {
   // The reduced-motion assertion above is only meaningful if the backdrop
-  // demonstrably DOES run when motion is allowed. It only morphs on the
-  // pointer/desktop path — the touch layout is deliberately still either way.
-  test.skip(
-    ({ viewport, isMobile }) => isMobile === true || (viewport?.width ?? 0) < 900,
-    'The backdrop is deliberately still on the touch/phone layout',
-  );
+  // demonstrably DOES run when motion is allowed — and it now runs on BOTH
+  // projects. This used to skip itself on the touch/phone layout, because
+  // `morph-canvas.tsx` gated the animation on `(max-width: 767px)` and every
+  // phone got the still regardless of the media query above. That gate is
+  // gone: the scene animates everywhere it is not asked to stop (reduced
+  // motion, save-data) or measured failing to keep up, so on the phone project
+  // this control is no longer vacuous — it is the sharper half of the pair.
+  // See `backdrop-capability.spec.ts` for the phone case in its own right.
 
   test('the backdrop runs a live render loop', async ({ page }) => {
     await openSettledPage(page);
