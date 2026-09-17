@@ -13,7 +13,19 @@ const YEARS = /(\d+\+?)\s*years/i.exec(SUMMARY)?.[1] ?? '7+';
 /** "San Francisco, CA" -> "San Francisco". */
 const CITY = CONTACT_INFO.location.split(',')[0].trim();
 
-const EYEBROW = `${CONTACT_INFO.title} · ${CITY}`.toUpperCase();
+/**
+ * Exported because `src/app/opengraph-image.tsx` renders the same eyebrow on
+ * the social card. One definition, so the card cannot contradict the page.
+ */
+export const HERO_EYEBROW = `${CONTACT_INFO.title} · ${CITY}`.toUpperCase();
+
+/**
+ * The hero headline. Exported for the same reason as `HERO_EYEBROW`: the OG
+ * card shows this sentence, and a second copy of it would be a second thing to
+ * forget to update.
+ */
+export const HERO_HEADLINE =
+  'I build the platform other frontend teams ship on.';
 
 /** Employers, in résumé order, de-duplicated (IBM appears twice). */
 const COMPANIES = Array.from(
@@ -29,7 +41,8 @@ const NPM_PACKAGES = Object.values(RESUME_DATA).filter(
   (entry) => entry.company === 'Published npm Package'
 ).length;
 
-const STATS = [
+/** Also rendered, verbatim, on the OG card. */
+export const HERO_STATS = [
   { term: 'Experience', detail: `${YEARS} years` },
   { term: 'Teams', detail: COMPANIES.join(' · ') },
   {
@@ -46,13 +59,13 @@ export function HeroSection() {
       className="relative flex flex-col justify-center px-6 pb-16 pt-[calc(var(--nav-height)+3rem)] min-[900px]:min-h-dvh min-[900px]:px-12 min-[900px]:pb-24"
     >
       <div className="w-full max-w-[660px]">
-        <p className="eyebrow">{EYEBROW}</p>
+        <p className="eyebrow">{HERO_EYEBROW}</p>
 
         <h1
           id="hero-heading"
           className="mt-6 text-balance font-display text-[40px] leading-[0.95] tracking-[-0.035em] text-ink min-[900px]:text-[82px]"
         >
-          I build the platform other frontend teams ship on.
+          {HERO_HEADLINE}
         </h1>
 
         <p className="mt-7 max-w-[54ch] text-[17px] leading-relaxed text-body min-[900px]:text-[19px]">
@@ -78,7 +91,7 @@ export function HeroSection() {
         </div>
 
         <dl className="mt-14 grid grid-cols-1 border-t border-hairline min-[900px]:grid-cols-3">
-          {STATS.map((stat, index) => (
+          {HERO_STATS.map((stat, index) => (
             <div
               key={stat.term}
               className={[
@@ -86,7 +99,7 @@ export function HeroSection() {
                 index > 0
                   ? 'min-[900px]:border-l min-[900px]:border-hairline min-[900px]:pl-6'
                   : '',
-                index < STATS.length - 1 ? 'min-[900px]:pr-6' : '',
+                index < HERO_STATS.length - 1 ? 'min-[900px]:pr-6' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
