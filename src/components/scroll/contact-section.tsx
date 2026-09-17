@@ -8,8 +8,15 @@ import {
   useRef,
   useState,
 } from 'react';
+import Script from 'next/script';
 import { AlertCircle, ArrowUpRight, Download } from 'lucide-react';
 import { CONTACT_INFO } from '@/data/resumeData';
+import { RECAPTCHA_SITE_KEY } from '@/data/site';
+import {
+  RECAPTCHA_FIELD,
+  recaptchaScriptSrc,
+  requestRecaptchaToken,
+} from '@/lib/recaptcha';
 
 /* ---------------------------------------------------------------------------
    ContactSection
@@ -26,6 +33,15 @@ import { CONTACT_INFO } from '@/data/resumeData';
    Action progressive enhancement is a Server Component property — a Client
    Component (which this must be, for the pills and live progress meter) only
    "queues" such submissions until hydration. Hence the Route Handler.
+
+   reCAPTCHA v3 lives here too, and it is the page's only third-party script.
+   `next/script` has four strategies (01-app/03-api-reference/02-components/
+   script.md) and none of them is "on interaction", so the interaction gate is
+   the render itself: the <Script> is not in the tree until someone touches a
+   field, at which point `afterInteractive` injects it once. `loadScript`
+   dedupes on `id || src` through a module-level cache, so re-renders and
+   re-mounts cannot inject it twice. Until then the page loads zero
+   third-party bytes — the hero stays clean.
    --------------------------------------------------------------------------- */
 
 const REASONS = [
@@ -45,7 +61,14 @@ type FieldErrors = Partial<Record<FieldName, string>>;
 
 type ContactResult = {
   ok: boolean;
-  code: 'sent' | 'invalid' | 'rejected' | 'not_configured' | 'delivery_failed';
+  code:
+    | 'sent'
+    | 'invalid'
+    | 'rejected'
+    /** No reCAPTCHA token reached the server, so nothing was forwarded. */
+    | 'unverified'
+    | 'not_configured'
+    | 'delivery_failed';
   message: string;
   fieldErrors?: FieldErrors;
 };
@@ -73,22 +96,32 @@ const SECONDARY_LINK_CLASS =
   'transition-colors hover:border-ink hover:bg-panel';
 
 /**
- * No-JS fallback for the reason pills. The pills are `aria-pressed` buttons
- * (per the design), which are inert without JavaScript — so with scripting
- * off the browser renders this native radio group instead and the handler
- * reads the first non-empty `reason` entry it finds. Written through
- * `dangerouslySetInnerHTML` because React serialises <noscript> children on
- * the server but the browser parses them as text on the client, which would
- * otherwise produce a hydration mismatch.
+ * The no-JS notice.
+ *
+ * There used to be a native radio group here standing in for the reason pills,
+ * so that a scripting-off browser could still post something the handler could
+ * read. reCAPTCHA ended that: a v3 token can only be produced by JavaScript,
+ * the Formspree form requires one, and a submission without it is rejected. A
+ * fallback that carefully collects four fields and then cannot deliver them is
+ * worse than no fallback, so the radios are gone and this says so up front,
+ * next to the submit button, before anyone types a word.
+ *
+ * (The native POST still works and still gets an honest HTML answer from the
+ * handler — see `route.ts`. This is about not wasting the visitor's time.)
+ *
+ * Written through `dangerouslySetInnerHTML` because React serialises
+ * <noscript> children on the server but the browser parses them as text on the
+ * client, which would otherwise produce a hydration mismatch.
  */
-const NOSCRIPT_REASONS = `
-<div class="mt-3 rounded-sm border border-control bg-panel p-3 shadow-hairline">
-  <p class="mb-2 font-ui text-sm font-semibold text-ink">JavaScript is off — choose one:</p>
-  ${REASONS.map(
-    (reason) => `<label class="mr-4 inline-flex items-center gap-2 font-ui text-base text-body">
-    <input type="radio" name="reason" value="${reason}"> ${reason}
-  </label>`,
-  ).join('')}
+const NOSCRIPT_NOTICE = `
+<div class="mt-4 rounded-sm border border-control bg-panel p-3 shadow-hairline">
+  <p class="font-ui text-sm font-semibold text-ink">This form needs JavaScript.</p>
+  <p class="mt-1 font-ui text-sm text-body">
+    It has to run a spam check before it can send, and that check is JavaScript.
+    With scripting off, please email
+    <a href="mailto:${CONTACT_INFO.email}">${CONTACT_INFO.email}</a> instead —
+    that always works.
+  </p>
 </div>`;
 
 function validateClientSide(values: {
@@ -119,6 +152,13 @@ export function ContactSection() {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>({ tone: 'idle' });
+
+  /** Flips on the first focus/keystroke anywhere in the form, and never back.
+   *  Rendering the <Script> is what starts the download, so this is the whole
+   *  "load on first interaction" mechanism. Repeat calls are no-ops — React
+   *  bails out of a re-render when the state is identical. */
+  const [recaptchaArmed, setRecaptchaArmed] = useState(false);
+  const armRecaptcha = useCallback(() => setRecaptchaArmed(true), []);
 
   const ids = useMemo(
     () => ({
@@ -164,10 +204,24 @@ export function ContactSection() {
       setErrors({});
       setStatus({ tone: 'pending' });
 
+      // Safari does not focus a <button> on click, so a visitor who filled the
+      // form with a password manager could reach here having never fired a
+      // focus or input event. Arm it now; the script has a few seconds to turn
+      // up while the token is awaited below.
+      setRecaptchaArmed(true);
+
       // The honeypot lives in the DOM only; read it straight off the form.
       const honeypot = formRef.current
         ? String(new FormData(formRef.current).get('company') ?? '')
         : '';
+
+      // A fresh token per attempt: v3 tokens are single-use and expire after
+      // about two minutes, so none is ever cached. This resolves to `null`
+      // rather than throwing or hanging when Google is blocked or slow — and
+      // then the request goes out anyway, tokenless, so that the server (which
+      // is the only thing that knows whether anything was delivered) decides
+      // what the visitor is told. See `route.ts`' `unverified` branch.
+      const recaptchaToken = await requestRecaptchaToken(RECAPTCHA_SITE_KEY);
 
       try {
         const response = await fetch('/api/contact', {
@@ -182,6 +236,9 @@ export function ContactSection() {
             email: email.trim(),
             message: message.trim(),
             company: honeypot,
+            // Formspree's name for it, kept end to end rather than renamed
+            // for one hop and translated back.
+            [RECAPTCHA_FIELD]: recaptchaToken ?? '',
           }),
         });
 
@@ -271,8 +328,23 @@ export function ContactSection() {
           action="/api/contact"
           method="post"
           onSubmit={handleSubmit}
+          // The interaction gate. `onFocusCapture` (React's name for
+          // `focusin`) covers tab, click and tap into any control; the pills
+          // are buttons, so a keystroke-only signal would miss them.
+          // `onInputCapture` covers autofill, which can populate fields
+          // without a focus event.
+          onFocusCapture={armRecaptcha}
+          onInputCapture={armRecaptcha}
           noValidate
         >
+          {/* Nothing is requested from Google until this renders. */}
+          {recaptchaArmed ? (
+            <Script
+              id="recaptcha-v3"
+              src={recaptchaScriptSrc(RECAPTCHA_SITE_KEY)}
+              strategy="afterInteractive"
+            />
+          ) : null}
           {/* Honeypot: off-screen, aria-hidden, untabbable. No human fills
               this in, so any value is treated as automated by the handler. */}
           <div
@@ -327,7 +399,6 @@ export function ContactSection() {
               })}
             </div>
 
-            <noscript dangerouslySetInnerHTML={{ __html: NOSCRIPT_REASONS }} />
             {/* Carries the pill choice on a native (pre-hydration) submit. */}
             <input type="hidden" name="reason" value={reason ?? ''} />
 
@@ -481,6 +552,33 @@ export function ContactSection() {
               ) : null}
             </p>
           </div>
+
+          <noscript dangerouslySetInnerHTML={{ __html: NOSCRIPT_NOTICE }} />
+
+          {/* Google's terms allow hiding the reCAPTCHA badge only if this
+              notice is visible near the form. `globals.css` hides the badge;
+              this is the other half of that bargain, and it is not optional.
+              The links are unclassed so they pick up the page's own link
+              styling from `a:not([class])`. */}
+          <p className="mt-4 font-ui text-xs leading-relaxed text-muted">
+            Protected by reCAPTCHA. Google&rsquo;s{' '}
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://policies.google.com/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Service
+            </a>{' '}
+            apply.
+          </p>
         </form>
       </div>
 

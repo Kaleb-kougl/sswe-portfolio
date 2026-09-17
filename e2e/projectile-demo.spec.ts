@@ -29,8 +29,6 @@ import { test, expect, type Locator, type Page } from '@playwright/test';
 const SAMPLE_MS = 2_000;
 /** ~120 frames of a live 60fps loop; 30 is a floor a stopped loop cannot reach. */
 const LIVE_FRAME_FLOOR = 30;
-/** The backdrop only runs a live loop on the pointer/desktop layout. */
-const DESKTOP_MIN_WIDTH = 900;
 
 interface DrawCounterWindow {
   __drawsFor: (canvas: HTMLCanvasElement) => number;
@@ -281,13 +279,12 @@ test.describe('The demo dialog', () => {
 });
 
 test.describe('The background canvas pauses while the demo is open', () => {
-  // The backdrop only runs a live render loop on the pointer/desktop layout —
-  // the touch layout is `frameloop="demand"` and already draws nothing when
-  // idle, so there would be no "before" to compare against.
-  test.skip(
-    ({ viewport, isMobile }) => isMobile === true || (viewport?.width ?? 0) < DESKTOP_MIN_WIDTH,
-    'The backdrop is deliberately still on the touch/phone layout',
-  );
+  // This used to skip itself on the touch/phone layout: the backdrop was gated
+  // on `(max-width: 767px)`, so below that it was already `frameloop="demand"`
+  // and there was no "before" to compare against. It animates on phones now, so
+  // the two-contexts-on-one-GPU problem this test is about is REAL on the phone
+  // project — that is where a second context hurts most — and the test finally
+  // has something to measure there. It runs everywhere.
 
   test('stops dead while open, and starts again on close', async ({ page }) => {
     await countWebGLDraws(page);
