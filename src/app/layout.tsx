@@ -49,7 +49,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // No `maximumScale` and no `userScalable: false` — deliberately.
+  //
+  // Capping the scale emits `maximum-scale=1`, which stops pinch-zoom and
+  // fails WCAG 2.1 SC 1.4.4 (Resize Text): a low-vision visitor relying on
+  // screen magnification cannot enlarge the page at all.
+  //
+  // The usual motive for that cap is iOS Safari zooming the viewport when a
+  // form field is focused. Safari only does that below a 16px font size, so
+  // the fix belongs on the inputs, not on everyone's ability to zoom — the
+  // contact form's fields are already `text-base` (16px) for exactly this
+  // reason. Do not reintroduce a cap here to fix an input-zoom bug.
   viewportFit: 'cover',
   themeColor: '#FFFDF7',
 };
