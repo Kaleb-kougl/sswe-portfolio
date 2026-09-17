@@ -229,6 +229,16 @@ test.describe('The demo dialog', () => {
     await launcher(page).click();
     await expect(dialog(page)).toBeFocused();
 
+    // Pause the simulation first. Focus trapping has nothing to do with
+    // whether projectiles are moving, but this test drives 20 keypresses each
+    // followed by an `evaluate` round trip — and against a live canvas under
+    // the headless software renderer that is slow enough to blow the 30s test
+    // budget on the mobile project. Pausing drops the demo's frameloop to
+    // "demand", so the 20 round trips are measuring focus rather than fill
+    // rate. Focus stays on the Pause button, which is itself inside the
+    // dialog, so the trap is still entered from a real focus position.
+    await dialog(page).getByRole('button', { name: 'Pause' }).click();
+
     for (let i = 0; i < 10; i++) {
       await page.keyboard.press('Tab');
       expect(await focusIsInsideDialog(page), `focus escaped forward on Tab #${i + 1}`).toBe(

@@ -33,16 +33,19 @@ export const metadata: Metadata = {
     description:
       'I build the platform other frontend teams ship on. Selected work, career history, and how I work — on one page.',
     url: SITE_URL,
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Kaleb Kougl — Senior Software Engineer, San Francisco',
-      },
-    ],
+    // No `images` here on purpose. `src/app/opengraph-image.tsx` is the
+    // file-convention route that generates the card, and Next emits
+    // og:image / :alt / :type / :width / :height from that file's own exports.
+    // Listing an image here as well would advertise the card twice — and it is
+    // how the old `public/og-image.png` came to claim 1200x630 while actually
+    // being a 1024x1024 JPEG.
     type: 'website',
   },
+  // Still required. Even for the generated card, Next only resolves a relative
+  // social-image URL to an absolute one through `metadataBase`
+  // (`resolveAndValidateImage` in next/dist/lib/metadata/resolvers/
+  // resolve-opengraph.js). Without it a self-hosted build falls back to
+  // `http://localhost:3000`, and crawlers would fetch nothing.
   metadataBase: new URL(SITE_URL),
 };
 
