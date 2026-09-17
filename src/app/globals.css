@@ -296,3 +296,22 @@ a:not([class]):hover {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* --- reCAPTCHA v3 badge ------------------------------------------------ */
+/* Google's loader plants a fixed, bottom-right badge on every page it runs
+   on. It is hidden here because it would float over the scrolling page long
+   after the contact form is out of sight — and because reCAPTCHA is only
+   armed once someone touches the form, the badge would appear mid-scroll for
+   no reason a visitor could connect to anything.
+
+   Google's terms permit hiding it on exactly one condition: a visible notice
+   near the form crediting reCAPTCHA and linking the Privacy Policy and Terms.
+   That notice is rendered by `contact-section.tsx` and the two travel
+   together — delete one and you owe the other.
+
+   `visibility: hidden`, not `display: none`: the badge is the element the
+   challenge iframe anchors to, and removing it from layout has been known to
+   break the fallback challenge. */
+.grecaptcha-badge {
+  visibility: hidden;
+}

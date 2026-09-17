@@ -11,3 +11,23 @@
  * When a real domain exists, change it here and nowhere else.
  */
 export const SITE_URL = 'https://kalebkougl-portfolio.vercel.app';
+
+/**
+ * The reCAPTCHA v3 **site** key for the contact form.
+ *
+ * This is the public half of the pair: it is embedded in the client HTML by
+ * design and is worthless on its own — Google only issues a token for it on
+ * the origins registered against it, and the token is verified against the
+ * **secret** key, which lives in the Formspree form settings and must never
+ * enter this repo.
+ *
+ * Formspree's custom integration expects the site owner to register their own
+ * key pair and post the token back as a field named exactly
+ * `g-recaptcha-response`; with reCAPTCHA switched on for the form, every
+ * submission without one is rejected with `400 "Please complete the
+ * reCAPTCHA"`.
+ *
+ * It lives here for the same reason `SITE_URL` does: it is a public,
+ * deploy-level fact, and the one place to change it is this file.
+ */
+export const RECAPTCHA_SITE_KEY = '6Lchp78tAAAAAECkHg6mrEAqYpbj8W83vVroPoXa';

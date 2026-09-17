@@ -1,4 +1,5 @@
 import { CONTACT_INFO } from '@/data/resumeData';
+import { RECAPTCHA_FIELD } from '@/lib/recaptcha';
 
 /**
  * POST /api/contact — the contact form's submit target.
@@ -16,6 +17,13 @@ import { CONTACT_INFO } from '@/data/resumeData';
  * Accepts both shapes:
  *   - `application/json`      → the enhanced (fetch) path, replies with JSON
  *   - form-encoded / multipart → the no-JS native browser POST, replies HTML
+ *
+ * reCAPTCHA: the Formspree form has reCAPTCHA switched on, so Formspree
+ * rejects any submission that arrives without a `g-recaptcha-response` token
+ * (`400 {"error":"Please complete the reCAPTCHA"}`). The browser fetches that
+ * token and posts it here; this handler forwards it under the same name.
+ * Verification happens at Formspree, against a secret key that is not in this
+ * repo — so this handler cannot judge a token, only carry one.
  */
 
 const REASONS = [
@@ -42,7 +50,13 @@ export type ContactFieldErrors = Partial<
 export type ContactResult = {
   ok: boolean;
   /** Machine-readable outcome, so the UI can branch without string matching. */
-  code: 'sent' | 'invalid' | 'rejected' | 'not_configured' | 'delivery_failed';
+  code:
+    | 'sent'
+    | 'invalid'
+    | 'rejected'
+    | 'unverified'
+    | 'not_configured'
+    | 'delivery_failed';
   message: string;
   fieldErrors?: ContactFieldErrors;
 };
@@ -52,6 +66,8 @@ export type ContactMessage = {
   name: string;
   email: string;
   message: string;
+  /** The reCAPTCHA v3 token, or '' when the browser could not get one. */
+  recaptchaToken: string;
 };
 
 /** How long to wait on the delivery provider before giving up. */
@@ -97,6 +113,11 @@ function resolveEndpoint(raw: string): string | null {
  * The contract this function must never break: it reports `sent` only when the
  * provider accepted the message. A contact form that swallows mail is worse
  * than no contact form, because the sender stops looking for you.
+ *
+ * Order matters here. "Is delivery configured at all?" is answered before "is
+ * this submission verified?", because an unconfigured deployment sends nothing
+ * either way and `not_configured` is the more useful truth — it also keeps the
+ * answer independent of whether Google's script happened to load.
  */
 async function deliverContactMessage(
   message: ContactMessage,
@@ -109,6 +130,21 @@ async function deliverContactMessage(
       code: 'not_configured',
       message:
         `This form isn't connected to a mail service yet, so nothing was sent. ` +
+        `Please email ${CONTACT_INFO.email} directly — that always works.`,
+    };
+  }
+
+  // No token, no point in asking: with reCAPTCHA enabled on the form,
+  // Formspree answers `400 "Please complete the reCAPTCHA"` every time. Say so
+  // plainly instead of spending a round trip to be told the same thing in
+  // words the visitor cannot act on.
+  if (!message.recaptchaToken) {
+    return {
+      ok: false,
+      code: 'unverified',
+      message:
+        `The spam check couldn't run — it is usually blocked by a privacy ` +
+        `extension or a corporate network — so nothing was sent. ` +
         `Please email ${CONTACT_INFO.email} directly — that always works.`,
     };
   }
@@ -131,6 +167,9 @@ async function deliverContactMessage(
         // Surfaced in the notification's subject line, so the inbox is triageable.
         _subject: `Portfolio contact — ${message.reason} — ${message.name}`,
         reason: message.reason,
+        // Formspree verifies this against the secret key held in its own form
+        // settings. The name is fixed by Formspree — do not rename it.
+        [RECAPTCHA_FIELD]: message.recaptchaToken,
       }),
       signal: timeout,
       cache: 'no-store',
@@ -210,6 +249,8 @@ type ParsedSubmission = {
   message: string;
   /** Honeypot. Humans never see this field, so any value means a bot. */
   company: string;
+  /** reCAPTCHA v3 token; '' when the browser could not produce one. */
+  recaptchaToken: string;
 };
 
 async function parseSubmission(
@@ -228,6 +269,7 @@ async function parseSubmission(
         email: readString(raw.email),
         message: readString(raw.message),
         company: readString(raw.company),
+        recaptchaToken: readString(raw[RECAPTCHA_FIELD]),
       };
     }
 
@@ -238,6 +280,7 @@ async function parseSubmission(
       email: readString(formData.get('email')),
       message: readString(formData.get('message')),
       company: readString(formData.get('company')),
+      recaptchaToken: readString(formData.get(RECAPTCHA_FIELD)),
     };
   } catch {
     return null;
@@ -347,6 +390,21 @@ function reply(
   return Response.json(result, { status });
 }
 
+function statusFor(result: ContactResult): number {
+  if (result.ok) return 200;
+  switch (result.code) {
+    case 'not_configured':
+      return 503;
+    // The token is a field of the request that the request did not carry, so
+    // this is a 4xx — even though the usual cause (a blocked script) is not
+    // something the sender chose.
+    case 'unverified':
+      return 400;
+    default:
+      return 502;
+  }
+}
+
 export async function POST(request: Request): Promise<Response> {
   const submission = await parseSubmission(request);
 
@@ -396,8 +454,8 @@ export async function POST(request: Request): Promise<Response> {
     name: submission.name,
     email: submission.email,
     message: submission.message,
+    recaptchaToken: submission.recaptchaToken,
   });
 
-  const status = result.ok ? 200 : result.code === 'not_configured' ? 503 : 502;
-  return reply(request, result, status);
+  return reply(request, result, statusFor(result));
 }
