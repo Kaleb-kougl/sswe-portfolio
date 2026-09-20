@@ -38,6 +38,7 @@ import {
   isBackdropSuspended,
   subscribeBackdropPower,
 } from './backdrop-power';
+import { canvasMatchesHost, RecoverableResizeObserver, remeasureBackdrop } from './canvas-measure';
 import { createFrameWatchdog, sampleFrame } from './frame-watchdog';
 import { detectWebGL2 } from './viewport-fallback';
 import { WebGLErrorBoundary } from './error-boundary';
@@ -174,6 +175,19 @@ const SWAY_AMPLITUDE = 0.035;
 const SWAY_SPEED = 0.16;
 
 /**
+ * How many times the size guard will ask for a re-measure before giving up and
+ * saying so. See `useCanvasSizeGuard`.
+ */
+const SIZE_GUARD_ATTEMPTS = 6;
+/**
+ * Gap between those attempts, in ms. Must clear react-use-measure's own scroll
+ * debounce (50ms), which is what it debounces the ResizeObserver callback with:
+ * asked again inside that window, it would only reset its own timer and never
+ * actually measure.
+ */
+const SIZE_GUARD_INTERVAL_MS = 120;
+
+/**
  * Any non-zero `useFrame` priority takes rendering out of R3F's hands:
  * `update()` in the loop only calls `gl.render` itself when `internal.priority`
  * is 0 (`@react-three/fiber` 9.6.1). `MorphingBlocks` wants that, because a
@@ -214,6 +228,23 @@ const HOST_STYLE: React.CSSProperties = {
 };
 
 const CANVAS_STYLE: React.CSSProperties = { pointerEvents: 'none' };
+
+/**
+ * Handed to `<Canvas resize>`, and module-level so R3F is never given a new
+ * object for it.
+ *
+ * `scroll: false` — react-use-measure re-measures on scroll by default; this
+ * backdrop is fixed, so that is pure overhead on the hottest event we have.
+ * (It is NOT what broke the backdrop. It does mean that when the first
+ * measurement goes missing there is no longer an accidental recovery on the
+ * first scroll, which is why the recovery below is explicit instead.)
+ *
+ * `polyfill` — the native observer plus an out-of-band "measure now", because
+ * R3F will not create its root until something reports a non-zero box and the
+ * ResizeObserver is otherwise the only thing that ever can. See
+ * `canvas-measure.ts` for the whole story.
+ */
+const RESIZE_OPTIONS = { scroll: false, polyfill: RecoverableResizeObserver };
 
 // ---------------------------------------------------------------------------
 // The mesh
@@ -780,8 +811,86 @@ function useRenderActive(hostRef: React.RefObject<HTMLDivElement | null>, enable
   return active;
 }
 
+/**
+ * Proves the canvas was actually sized, and fixes it when it was not.
+ *
+ * R3F creates its root — and therefore calls `gl.setSize`, and therefore draws
+ * anything at all — only once react-use-measure reports a non-zero box, and the
+ * only thing that reports one is a ResizeObserver delivery. That delivery is
+ * part of the document's rendering lifecycle and a document that is not being
+ * rendered never gets it, so the canvas can sit at its 300x150 intrinsic
+ * default inside a full-viewport host, forever, without throwing. Every signal
+ * this repo collects would still be green: no exception for the error boundary,
+ * no failed context for the `fallback`, `aria-hidden` for screen readers, and a
+ * draw-call budget that an unrendered scene passes trivially.
+ *
+ * So this asks the question directly — does the canvas's box match its host's?
+ * — at the first moment the answer can be acted on. A `requestAnimationFrame`
+ * callback *running* is that moment: it is the same rendering lifecycle the
+ * missing delivery belongs to, seen from the other side. Re-armed on
+ * `visibilitychange` and `pageshow` so a tab that loads in the background and a
+ * page restored from the bfcache both get their turn.
+ *
+ * It settles on the first attempt in the healthy case, and if it never settles
+ * it says so once. A decorative backdrop should fail quietly to the visitor;
+ * it should not fail quietly to the person maintaining it.
+ */
+function useCanvasSizeGuard(
+  hostRef: React.RefObject<HTMLDivElement | null>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+) {
+  useEffect(() => {
+    let frame = 0;
+    let timer = 0;
+    let stopped = false;
+
+    const attempt = (n: number) => {
+      timer = 0;
+      if (stopped) return;
+      const host = hostRef.current;
+      const canvas = canvasRef.current;
+      // No canvas means no WebGL2 and nothing to size — not this failure.
+      if (!host || !canvas) return;
+      if (canvasMatchesHost(canvas, host)) return;
+
+      remeasureBackdrop();
+      if (n + 1 < SIZE_GUARD_ATTEMPTS) {
+        timer = window.setTimeout(() => attempt(n + 1), SIZE_GUARD_INTERVAL_MS);
+        return;
+      }
+      console.error(
+        '[morph-canvas] the backdrop never sized itself: the canvas is still ' +
+          `${canvas.clientWidth}x${canvas.clientHeight} inside a ` +
+          `${Math.round(host.clientWidth)}x${Math.round(host.clientHeight)} host, so ` +
+          'react-three-fiber never created its root and the scene is drawing nothing.',
+      );
+    };
+
+    const arm = () => {
+      if (stopped || frame || timer) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        attempt(0);
+      });
+    };
+
+    arm();
+    document.addEventListener('visibilitychange', arm);
+    window.addEventListener('pageshow', arm);
+
+    return () => {
+      stopped = true;
+      if (frame) cancelAnimationFrame(frame);
+      if (timer) window.clearTimeout(timer);
+      document.removeEventListener('visibilitychange', arm);
+      window.removeEventListener('pageshow', arm);
+    };
+  }, [hostRef, canvasRef]);
+}
+
 export default function MorphCanvas() {
   const hostRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const saveData = useSaveData();
   /**
@@ -830,20 +939,21 @@ export default function MorphCanvas() {
   // failed. No WebGL means no backdrop, and the sections stand on their own.
   const supported = detectWebGL2();
 
+  useCanvasSizeGuard(hostRef, canvasRef);
+
   return (
     <div ref={hostRef} aria-hidden="true" style={HOST_STYLE}>
       {supported ? (
         <WebGLErrorBoundary FallbackComponent={SilentFallback}>
           <Canvas
+            ref={canvasRef}
             aria-hidden="true"
             style={CANVAS_STYLE}
             fallback={null}
             flat
             dpr={dpr}
             frameloop={animated ? (active ? 'always' : 'never') : 'demand'}
-            // react-use-measure re-measures on scroll by default; this backdrop
-            // is fixed, so that is pure overhead on the hottest event we have.
-            resize={{ scroll: false }}
+            resize={RESIZE_OPTIONS}
             gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
             camera={{ fov: CAMERA_FOV, near: 1, far: 400, position: [0, 0, CAMERA_Z] }}
           >

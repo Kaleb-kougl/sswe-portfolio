@@ -60,7 +60,7 @@ export interface WorkLink {
 export type WorkProjectId =
   | 'r3f-projectiles'
   | 'roblox-css'
-  | 'bonkball'
+  | 'video-pipeline'
   | 'analytics-extension';
 
 export interface WorkProject {
@@ -145,21 +145,51 @@ export const WORK_PROJECTS: readonly WorkProject[] = [
     ],
   },
   {
-    id: 'bonkball',
-    name: 'BonkBall',
-    badge: { label: 'ROBLOX GAME', tone: 'neutral' },
-    // Sourced from src/data/resumeData.ts → RESUME_DATA['hammerball'].
-    // The Roblox link is the live game, verified HTTP 200 with the title
-    // "BonkBall | Play on Roblox". It is the only public artifact for this
-    // project — there is no repo and no case-study page — so it is the one
-    // link the card carries.
+    id: 'video-pipeline',
+    name: 'Agentic AI Video Creator',
+    badge: { label: 'AGENTIC AI · MIT', tone: 'lime' },
+    //
+    // REPLACED BonkBall here. BonkBall keeps its résumé entry
+    // (RESUME_DATA['hammerball']) and its live Roblox link; what it does not
+    // keep is one of the four slots a reader actually looks at. This grid is
+    // the site's argument, and a multiplayer game made a weaker one than a
+    // multi-agent LLM system does.
+    //
+    // SOURCING — read before adding a number to this card.
+    // Every clause is read off the public repo's README at
+    // github.com/Kaleb-kougl/video-pipeline (Public, Python, MIT):
+    //   six stages           → "WorkflowOrchestrator (agents/workflow_orchestrator.py)
+    //                          drives all six stages"
+    //   sub-agents           → transcript discovery, content generation,
+    //                          compilation, per the same section
+    //   Pydantic schema      → "Constraining a nondeterministic model":
+    //                          with_structured_output(Episode_Summary_Schema),
+    //                          plot_points: List[str]
+    //   six validators/gate  → "Quality gates with explicit criticality":
+    //                          agents/quality_agents/, the min_score/critical
+    //                          table in quality_coordinator.py
+    //   149 tests            → "Tests: 149 passed, 2 skipped"
+    //
+    // TWO LINKEDIN CLAIMS ARE DELIBERATELY ABSENT, and should not be added to
+    // this card without their own artifact to point at:
+    //   - "parallel image generation ... reduced media creation time by over
+    //     60%". No parallel image module and no 60% figure appears in this
+    //     repo. The README's one performance discussion is ContentCache, and
+    //     it says that saving is theoretical because nothing calls it.
+    //   - the separate autonomous coding agent that enforced TDD. Not in this
+    //     repo either.
+    // Both live in separate repositories. When one is public, cite it here and
+    // the claims can ship — the TDD agent especially, since "an agent that
+    // refactors my own code under TDD" is the strongest thing on this profile
+    // for an AI-developer-tooling reader. Until then they stay off the card
+    // and remain on the résumé entry, which is labelled as LinkedIn-sourced.
     description:
-      'A PvPvE multiplayer Roblox game in strict TypeScript. An Entity-Component-System boundary keeps client and server apart, with Finite-State-Machine bots and match phases synchronized across 20+ decoupled services.',
+      'A six-stage agentic pipeline that turns an episode transcript into a narrated video. A workflow orchestrator drives sub-agents for transcript discovery, Gemini generation and compilation, with the model bound to a Pydantic schema so everything downstream gets a fixed shape instead of prose to parse. Six validators score their own stage against a gate table that decides whether a weak one degrades the run or stops it. 149 tests passing.',
     links: [
       {
-        label: 'Play on Roblox',
-        href: 'https://www.roblox.com/games/125331448291741/BonkBall',
-        screenReaderSuffix: ' — BonkBall on Roblox',
+        label: 'Source',
+        href: 'https://github.com/Kaleb-kougl/video-pipeline',
+        screenReaderSuffix: ' for the Agentic AI Video Creator on GitHub',
       },
     ],
   },
@@ -168,14 +198,21 @@ export const WORK_PROJECTS: readonly WorkProject[] = [
     name: 'Indeed Analytics Extension',
     badge: { label: 'AT INDEED', tone: 'blue' },
     // Sourced from src/data/resumeData.ts → RESUME_DATA['analytics-extension'].
-    // Every clause below maps to one of its bullets: Manifest V3 React
-    // extension, "zero-auth, stateless bridge", "deep-linked troubleshooting
-    // UI workflow", "strict frontend input allowlists and automatic URL
-    // sanitization".
+    // Every clause below maps to one of its bullets: the 20% troubleshooting
+    // figure and "GenAI analytics Chrome extension" from the résumé bullet,
+    // "single-click workflow that replaced a cumbersome manual process" from
+    // the LinkedIn one, then "zero-auth, stateless bridge" and "strict
+    // frontend input allowlists and automatic URL sanitization".
+    //
+    // ORDER IS THE POINT. This card used to open on the auth bridge and the
+    // sanitization, which is plumbing, and never said the thing was GenAI or
+    // that it saved anyone any time. The security design is still here; it is
+    // just no longer the first thing a skimming reader gets.
+    //
     // NO LINK: internal Indeed tooling with no public repository, and no case
     // study page exists to link to.
     description:
-      'A Manifest V3 React extension that deep-links straight into campaign diagnostics. A stateless bridge that carries no auth tokens, with strict input allowlists and automatic URL sanitization on the way through.',
+      'A GenAI analytics extension that cut ad-campaign troubleshooting 20% for Customer Support, turning a manual diagnostic process into one click. Manifest V3 and React over a stateless bridge that carries no auth tokens, with strict input allowlists and automatic URL sanitization on the way through.',
     links: [],
     linkNote: 'Internal to Indeed — no public link',
   },

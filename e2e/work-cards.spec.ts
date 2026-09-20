@@ -17,6 +17,13 @@ import { WORK_PROJECTS, ROBLOX_CSS_COVERAGE } from '../src/data/workProjects';
  * this one always does.
  */
 
+/**
+ * BonkBall was one of these four cards until the Agentic AI Video Creator took
+ * its slot; its `test('BonkBall links to the live game')` went with it. The
+ * game is still on the résumé (RESUME_DATA['hammerball']) and still live on
+ * Roblox — it is just no longer in the grid, so there is nothing here to
+ * assert about it.
+ */
 const card = (page: import('@playwright/test').Page, name: string) =>
   page.locator('#work li').filter({ has: page.getByRole('heading', { name, exact: true }) });
 
@@ -55,17 +62,34 @@ test('r3f-projectiles states the counts its source actually supports', async ({ 
   await expect(page.locator('#work')).not.toContainText('9 modifiers');
 });
 
-test('BonkBall links to the live game', async ({ page }) => {
-  const link = card(page, 'BonkBall').getByRole('link', { name: /play on roblox/i });
-  await expect(link).toHaveAttribute(
-    'href',
-    'https://www.roblox.com/games/125331448291741/BonkBall',
-  );
+test('the video pipeline card links to the repo its claims come from', async ({ page }) => {
+  const c = card(page, 'Agentic AI Video Creator');
+  const link = c.getByRole('link', { name: /source/i });
+  await expect(link).toHaveAttribute('href', 'https://github.com/Kaleb-kougl/video-pipeline');
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', /noopener/);
 
-  // It used to say this, when no public URL was known.
-  await expect(card(page, 'BonkBall')).not.toContainText('No public link yet');
+  // Every figure on this card is one that README states.
+  await expect(c).toContainText('six-stage');
+  await expect(c).toContainText('149 tests passing');
+});
+
+test('the video pipeline card claims nothing the linked repo cannot show', async ({ page }) => {
+  // TWO CLAIMS ON THE LINKEDIN PROJECT ENTRY LIVE IN OTHER REPOSITORIES: a
+  // parallel image-generation module said to cut media creation time by 60%,
+  // and the separate autonomous coding agent that refactored this project
+  // under TDD. Neither appears in video-pipeline, which is the repo this card
+  // links to — so a reader who follows "Source" to check them would find
+  // nothing, and the README instead says its one documented saving (the
+  // content cache) is theoretical because nothing calls it.
+  //
+  // This test is not hostile to those claims. It pins them to their evidence:
+  // when either repo is public, link it from the card and the matching
+  // assertion here comes out. Until then the card stays inside what one
+  // README supports.
+  const work = page.locator('#work');
+  await expect(work).not.toContainText('60%');
+  await expect(work).not.toContainText(/Test-Driven Development/i);
 });
 
 test('a card with no public artifact says so rather than linking nowhere', async ({ page }) => {

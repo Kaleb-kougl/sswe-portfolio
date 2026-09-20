@@ -205,27 +205,108 @@ function CssTranslationDrawing() {
   );
 }
 
-/** BonkBall — the bot brain's finite state machine, as a strip. */
-function FiniteStateMachineDrawing() {
-  const pillBase =
-    'rounded-pill px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em]';
-  const arrow = (
-    <svg viewBox="0 0 22 10" className="w-5 shrink-0 text-muted" fill="none">
-      <path d="M0 5h14" stroke="currentColor" strokeWidth={1.5} />
-      <path d="M20 5 13 1.5v7Z" fill="currentColor" />
-    </svg>
-  );
+/**
+ * The sub-agents the orchestrator drives, in the README's stage order.
+ *
+ * `y` is the row's centre in the 112-unit viewBox, spaced 24 apart from 20, so
+ * the four rows sit symmetrically about the orchestrator box at y=56.
+ *
+ * Each label names the agent and the thing it is built on, both read off
+ * github.com/Kaleb-kougl/video-pipeline: transcript discovery, content
+ * generation via Gemini, character analysis over ChromaDB, and MP4
+ * compilation. Not an impression of a pipeline — these are its actual stages.
+ */
+const PIPELINE_AGENTS = [
+  { label: 'transcript discovery', y: 20 },
+  { label: 'content · gemini', y: 44 },
+  { label: 'character · chromadb', y: 68 },
+  { label: 'compile · mp4', y: 92 },
+] as const;
 
+/**
+ * video-pipeline — one orchestrator, four sub-agents.
+ *
+ * A graph rather than a strip, because that is the shape of the claim: the
+ * three other cards draw a ring, two code panes and a popup, so a fan-out is
+ * the one silhouette not already spent.
+ *
+ * Colors come through `currentColor` off `text-*` tokens rather than
+ * `fill-*`/`stroke-*` utilities, matching the arrow SVGs elsewhere in this
+ * file. The rect fills are `fill-white`, which is exactly `--color-surface`.
+ */
+function AgentOrchestratorDrawing() {
   return (
-    <IllustrationPanel className="gap-2 bg-panel px-3">
-      {/* The live state: lime fill, ink border — the one filled pill. */}
-      <span className={`${pillBase} border border-ink bg-lime text-lime-ink`}>Patrol</span>
-      {arrow}
-      {/* Inactive states: a surface fill against the panel tint, plus the
-          stronger control border — a border alone would not separate them. */}
-      <span className={`${pillBase} border border-control bg-surface text-body`}>Aggro</span>
-      {arrow}
-      <span className={`${pillBase} border border-control bg-surface text-body`}>Flee</span>
+    <IllustrationPanel className="bg-panel">
+      <svg
+        viewBox="0 0 280 112"
+        preserveAspectRatio="xMidYMid meet"
+        className="h-full w-full"
+      >
+        {/* Connectors first, so the boxes sit on top of their ends. */}
+        {PIPELINE_AGENTS.map((agent) => (
+          <path
+            key={agent.label}
+            d={`M94 56 C 116 56, 126 ${agent.y}, 148 ${agent.y}`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1}
+            className="text-control"
+          />
+        ))}
+
+        {/* The orchestrator: the one ink-bordered box on the panel. */}
+        <rect
+          x={12}
+          y={38}
+          width={82}
+          height={36}
+          rx={7}
+          stroke="currentColor"
+          strokeWidth={1.25}
+          className="fill-white text-ink"
+        />
+        <text
+          x={53}
+          y={53}
+          textAnchor="middle"
+          fill="currentColor"
+          className="font-mono text-[8px] font-bold text-ink"
+        >
+          workflow
+        </text>
+        <text
+          x={53}
+          y={64}
+          textAnchor="middle"
+          fill="currentColor"
+          className="font-mono text-[8px] font-bold text-ink"
+        >
+          orchestrator
+        </text>
+
+        {PIPELINE_AGENTS.map((agent) => (
+          <g key={agent.label}>
+            <rect
+              x={148}
+              y={agent.y - 9}
+              width={120}
+              height={18}
+              rx={4}
+              stroke="currentColor"
+              strokeWidth={1}
+              className="fill-white text-hairline"
+            />
+            <text
+              x={158}
+              y={agent.y + 3}
+              fill="currentColor"
+              className="font-mono text-[8px] text-body"
+            >
+              {agent.label}
+            </text>
+          </g>
+        ))}
+      </svg>
     </IllustrationPanel>
   );
 }
@@ -247,9 +328,12 @@ function ExtensionPopupDrawing() {
             Campaign diagnostics
           </span>
         </div>
+        {/* The second row is the résumé's own figure, not a decorative one:
+            "Cut ad campaign troubleshooting time 20% for Customer Support."
+            The card's copy now leads with it, so the picture does too. */}
         <div className="divide-y divide-hairline py-0.5">
-          {row('Deep link', 'ready')}
-          {row('Input allowlist', 'passed')}
+          {row('One-click triage', 'ready')}
+          {row('Troubleshooting time', '\u221220%')}
         </div>
       </div>
     </IllustrationPanel>
@@ -259,7 +343,7 @@ function ExtensionPopupDrawing() {
 const ILLUSTRATIONS: Record<WorkProjectId, ReactNode> = {
   'r3f-projectiles': <ProjectilePoolDrawing />,
   'roblox-css': <CssTranslationDrawing />,
-  bonkball: <FiniteStateMachineDrawing />,
+  'video-pipeline': <AgentOrchestratorDrawing />,
   'analytics-extension': <ExtensionPopupDrawing />,
 };
 
@@ -284,7 +368,7 @@ export function WorkSection() {
         </h2>
 
         <p className="mt-4 max-w-2xl text-lg text-body">
-          Two open-source packages, a multiplayer game, and tooling used inside Indeed.
+          Two npm packages, a multi-agent LLM pipeline, and tooling used inside Indeed.
         </p>
 
         <ul className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">

@@ -68,10 +68,19 @@ export function HeroSection() {
           {HERO_HEADLINE}
         </h1>
 
+        {/*
+          The AI clause used to be four words — "Lately, GenAI and agentic
+          workflows" — for the largest body of work on the résumé below it. It
+          now names the two things that clause was standing in for, both of
+          which are bullets on `indeed-sr-swe`: the code-generation harnesses
+          that took 10% off cycle time, and the secure gateway that opens
+          internal AI platforms to third-party agents.
+        */}
         <p className="mt-7 max-w-[54ch] text-[17px] leading-relaxed text-body min-[900px]:text-[19px]">
           {YEARS} years of TypeScript and React: component libraries, module
-          federation, Core Web Vitals and frontend SLOs. Lately, GenAI and
-          agentic workflows.
+          federation, Core Web Vitals and frontend SLOs. Lately, AI in the
+          delivery path — code-generation harnesses, and a secure gateway that
+          opens internal AI platforms to third-party agents.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-3">
