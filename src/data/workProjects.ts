@@ -100,13 +100,36 @@ export const WORK_PROJECTS: readonly WorkProject[] = [
     id: 'roblox-css',
     name: 'roblox-css',
     badge: { label: 'NPM · LGPL-3.0', tone: 'lime' },
-    // Prose from src/data/resumeData.ts → RESUME_DATA['roblox-css']; the
-    // coverage figure from ROBLOX_CSS_COVERAGE above, which
+    // Read off the package at v0.1.1 rather than quoted from the résumé:
+    // the three parsers are roblox-css/src/styles/{dimension,color,gradient}
+    // Parser.ts, the UDim2/Color3/UIGradient emission and the
+    // `uisizeconstraint` / `uiaspectratioconstraint` / `uitextsizeconstraint`
+    // injection are in styles/webStyle.ts, and "at render time" is literal —
+    // there is no build step, the peer dep is @rbxts/react.
+    //
+    // The résumé bullet this replaces said "incl. recursive calc()". That is
+    // not true and must not come back: parseCalc (styles/dimensionParser.ts)
+    // splits its terms on " - " / " + " with no regard for parentheses and
+    // bails unless it gets exactly two, so every nested calc() fails — and so
+    // does a single-term one. The spec only covers two-term expressions, which
+    // is why nothing caught it. What ships here is what the parser does.
+    //
+    // The coverage figure comes from ROBLOX_CSS_COVERAGE above, which
     // `npm run roblox-css:check` re-derives from a clone of the real repo.
     description:
-      'Write familiar CSS — flex, grid, gradients, calc — and get native Roblox UI primitives. A translation middleware for roblox-ts, built on a branded type system, three specialized parsers, and variant-driven animation, held in place by ' +
+      'Write familiar CSS — flex, grid, gradients, calc — and get native Roblox UI. Hand-written parsers resolve dimensions, colors and linear-gradient() into UDim2, Color3 and UIGradient at render time, and a React layer injects the matching UI constraint instances. Held in place by ' +
       `${ROBLOX_CSS_COVERAGE.assertions.toLocaleString('en-US')} assertions across ${ROBLOX_CSS_COVERAGE.specFiles} spec files.`,
     links: [
+      // Verified HTTP 200. NOTE: this repo's README still advertises "1,419
+      // assertions across 24 spec files", a figure matching neither the raw
+      // count (1,926/17) nor the distinct one this card publishes (1,298/9).
+      // Now that the card links to it, a reader who follows Source sees the
+      // contradiction. Fix belongs upstream, in the package's README.
+      {
+        label: 'Source',
+        href: 'https://github.com/Kaleb-kougl/roblox-css',
+        screenReaderSuffix: ' for roblox-css on GitHub',
+      },
       {
         label: 'npm',
         href: 'https://www.npmjs.com/package/@k9kbdev/roblox-css',

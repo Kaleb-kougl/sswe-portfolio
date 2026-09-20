@@ -105,31 +105,101 @@ function ProjectilePoolDrawing() {
   );
 }
 
-/** roblox-css — CSS in, native Roblox instances out. */
+/**
+ * roblox-css — one CSS block on the left, the instances it emits on the right.
+ *
+ * NOT an impression of the output. Every line of the right pane is what
+ * `webStyle()` actually produces for the left pane, read off
+ * roblox-css/src/styles/webStyle.ts at v0.1.1:
+ *
+ *   width: calc(100% - 24px)  → step 1, Size. `height` is omitted, so it
+ *                               falls back to "100%" → UDim(1, 0).
+ *   background: linear-...    → step 2.5, a <uigradient> child. With no
+ *                               direction given, gradientParser defaults to
+ *                               180deg (CSS "to bottom") and Roblox rotation
+ *                               is angle - 90, so 90.
+ *   border-radius: 8px        → step 4, <uicorner> CornerRadius UDim(0, 8).
+ *   display/flex-direction    → step 6, <uilistlayout>. FillDirection is
+ *                               Horizontal only because flex-direction is
+ *                               spelled out; omitted, this package defaults
+ *                               to Vertical, which is NOT the CSS default.
+ *   gap: 8px                  → the same layout's Padding, UDim(0, 8).
+ *
+ * The child order is the order webStyle pushes them, not a tidied one.
+ */
+const CSS_DECLARATIONS: readonly (readonly [property: string, value: string])[] = [
+  ['width', 'calc(100% - 24px);'],
+  ['background', ''],
+  ['', '  linear-gradient('],
+  ['', '    #BFF03A, #8B9BFF);'],
+  ['border-radius', '8px;'],
+  ['display', 'flex;'],
+  ['flex-direction', 'row;'],
+  ['gap', '8px;'],
+] as const;
+
+/**
+ * `mark` is "·" on the instances webStyle injects as children and empty on
+ * everything else — the Frame itself, its own props, and the continuation
+ * lines that carry a child's properties.
+ *
+ * A middle dot rather than the box-drawing "├"/"└" this wants to be: the mono
+ * face has no box-drawing glyphs, so those fell back to a font that renders
+ * both as the same short dash, which loses the one thing the characters were
+ * there for. "·" is already in this page's type (the badge, the bullet count),
+ * so it is known to render.
+ */
+const EMITTED_INSTANCES: readonly {
+  readonly mark: string;
+  readonly name: string;
+  readonly detail: string;
+}[] = [
+  { mark: '', name: 'Frame', detail: '' },
+  { mark: '  ', name: 'Size', detail: 'UDim2(1,-24, 1,0)' },
+  { mark: '  · ', name: 'UIGradient', detail: '' },
+  { mark: '      ', name: '', detail: 'Rotation 90' },
+  { mark: '  · ', name: 'UICorner', detail: 'UDim(0,8)' },
+  { mark: '  · ', name: 'UIListLayout', detail: '' },
+  { mark: '      ', name: '', detail: 'Horizontal' },
+  { mark: '      ', name: '', detail: 'Padding UDim(0,8)' },
+] as const;
+
 function CssTranslationDrawing() {
   return (
-    <IllustrationPanel className="gap-3 bg-panel px-4">
-      <div className="rounded-xs border border-hairline bg-surface px-2.5 py-2 shadow-hairline">
-        <code className="block font-mono text-[9px] leading-[1.6] text-link">
-          display: flex;
-          <br />
-          gap: 8px;
-          <br />
-          border-radius: 6px;
+    <IllustrationPanel className="gap-1.5 bg-panel p-2">
+      {/* Left: the source. Property names take the link ink, values the body
+          ink, which is the same two-tone the rest of the site gives code. */}
+      <div className="min-w-0 flex-1 self-stretch overflow-hidden rounded-xs border border-hairline bg-surface px-2 py-0.5 shadow-hairline">
+        <code className="block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px]">
+          {CSS_DECLARATIONS.map(([property, value]) => (
+            <span key={`${property}${value}`} className="block">
+              {property ? <span className="text-link">{property}: </span> : null}
+              <span className="text-body">{value}</span>
+            </span>
+          ))}
         </code>
       </div>
 
-      <svg viewBox="0 0 26 10" className="w-6 shrink-0 text-muted" fill="none">
-        <path d="M0 5h18" stroke="currentColor" strokeWidth={1.5} />
-        <path d="M24 5 17 1.5v7Z" fill="currentColor" />
+      <svg viewBox="0 0 22 10" className="w-4 shrink-0 text-muted" fill="none">
+        <path d="M0 5h14" stroke="currentColor" strokeWidth={1.5} />
+        <path d="M20 5 13 1.5v7Z" fill="currentColor" />
       </svg>
 
-      <div className="rounded-xs bg-[#161310] px-2.5 py-2">
-        <span className="font-mono text-[9px] leading-[1.6] text-[#FFFDF7]">
-          Roblox UI
-          <br />
-          native primitives
-        </span>
+      {/* Right: the emitted tree, on the package's own dark canvas. Paper for
+          instance names, periwinkle for the values they carry — both already
+          pigments this file draws with, so the panel needs no new ink. */}
+      <div className="min-w-0 flex-1 self-stretch overflow-hidden rounded-xs bg-[#161310] px-2 py-0.5">
+        <code className="block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px]">
+          {EMITTED_INSTANCES.map((instance) => (
+            <span key={`${instance.mark}${instance.name}${instance.detail}`} className="block">
+              <span className="text-[#6F675E]">{instance.mark}</span>
+              <span className="text-[#FFFDF7]">{instance.name}</span>
+              {instance.detail ? (
+                <span className="text-[#8B9BFF]">{instance.name ? ' ' : ''}{instance.detail}</span>
+              ) : null}
+            </span>
+          ))}
+        </code>
       </div>
     </IllustrationPanel>
   );
