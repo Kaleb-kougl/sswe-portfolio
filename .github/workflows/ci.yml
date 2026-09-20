@@ -79,6 +79,49 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
+  web-vitals:
+    name: Mid-Range Phone Vitals
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Its own job, not a step in build-and-test, for two reasons. It needs a
+    # PRODUCTION server -- `next dev` compiles on request and ships unminified
+    # modules, so an LCP measured there is a fact about the dev server -- and
+    # Next holds a build lock, so it cannot share a runner with the build that
+    # job already does. Running it here gets it a clean machine and a build of
+    # its own, and `npm run test:vitals` does both halves in order.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Builds, serves, and measures. The thresholds are Google's published
+      # "good" boundaries rather than this build's own numbers, which is what
+      # keeps a shared, noisy runner from deciding the result.
+      - name: Measure Core Web Vitals under mobile emulation
+        run: npm run test:vitals
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-vitals
+          path: playwright-report/
+          retention-days: 14
+
   asset-budget:
     name: Hero Asset Budget
     runs-on: ubuntu-latest

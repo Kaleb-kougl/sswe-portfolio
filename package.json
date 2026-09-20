@@ -9,6 +9,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "test:e2e": "playwright test",
+    "test:vitals": "npm run build && playwright test --config=playwright.vitals.config.ts",
     "test:unit": "vitest run",
     "hero:build": "\"${BLENDER:-/Applications/Blender.app/Contents/MacOS/Blender}\" --background --factory-startup --python scripts/build_hero_glb.py -- --out public/models/hero.glb --blend scripts/hero.blend",
     "hero:check": "node scripts/check-hero-budget.mjs",
