@@ -33,10 +33,15 @@ test('roblox-css states its coverage, matching the single source', async ({ page
   const expected = `${ROBLOX_CSS_COVERAGE.assertions.toLocaleString('en-US')} assertions across ${ROBLOX_CSS_COVERAGE.specFiles} spec files`;
   await expect(card(page, 'roblox-css')).toContainText(expected);
 
-  // The figure this replaced came from the package's own README and matched
-  // neither the raw nor the deduplicated count. It must not come back.
+  // Two superseded figures, both of which must stay gone. 1,419/24 came from
+  // the package's own README and matched neither the raw nor the deduplicated
+  // count. 1,298/9 was this site's own, and was wrong for a subtler reason:
+  // the check script matched only `.spec.ts`, so three `.spec.tsx` files never
+  // reached the total it was validating against.
   await expect(page.locator('#work')).not.toContainText('1,419');
   await expect(page.locator('#work')).not.toContainText('24 spec files');
+  await expect(page.locator('#work')).not.toContainText('1,298');
+  await expect(page.locator('#work')).not.toContainText('9 spec files');
 });
 
 test('r3f-projectiles states the counts its source actually supports', async ({ page }) => {

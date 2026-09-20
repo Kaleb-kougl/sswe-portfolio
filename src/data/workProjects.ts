@@ -18,15 +18,22 @@
  *
  * DISTINCT, not total. At v0.1.1 eight spec files are byte-identical duplicates
  * between src/tests/ and src/tests/<subdir>/; both copies compile and run, so a
- * raw count reports 1,926 assertions across 17 files. We publish what is
+ * raw count reports 1,966 assertions across 20 files. We publish what is
  * actually distinct.
  *
- * The package's own README and CHANGELOG still say "1,419 assertions across 24
- * spec files", which matches neither figure. Worth correcting upstream.
+ * This said 1,298 across 9 until the check script was found to be matching only
+ * `.spec.ts` and skipping `.spec.tsx` — three real spec files, 40 assertions,
+ * invisible to the very thing meant to keep the claim honest. The script now
+ * matches both extensions and is scoped to `src/`, since the package's
+ * root-level `tests/` tree never compiles and has never run.
+ *
+ * The package's README and CHANGELOG used to say "1,419 assertions across 24
+ * spec files", matching nothing countable. Corrected upstream in roblox-css
+ * 87429f8, which now publishes these same two numbers.
  */
 export const ROBLOX_CSS_COVERAGE = {
-  assertions: 1298,
-  specFiles: 9,
+  assertions: 1338,
+  specFiles: 12,
 } as const;
 
 /** Which badge tint a card's chip uses. Each tint ships its own legible ink. */
