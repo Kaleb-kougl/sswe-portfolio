@@ -19,9 +19,14 @@
  *   1 draw call rendered through a single InstancedMesh and 112 draw calls
  *   rendered naively as 112 separate Meshes. This script therefore reports a
  *   *minimum*, never the actual number, and deliberately prints no draw-call
- *   figure it did not measure. Measuring the real number needs a Playwright
- *   probe reading `renderer.info.render.calls` against the running page --
- *   tracked as the follow-up, not faked here.
+ *   figure it did not measure.
+ *
+ *   Nor can it tell a scene drawing one call per frame from a scene drawing
+ *   none -- and the backdrop shipped in the second state for a while, passing
+ *   this check the whole time, because a floor and a ceiling are both
+ *   satisfied by zero. The runtime figure now lives in
+ *   `e2e/backdrop-renders.spec.ts`, which asserts a RANGE: above zero, and
+ *   within the budget below.
  *
  * Usage: node scripts/check-hero-budget.mjs [path/to/hero.glb]
  */
@@ -240,7 +245,10 @@ function main() {
     "  the asset permits the budget; it cannot verify the scene honours it.",
   );
   console.log(
-    "  A real figure needs a Playwright probe reading renderer.info.render.calls.",
+    "  The runtime figure is measured by e2e/backdrop-renders.spec.ts, which",
+  );
+  console.log(
+    "  also asserts it is ABOVE zero -- this check cannot see a blank scene.",
   );
 
   if (failures.length) {

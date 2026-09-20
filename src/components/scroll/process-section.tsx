@@ -16,13 +16,19 @@
  *   - `hero.glb` size is printed by `npm run hero:check`, which the
  *     `asset-budget` job in `.github/workflows/ci.yml` runs on every push and
  *     PR against the committed asset.
- *   - draw calls per frame were measured in a browser, by a Playwright probe
- *     counting `drawArrays*`/`drawElements*` on the WebGL2 prototype across a
- *     sampling window, idle and mid-scroll. CI does NOT measure this: the
- *     budget script can only prove the asset *permits* one draw call (112
- *     nodes, one shared mesh, one shared material), never that the scene
- *     honours it. That distinction is what `note` exists to carry — do not
- *     drop it to tidy the row up.
+ *   - draw calls per frame are measured by `e2e/backdrop-renders.spec.ts`,
+ *     which counts `drawArrays*`/`drawElements*` on the WebGL2 prototype and
+ *     animation frames over the same window, so the row is a ratio and not a
+ *     raw count. `scripts/check-hero-budget.mjs` still cannot do this: it can
+ *     only prove the asset *permits* one draw call (112 nodes, one shared
+ *     mesh, one shared material), never that the scene honours it.
+ *
+ *     The row reads `in (0, 10]` rather than `of 10 budget` for a reason, and
+ *     the reason is a bug this page shipped with. The backdrop spent a while
+ *     drawing nothing at all — react-three-fiber never got the measurement it
+ *     needs to create its root, so the canvas sat at 300x150 and no frame was
+ *     ever issued — and the budget stayed green throughout, because a ceiling
+ *     is satisfied most comfortably by zero. Do not restate this as a maximum.
  *   - the mid-range phone was `not yet tested` until `npm run test:vitals`
  *     existed to test it: `e2e/midrange-phone.spec.ts` under Lighthouse's
  *     mobile emulation, against a production build, in the `web-vitals` CI
@@ -62,12 +68,11 @@ const PREVIEW_CHECKS: PreviewCheck[] = [
     note: 'emulated: 4× CPU, 1.6 Mbps, production build — not a physical handset',
   },
 
-  // --- Real, but measured in a browser rather than by a CI job. ---------
   {
     name: 'draw calls per frame',
-    value: '1.00 of 10 budget',
+    value: '1.00, in (0, 10]',
     status: 'passing',
-    note: 'measured in-browser, idle and mid-scroll — not a CI job',
+    note: 'asserted as a range, not a ceiling — a blank canvas passes "≤ 10"',
   },
 ];
 
@@ -80,8 +85,14 @@ const STEPS: ProcessStep[] = [
   { title: 'Design', line: 'Sketch each section and what the blocks should do there.' },
   { title: 'Build in Blender', line: 'A Python script generates the blocks and exports hero.glb.' },
   {
+    // NOT "with a still-image fallback". There is no still image: the only
+    // asset it could point at does not exist (`STILL_AVAILABLE` is false in
+    // `viewport-fallback.tsx`), and `morph-canvas.tsx` deliberately renders
+    // nothing when WebGL is unavailable, because the backdrop is decoration
+    // and an error card in its place would be worse than its absence. Say the
+    // thing the code does.
     title: 'Animate on the web',
-    line: 'React Three Fiber moves the parts on scroll, with a still-image fallback.',
+    line: 'React Three Fiber moves the parts on scroll. Without WebGL the page simply drops it.',
   },
   {
     title: 'Verify',

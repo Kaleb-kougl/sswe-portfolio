@@ -16,8 +16,13 @@ export interface ProjectEntry {
   type: 'work' | 'project' | 'profile' | 'contact' | 'skill';
   /**
    * The point of the entry, not the job title — a concrete claim a hiring
-   * manager can act on. Rendered as the Inspector's display headline.
-   * Keep it under ~60 characters.
+   * manager can act on. Keep it under ~60 characters.
+   *
+   * NOT CURRENTLY RENDERED. This was the Inspector's display headline in the
+   * IDE shell, which the scroll rebuild retired (see the note at the top of
+   * `e2e/server-rendering.spec.ts`). Nothing reads it today — CareerSection
+   * renders `summary` and `result`. It is kept as each entry's one-line
+   * thesis: the thing `summary` has to end up saying.
    */
   headline: string;
   /** One plain sentence under the headline. */
@@ -59,6 +64,55 @@ export const EDUCATION = [
     graduationDate: 'Jul 2017',
     degree: 'Bachelor of Science in Biological Sciences, Cum Laude',
     gpa: '3.9',
+  },
+];
+
+export interface Testimonial {
+  /**
+   * An excerpt, never a paraphrase. Where sentences either side of an elision
+   * are joined, the elision is marked with an ellipsis in the string itself —
+   * the reader can see that something was cut, and `source` says where to read
+   * the whole thing.
+   */
+  quote: string;
+  name: string;
+  /** Their title at the time of writing, not today's. */
+  title: string;
+  /** How they knew the work, in LinkedIn's own words. */
+  relationship: string;
+  date: string;
+}
+
+/**
+ * Recommendations received, quoted from
+ * linkedin.com/in/kaleb-kougl/details/recommendations (visibility: all
+ * LinkedIn members).
+ *
+ * TWO OF FIVE, chosen because they corroborate claims this site already makes
+ * rather than because they are the warmest. Alvaro managed the IBM work and
+ * describes the React platform transformation and the mentoring; Thai worked
+ * alongside it and names an artifact — the org-wide open-source clearance
+ * tool — that appears nowhere else on this site or on the résumé.
+ *
+ * Do not edit the quotes to read better. Trim them at sentence boundaries or
+ * leave them alone.
+ */
+export const TESTIMONIALS: readonly Testimonial[] = [
+  {
+    quote:
+      'His React knowledge and the way he drove the effort of transforming our platform into a React app allowed for much more flexibility and reliability than we had seen previously. \u2026 He assisted many others on our team in getting up to speed on new technologies and codebase.',
+    name: 'Alvaro (Al) Sanchez-Cifuentes',
+    title: 'Program Director, IBM Developer, Cloud and Open Source Technologies',
+    relationship: 'managed Kaleb directly',
+    date: 'May 2022',
+  },
+  {
+    quote:
+      'Kaleb is extremely thoughtful and talented, he served as our resident React expert. Kaleb built a web-based tool for managing open-source clearance across all of IBM while he was in my squad. This tool is instrumental in IBM\u2019s success in open-source.',
+    name: 'Thai Tran',
+    title: 'Senior Software Engineer, IBM',
+    relationship: 'was senior to Kaleb',
+    date: 'May 2022',
   },
 ];
 
@@ -123,6 +177,23 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
    * bullets describing shipped product work go to the earlier title. Every
    * bullet still appears exactly once, verbatim from the résumé, and every
    * `result` quotes a number that appears in it.
+   *
+   * SECOND SOURCE — LinkedIn. Some work the résumé has no room for is carried
+   * on the LinkedIn profile instead, and four bullets now come from there
+   * rather than the PDF: the AI gateway, the Luxon migration, the OneHost
+   * dimensions (principal architect, 6 engineers) and the extension's
+   * single-click workflow. They are marked `LinkedIn:` in a comment above the
+   * bullet they belong to. The rule is unchanged in substance — a bullet is
+   * still quoted from a document the reader could be handed, never written
+   * here — but "verbatim from the résumé" is now "verbatim from the résumé or
+   * the profile", and which one is recorded per bullet.
+   *
+   * ONE DELIBERATE DIVERGENCE: `jbhunt-intern` is not on the current one-page
+   * résumé, which drops the 2018 internship for space. It stays here on
+   * purpose — the site is not constrained to a page. Do not "resync" by
+   * deleting it. Removing it would also move CareerSection's derived
+   * numbers: the eyebrow's start year (2018 → 2019) and the "N steps up."
+   * heading (five → four).
    */
   'indeed-sr-swe': {
     fileId: 'indeed-sr-swe',
@@ -130,13 +201,36 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: 'Indeed.com',
     dates: 'Dec 2024 \u2013 Jun 2026',
     type: 'work',
-    headline: 'Tech lead on the OneHost microfrontend migration.',
+    headline: 'AI gateway, OneHost, six engineers led.',
     summary:
-      'Led the platform work at Indeed: the OneHost module-federation migration, the AI-assisted workflows that shortened delivery, and the Frontend SLOs that keep consumer features out of incident.',
+      'Led frontend platform and AI-tooling work at Indeed: AI-assisted code generation and workflow harnesses that shortened delivery, a secure gateway that externalizes internal AI platforms to third-party clients and agents, and the OneHost micro-frontend migration \u2014 co-architected with the principal architect, executed with a team of 6. Mentored ~12 engineers along the way.',
     result: 'Reduced pickup-to-merge cycle time by 10%.',
     bullets: [
       'Reduced Pickup to merge cycle time by 10% through applied AI\u2011assisted code generation and workflow harnesses.',
+      /*
+       * LinkedIn. The platform-level AI work, which the one-page résumé drops
+       * entirely. It is the closest thing on this profile to "externalize AI
+       * capabilities for agent-based integrations", so it does not belong in a
+       * cut file.
+       */
+      'Contributed to a strategic initiative to externalize core AI capabilities through a secure gateway, enabling third-party client and agent-based integrations with internal AI platforms.',
       'Led team migration as tech lead from monolithic architecture to OneHost micro\u2011frontend platform (Webpack 5 module federation) leveraging React Storybook and CSS Design Tokens; automated CI/CD.',
+      /*
+       * LinkedIn, and the one merged bullet on this page. The profile splits
+       * OneHost across two entries — "Co-architected... partnering with the
+       * principal architect" and "Spearheaded the technical execution...
+       * leading a team of 6 engineers" — which restate the résumé's "Led team
+       * migration as tech lead" above except for two facts it does not carry:
+       * who it was designed with, and how many people executed it. Rather than
+       * ship a third overlapping OneHost bullet, those two clauses are joined
+       * here. Both halves are the profile's own words; only the join is new.
+       */
+      'Co-architected the migration to OneHost, the company\u2019s standard micro-frontend UI platform, partnering with the principal architect to define a new, scalable architecture, then led a team of 6 engineers on the technical execution using Webpack 5 Federated Modules and GraphQL.',
+      /*
+       * LinkedIn. A codebase-wide library migration with a mechanical core —
+       * the most tooling-shaped thing in this role, and absent from the résumé.
+       */
+      'Drove the successful execution of the migration to the Luxon library for standardized timezone handling, a strategic move that unblocked critical integration with the Horizon platform.',
       'Mentored ~12 engineers as team/project lead, resulting in promotions and improved onboarding.',
       'Operationalized Frontend SLOs with SRE and Product, reducing customer\u2011facing incidents for consumer features.',
     ],
@@ -150,7 +244,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     type: 'work',
     headline: 'Cut Time to Interactive 15% for 680M+ users.',
     summary:
-      'Shipped the consumer-facing half: apply-flow performance, accessible shared React components, and the analytics extension Customer Support troubleshoots ad campaigns with.',
+      'Shipped the consumer-facing half: apply-flow performance for 680M+ users, WCAG accessibility across 20+ shared React components consumed by 5 teams, and the analytics extension Customer Support troubleshoots ad campaigns with.',
     result: 'Cut Time to Interactive 15% in the apply flow.',
     bullets: [
       'Cut ad campaign troubleshooting time 20% for Customer Support by shipping a TypeScript/Python Manifest V3 GenAI analytics Chrome extension.',
@@ -167,7 +261,13 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     headline: 'Cut the bundle from 6 MB to 300 KB.',
     summary:
       'Rebuilt IBM Developer on React and re-tuned its Webpack pipeline for build time, bundle size, and Core Web Vitals.',
-    result: 'Bundle 6 MB \u2192 300 KB; hot-reload 29x faster.',
+    /*
+     * The bundle figure alone is a build-system statistic. The résumé's own
+     * bullet already converts it into the thing a reader is actually buying —
+     * engineer time — so the `result` quotes that clause instead of stopping at
+     * the kilobytes. Same sentence, further along.
+     */
+    result: 'Bundle 6 MB \u2192 300 KB, reclaiming 20+ engineer hours per week across a team of 10.',
     bullets: [
       'Modernized IBM Developer site (https://developer.ibm.com/) with React and Webpack, improving SEO and Core Web Vitals (TTI/FCP) across devices.',
       'Optimized Webpack to halve build time, improve rebuild/hot\u2011reload 29x, and shrink bundle from 6 MB to 300 KB, reclaiming 20+ engineer hours per week across a team of 10.',
@@ -203,6 +303,31 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     bullets: [
       'Built cross\u2011platform React Native features and added Jest/Appium test suites to raise release confidence.',
     ],
+  },
+  'video-pipeline': {
+    fileId: 'video-pipeline',
+    title: 'Agentic AI Video Creator',
+    company: 'Open Source \u00b7 video-pipeline',
+    dates: '',
+    type: 'project',
+    headline: 'Sub-agents under one workflow orchestrator.',
+    summary:
+      'A modular agentic Python application that turns an episode transcript into a narrated video, coordinated by a workflow orchestrator driving specialized sub-agents.',
+    /*
+     * SOURCING. The first four bullets are the LinkedIn project entry's own
+     * words. The fifth is read off the public repository, which is the artifact
+     * a reader can actually check, and is the one the Work card is built from —
+     * see the note on WORK_PROJECTS['video-pipeline'] in `workProjects.ts` for
+     * which claims that README does and does not support.
+     */
+    bullets: [
+      'Engineered a modular, agentic Python application to fully automate the creation of anime summary videos. The system is managed by a workflow orchestrator that coordinates specialized sub-agents for transcript discovery, content generation (using LangChain and Google Gemini), and final video compilation.',
+      'Developed and utilized a separate, autonomous coding agent to build and refactor core components of the video creator itself, enforcing a strict Test-Driven Development (TDD) methodology.',
+      'Architected a character analysis system using ChromaDB and Sentence Transformers for vector-based semantic search, enabling deep narrative analysis across entire seasons.',
+      'Implemented a high-performance, parallel image generation module that reduced media creation time by over 60% through concurrent processing.',
+      'Six quality validators score their own stage 0.0\u20111.0 against a gate table that keeps criticality separate from score, so a weak episode-discovery result degrades the run while a weak transcript stops it. 149 tests passing. Source: https://github.com/Kaleb-kougl/video-pipeline',
+    ],
+    skills: ['Python', 'LangChain', 'Google Gemini', 'ChromaDB', 'Agentic workflows', 'TDD'],
   },
   'hammerball': {
     fileId: 'hammerball',
@@ -248,15 +373,28 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: 'Indeed.com',
     dates: '',
     type: 'project',
-    headline: 'Campaign diagnostics with zero auth tokens.',
+    headline: '20% faster troubleshooting for Customer Support.',
+    /*
+     * REORDERED, not rewritten. This entry used to open on the auth bridge and
+     * the URL sanitization — real engineering, but plumbing — and left the
+     * GenAI half and the 20% outcome to be inferred. The résumé bullet in
+     * `indeed-swe-ii` leads with both, and so does this now. The architecture
+     * bullets below are unchanged and still carry the interesting part.
+     */
     summary:
-      'A Manifest V3 React extension that deep-links Indeed campaign troubleshooting straight into backend microservices.',
+      'A GenAI analytics Chrome extension that cut ad-campaign troubleshooting time 20% for Customer Support, replacing a manual diagnostic process with a single click.',
+    result: 'Cut ad campaign troubleshooting time 20% for Customer Support.',
     bullets: [
+      'Cut ad campaign troubleshooting time 20% for Customer Support by shipping a TypeScript/Python Manifest V3 GenAI analytics Chrome extension.',
+      /*
+       * LinkedIn. Says what the extension replaced, which no résumé bullet does.
+       */
+      'Led the end-to-end, full-stack development of an internal analytics troubleshooting browser extension (React, Manifest V3), creating a single-click workflow that replaced a cumbersome manual process.',
       '**Architected** a React (Manifest V3) browser extension, designing a zero-auth, stateless bridge that connects the frontend client to backend microservices via dynamic URL generation to eliminate traditional API token overhead.',
       '**Engineered** an automated, deep-linked troubleshooting UI workflow, enabling the extension to instantly auto-populate and trigger complex campaign diagnostics without requiring manual data entry.',
       '**Secured** cross-platform data transfers by implementing strict frontend input allowlists and automatic URL sanitization to prevent XSS, seamlessly routing external inputs into existing backend validation pipelines.',
     ],
-    skills: ['React', 'TypeScript', 'Manifest V3', 'Chrome Extensions'],
+    skills: ['React', 'TypeScript', 'Python', 'GenAI', 'Manifest V3', 'Chrome Extensions'],
   },
   'core-skills': {
     fileId: 'core-skills',

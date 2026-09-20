@@ -1,4 +1,4 @@
-import { EDUCATION, RESUME_DATA, SUMMARY } from '@/data/resumeData';
+import { EDUCATION, RESUME_DATA, SUMMARY, TESTIMONIALS } from '@/data/resumeData';
 
 /**
  * CareerSection — the "EXPERIENCE" block of the scrolling page.
@@ -101,6 +101,33 @@ const EDUCATION_LINE = [...EDUCATION]
   })
   .join(' · ');
 
+/**
+ * The peer-reviewed paper, derived from its RESUME_DATA entry.
+ *
+ * WHY IT SITS BESIDE EDUCATION. A biology degree alone, at the bottom of an
+ * engineering timeline, reads as something to explain away. The same degree
+ * with a peer-reviewed paper next to it reads as a researcher who chose
+ * software — same fact, and the second framing is the true one. So the two
+ * lines stay adjacent; do not move the publication into the projects data and
+ * leave the degree standing on its own down here.
+ *
+ * Found by journal rather than by key so that renaming the entry cannot
+ * silently empty this line, and typed as possibly-null so that deleting the
+ * entry drops the line instead of rendering "undefined".
+ */
+const PUBLICATION = (() => {
+  const entry = Object.values(RESUME_DATA).find((item) =>
+    /Analytical Chemistry/i.test(item.company)
+  );
+  if (!entry) return null;
+
+  const doi = entry.bullets
+    .map((bullet) => /\bDOI:\s*(\S+)/i.exec(bullet)?.[1])
+    .find(Boolean);
+
+  return { title: entry.title, journal: entry.company, year: entry.dates, doi };
+})();
+
 /* ------------------------------------------------------------------ *
  * Component
  * ------------------------------------------------------------------ */
@@ -157,9 +184,61 @@ export function CareerSection() {
           })}
         </ol>
 
-        <p className="border-t border-hairline pt-7 text-[15px] leading-relaxed text-muted">
+        {/*
+          * Third-party voice. An h3, deliberately — `server-rendering.spec.ts`
+          * and `accessibility.spec.ts` both assert the page has exactly four
+          * h2s, one per section, and these quotes are part of EXPERIENCE
+          * rather than a section of their own.
+          *
+          * The label takes `text-muted` mono, not `.eyebrow`: the accent
+          * terracotta is contracted to one kicker per section and that budget
+          * is already spent above.
+          */}
+        <h3 className="mt-14 border-t border-hairline pt-9 font-mono text-[11px] font-bold uppercase leading-none tracking-[0.12em] text-muted md:mt-16">
+          Recommendations
+        </h3>
+
+        <div className="mt-7 grid gap-8 md:grid-cols-2 md:gap-10">
+          {TESTIMONIALS.map((testimonial) => (
+            <figure key={testimonial.name} className="flex flex-col">
+              <blockquote className="max-w-[46ch] text-[15px] leading-relaxed text-body">
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
+              <figcaption className="mt-4 font-mono text-[11px] leading-[1.6] tracking-[0.04em] text-muted">
+                <span className="font-bold text-ink">{testimonial.name}</span>
+                <span className="block">{testimonial.title}</span>
+                <span className="block">
+                  {testimonial.relationship} &middot; {testimonial.date}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <p className="mt-14 border-t border-hairline pt-7 text-[15px] leading-relaxed text-muted md:mt-16">
           {EDUCATION_LINE}
         </p>
+
+        {PUBLICATION && (
+          <p className="mt-2.5 max-w-[72ch] text-[15px] leading-relaxed text-muted">
+            Peer-reviewed: &ldquo;{PUBLICATION.title},&rdquo; {PUBLICATION.journal},{' '}
+            {PUBLICATION.year}.
+            {PUBLICATION.doi ? (
+              <>
+                {' '}
+                <a
+                  href={`https://doi.org/${PUBLICATION.doi}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xs font-medium text-link underline decoration-1 underline-offset-2 hover:text-link-hover"
+                >
+                  doi:{PUBLICATION.doi}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </>
+            ) : null}
+          </p>
+        )}
       </div>
     </section>
   );
