@@ -11,10 +11,22 @@
  * match its source. This script makes the published figure re-derivable instead
  * of trusted.
  *
- * DEDUPLICATION IS THE POINT. At v0.1.1 eight spec files are byte-identical
+ * WHAT COUNTS AS A SPEC. Two rules, both learned the hard way:
+ *
+ *   1. `.spec.tsx` as well as `.spec.ts`. This script used to match only the
+ *      former's shorter sibling, which silently dropped three spec files and
+ *      published 1,298/9 where the truth is 1,338/12. A suffix test that omits
+ *      the extension React components are written in is not a suffix test.
+ *   2. Under `src/` only. The package also has a `tests/` tree at its root with
+ *      eighteen more spec files, and not one of them has ever run: its
+ *      tsconfig sets include: ["src"], so nothing outside src/ compiles to
+ *      out/, and test-runner.project.json mounts out/tests. Counting them
+ *      would publish coverage the suite does not have.
+ *
+ * DEDUPLICATION IS ALSO THE POINT. At v0.1.1 eight spec files are byte-identical
  * duplicates between src/tests/ and src/tests/<subdir>/. Both copies compile and
- * both run, so a naive count reports ~1,926 assertions across 17 files while only
- * 1,298 across 9 are distinct. We publish the distinct figure, so this script
+ * both run, so a raw count reports 1,966 assertions across 20 files while only
+ * 1,338 across 12 are distinct. We publish the distinct figure, so this script
  * dedupes by file content hash rather than by path.
  *
  * Exit codes: 0 pass or skipped (no clone), 1 mismatch.
@@ -38,19 +50,21 @@ if (!existsSync(PKG)) {
 
 /** Spec sources only: skip compiled Luau output, vendored runtime, deps. */
 const SKIP = new Set(['out', 'include', 'node_modules', '.git', 'plugin', 'docs']);
+/** Only what the test-runner project actually builds. See the note above. */
+const SPEC_ROOT = 'src';
 function specFiles(dir, found = []) {
   for (const entry of readdirSync(dir)) {
     if (SKIP.has(entry)) continue;
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) specFiles(full, found);
-    else if (entry.endsWith('.spec.ts')) found.push(full);
+    else if (/\.spec\.tsx?$/.test(entry)) found.push(full);
   }
   return found;
 }
 
-const files = specFiles(PKG).sort();
+const files = specFiles(join(PKG, SPEC_ROOT)).sort();
 if (files.length === 0) {
-  console.error('roblox-css coverage -- FAIL: found no *.spec.ts sources; has the layout changed?');
+  console.error(`roblox-css coverage -- FAIL: no *.spec.ts(x) under ${SPEC_ROOT}/; has the layout changed?`);
   process.exit(1);
 }
 

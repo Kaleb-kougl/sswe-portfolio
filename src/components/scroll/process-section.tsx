@@ -11,7 +11,8 @@
  * row — flip it to `passing` and fill in the real number only once something
  * actually prints one.
  *
- * Two rows were flipped when the Blender pipeline landed:
+ * Three rows have been flipped since, and each `note` says exactly how far the
+ * row's claim reaches:
  *   - `hero.glb` size is printed by `npm run hero:check`, which the
  *     `asset-budget` job in `.github/workflows/ci.yml` runs on every push and
  *     PR against the committed asset.
@@ -22,6 +23,12 @@
  *     nodes, one shared mesh, one shared material), never that the scene
  *     honours it. That distinction is what `note` exists to carry — do not
  *     drop it to tidy the row up.
+ *   - the mid-range phone was `not yet tested` until `npm run test:vitals`
+ *     existed to test it: `e2e/midrange-phone.spec.ts` under Lighthouse's
+ *     mobile emulation, against a production build, in the `web-vitals` CI
+ *     job. The figures quoted are a local run of it. It is an emulation, the
+ *     `note` says so, and it stays saying so — "mid-range phone" without that
+ *     qualifier claims a handset nothing in this repo has ever touched.
  */
 
 type CheckStatus = 'passing' | 'pending';
@@ -48,6 +55,12 @@ const PREVIEW_CHECKS: PreviewCheck[] = [
   { name: 'production build', value: 'npm run build', status: 'passing' },
   { name: 'end-to-end + visual snapshots', value: 'npm run test:e2e', status: 'passing' },
   { name: 'hero.glb size', value: '8.5 KB of 500 KB budget', status: 'passing' },
+  {
+    name: 'mid-range phone',
+    value: 'LCP 0.8s, CLS 0.00',
+    status: 'passing',
+    note: 'emulated: 4× CPU, 1.6 Mbps, production build — not a physical handset',
+  },
 
   // --- Real, but measured in a browser rather than by a CI job. ---------
   {
@@ -56,9 +69,6 @@ const PREVIEW_CHECKS: PreviewCheck[] = [
     status: 'passing',
     note: 'measured in-browser, idle and mid-scroll — not a CI job',
   },
-
-  // --- Aspirational: nothing has measured this yet. ---------------------
-  { name: 'mid-range phone', value: 'not yet tested', status: 'pending' },
 ];
 
 interface ProcessStep {

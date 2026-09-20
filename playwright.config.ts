@@ -1,16 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { VITALS_SPEC } from './playwright.vitals.config';
+
 /**
  * Playwright configuration for the single-page scrolling portfolio.
  * - Desktop: Chromium at 1280×720 — above the 900px nav breakpoint
  * - Mobile: Chromium (Pixel 5) at 375×812 — below it, so the nav is collapsed
  * - Visual regression with maxDiffPixelRatio: 0.01
  *
- * Both projects run every spec; the ones that only make sense on one side of
- * the 900px breakpoint skip themselves based on `viewport.width`.
+ * Both projects run every spec here; the ones that only make sense on one side
+ * of the 900px breakpoint skip themselves based on `viewport.width`.
+ *
+ * `e2e/midrange-phone.spec.ts` is deliberately excluded. It measures Core Web
+ * Vitals, which are meaningless against `next dev` — unminified modules,
+ * compiled on request — so it runs from `playwright.vitals.config.ts` against
+ * a production server instead (`npm run test:vitals`). See the header there.
  */
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: VITALS_SPEC,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
