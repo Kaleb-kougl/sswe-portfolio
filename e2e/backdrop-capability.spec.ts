@@ -5,9 +5,9 @@ import { test, expect, type Page } from '@playwright/test';
  *
  * `morph-canvas.tsx` used to decide with `(max-width: 767px)`: every phone, and
  * every narrow desktop window, was handed a still. It now animates by default
- * and downgrades only on evidence — a frame-time watchdog inside the existing
- * `useFrame` loop. These tests prove both halves of that on the phone project,
- * where the behaviour actually changed.
+ * and downgrades only on evidence — the work-time watchdog in
+ * `frame-watchdog.ts`, fed from the existing `useFrame` loop. These tests prove
+ * both halves of that on the phone project, where the behaviour changed.
  *
  * HOW ANY OF THIS IS OBSERVED
  * ---------------------------
@@ -34,21 +34,47 @@ const SMALL_VIEWPORT_MAX_DPR = 1.25;
 const SMALL_VIEWPORT_MAX_WIDTH = 767;
 
 /**
- * CPU throttle used to force a downgrade.
+ * CPU throttle used to simulate a slow device — NOT to force a downgrade.
  *
- * Measured on this scene: 20x still holds ~58fps (112 instances is almost no
- * CPU work), 50x collapses it to ~8fps. 50 is therefore the first rate that
- * actually simulates a device the watchdog is meant to catch — and the fact
- * that 20 does not is the more useful half of that measurement.
+ * Measured on this scene, pre-downgrade: 20x lands the desktop project at
+ * ~39fps and the phone project at ~57fps, while the backdrop's own share of
+ * the frame stays near a millisecond. That is the shape of the population this
+ * watchdog must leave alone, and at 39fps it is on the wrong side of the 40fps
+ * floor the rule used to apply.
  */
-const THROTTLE_RATE = 50;
+const THROTTLE_RATE = 20;
 
-type DrawCounter = { __draws: number };
+/**
+ * Milliseconds burned inside every draw call to stage a real downgrade.
+ *
+ * Comfortably over `WATCHDOG_MAX_WORK_MS` (16), so the rolling average clears
+ * the budget on the first full window rather than hovering at the edge.
+ */
+const EXPENSIVE_DRAW_MS = 40;
 
-/** Must be installed before any page script runs, hence `addInitScript`. */
+type DrawCounter = { __draws: number; __drawCostMs: number };
+
+/**
+ * Counts WebGL draws, and can make each one expensive on demand.
+ *
+ * The second half is how the downgrade is staged. `MorphingBlocks` brackets
+ * its own frame — buffer write through `gl.render` — and the watchdog judges
+ * that span, so burning time inside the draw call is burning time inside the
+ * span, which is precisely the condition the rule exists to catch: a device on
+ * which drawing this scene is what costs the frame.
+ *
+ * It replaces CPU throttling, which cannot stage this at all. Measured, the
+ * scene costs under 0.1ms a frame, so even a 50x handicap only brings it to
+ * ~4ms — and how many times over you have to multiply 0.1ms to clear a 16ms
+ * budget depends entirely on how fast the machine running the test is. This
+ * does not: the cost is absolute and the same everywhere.
+ *
+ * Must be installed before any page script runs, hence `addInitScript`.
+ */
 async function countWebGLDraws(page: Page) {
   await page.addInitScript(() => {
     (window as unknown as DrawCounter).__draws = 0;
+    (window as unknown as DrawCounter).__drawCostMs = 0;
     const proto = (
       window as unknown as {
         WebGL2RenderingContext?: { prototype: Record<string, unknown> };
@@ -66,6 +92,14 @@ async function countWebGLDraws(page: Page) {
       if (typeof original !== 'function') continue;
       proto[name] = function (this: unknown, ...args: unknown[]) {
         (window as unknown as DrawCounter).__draws++;
+        const cost = (window as unknown as DrawCounter).__drawCostMs;
+        if (cost > 0) {
+          // Busy-wait, deliberately: this has to occupy the main thread inside
+          // the span the watchdog is timing, which a promise or a timer would
+          // not. It runs only in this test.
+          const until = performance.now() + cost;
+          while (performance.now() < until);
+        }
         return original.apply(this, args);
       };
     }
@@ -144,31 +178,64 @@ test.describe('The backdrop animates on a phone', () => {
   });
 });
 
-test.describe('The frame-time watchdog', () => {
+test.describe('The work-time watchdog', () => {
   // Not skipped anywhere: the watchdog is the one part of this that is not
   // about viewport width at all, and "a narrow window is not a slow GPU" is
   // half the point of the change. It has to hold on the desktop project too.
-  test('downgrades once on a device that cannot keep up, and stays down', async ({ page }) => {
-    // Throttling to 1/50th speed makes every step of this slow.
+
+  test('a slow device keeps its animation while the scene stays cheap', async ({ page }) => {
+    // The regression. This backdrop used to be downgraded for running below
+    // 40fps, which is a statement about the compositor and not about the
+    // device: a browser on a 30Hz display cleared the floor by being healthy
+    // and was turned off anyway. The rule now judges what the frame costs, and
+    // under a twentyfold CPU handicap this scene still costs about a
+    // millisecond of it.
+    test.setTimeout(120_000);
+
+    await openSettledPage(page);
+
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE_RATE });
+
+    // Well past the ~3.7s the watchdog needs to make up its mind: 1s warm-up,
+    // 20 frames of window, 2s of sustained badness.
+    await page.waitForTimeout(10_000);
+
+    const mark = await drawsSoFar(page);
+    await page.waitForTimeout(SAMPLE_MS);
+    const draws = (await drawsSoFar(page)) - mark;
+
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+
+    expect(
+      draws,
+      'a slow device with a cheap backdrop was downgraded — the watchdog is judging frame rate again',
+    ).toBeGreaterThan(0);
+  });
+
+  test('downgrades once when the scene itself eats the frame, and stays down', async ({ page }) => {
     test.setTimeout(120_000);
 
     await openSettledPage(page);
 
     // --- Control: it is animating to begin with --------------------------
-    const beforeThrottle = await drawsSoFar(page);
+    const beforeCost = await drawsSoFar(page);
     await page.waitForTimeout(SAMPLE_MS);
     expect(
-      (await drawsSoFar(page)) - beforeThrottle,
+      (await drawsSoFar(page)) - beforeCost,
       'the backdrop was not animating, so this test proves nothing',
     ).toBeGreaterThan(LIVE_FRAME_FLOOR);
 
-    // --- Make the device slow -------------------------------------------
-    const cdp = await page.context().newCDPSession(page);
-    await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE_RATE });
+    // --- Make the scene expensive ----------------------------------------
+    await page.evaluate(
+      (ms) => {
+        (window as unknown as { __drawCostMs: number }).__drawCostMs = ms;
+      },
+      EXPENSIVE_DRAW_MS,
+    );
 
-    // ~1s warm-up, then 20 frames of window at ~8fps, then 2s of sustained
-    // badness. Polled rather than slept: the exact moment is hardware's to
-    // decide, and what is under test is that it arrives at all.
+    // Polled rather than slept: the exact moment is the hardware's to decide,
+    // and what is under test is that it arrives at all.
     await expect
       .poll(
         async () => {
@@ -178,16 +245,18 @@ test.describe('The frame-time watchdog', () => {
         },
         {
           timeout: 45_000,
-          message: 'the watchdog never downgraded on a device running at ~8fps',
+          message: 'the watchdog never downgraded on a scene costing 40ms a frame',
         },
       )
       .toBeLessThanOrEqual(1);
 
-    // --- Un-slow it: the downgrade must not reverse ----------------------
+    // --- Make it cheap again: the downgrade must not reverse -------------
     // This is the anti-oscillation claim. A watchdog that promoted the scene
     // back would restart the loop here, and a flickering backdrop is worse
     // than either state.
-    await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+    await page.evaluate(() => {
+      (window as unknown as { __drawCostMs: number }).__drawCostMs = 0;
+    });
     await page.waitForTimeout(SAMPLE_MS);
 
     const afterRecovery = await drawsSoFar(page);

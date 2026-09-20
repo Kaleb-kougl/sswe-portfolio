@@ -38,6 +38,7 @@ import {
   isBackdropSuspended,
   subscribeBackdropPower,
 } from './backdrop-power';
+import { createFrameWatchdog, sampleFrame } from './frame-watchdog';
 import { detectWebGL2 } from './viewport-fallback';
 import { WebGLErrorBoundary } from './error-boundary';
 import {
@@ -93,9 +94,11 @@ import {
  * does not exist on iOS Safari, so any rule that requires it silently excludes
  * every iPhone — the single largest group of phones this change is for — and
  * `hardwareConcurrency` counts CPU cores, which is not what draws frames. So
- * the backdrop animates by default and *measures*: `FrameWatchdog` below
- * watches real frame times and downgrades once, permanently, if the device is
- * sustainably too slow. Guessing is replaced by evidence, after the fact.
+ * the backdrop animates by default and *measures*: the watchdog in
+ * `frame-watchdog.ts` times how long each frame's own work takes — not how
+ * often frames happen, which is the compositor's business — and downgrades
+ * once, permanently, if the device is sustainably too slow. Guessing is
+ * replaced by evidence, after the fact.
  *
  * Degradation, in order:
  *   no WebGL2  -> renders nothing at all (it is decoration; failure is silent)
@@ -103,7 +106,7 @@ import {
  *                 no measurement: an accessibility guarantee, never adaptive
  *   save-data  -> same still arrangement (the visitor asked for less)
  *   too slow   -> same still arrangement, latched for the session, once the
- *                 frame-time watchdog has proved the device cannot keep up
+ *                 work-time watchdog has proved the device cannot keep up
  *   tab hidden -> `frameloop="never"`, the render loop stops entirely
  *   demo open  -> `frameloop="never"`, same lever, pulled by `backdrop-power.ts`
  *                 so the projectiles demo's WebGL context is the only live one
@@ -171,52 +174,18 @@ const SWAY_AMPLITUDE = 0.035;
 const SWAY_SPEED = 0.16;
 
 /**
- * Frame-time watchdog. See `FrameWatchdog` for how these are applied.
+ * Any non-zero `useFrame` priority takes rendering out of R3F's hands:
+ * `update()` in the loop only calls `gl.render` itself when `internal.priority`
+ * is 0 (`@react-three/fiber` 9.6.1). `MorphingBlocks` wants that, because a
+ * draw it issues itself is a draw it can time — see `frame-watchdog.ts`.
  *
- * 40fps is not a guess. Measured on this scene, as sustained frames over a 2s
- * window (one draw call per frame, so draws are frames):
- *
- *   desktop 1280x720            ~97fps
- *   Pixel 5 emulation, DPR 1.25  ~112fps
- *   ...the same, CPU throttled 4x  ~111fps
- *   ...10x                          ~86fps
- *   ...20x                          ~58fps
- *   ...50x                           ~8fps
- *
- * The interesting result is 20x: a twentyfold CPU handicap still clears 58fps,
- * because 112 instances written into two buffers is almost no CPU work and this
- * scene is not CPU bound. Nothing that is merely *slow* lands near the floor —
- * the curve falls off a cliff between 20x and 50x and skips the whole 30-50fps
- * band. So 40 sits in an empty region: comfortably under everything healthy,
- * comfortably over the wreckage, and there is nothing in between to misjudge.
+ * It is scoped to the live path alone. `StaticBlocks` registers no `useFrame`,
+ * so when the watchdog swaps it in the priority count drops back to 0, R3F
+ * resumes rendering on its own, and `frameloop="demand"` keeps working exactly
+ * as it did — which is what makes this one draw call for the rest of the
+ * session rather than none at all.
  */
-/** Frames the rolling window holds at most — 1s at 60fps, 1.5s at 40fps. */
-const WATCHDOG_SAMPLES = 60;
-/**
- * Frames before the window is allowed to have an opinion.
- *
- * A frame count, not a duration, and that is the point: the window has to be
- * long enough to be an average rather than a spike, but a device at 8fps takes
- * 7.5s to produce 60 frames, and waiting that long to notice would leave the
- * reader scrolling through the exact experience this is meant to end. 20 frames
- * is 0.17s of evidence on a healthy device and 2.5s on a badly broken one —
- * which is the right way round, because the broken one is the one whose frames
- * are individually damning.
- */
-const WATCHDOG_MIN_SAMPLES = 20;
-/** Startup jank (chunk eval, shader compile, the GLB swap) is not evidence. */
-const WATCHDOG_WARMUP_S = 1;
-/** Rolling-average frame rate below which the window counts as bad. */
-const WATCHDOG_MIN_FPS = 40;
-/** How long it has to stay bad, continuously, before the still takes over. */
-const WATCHDOG_SUSTAIN_S = 2;
-/**
- * Any frame longer than this is read as a stall, not as a frame rate: a
- * resumed tab, a breakpoint, a scheduler hiccup. It resets the streak rather
- * than counting toward it, so the watchdog only ever fires on sustained,
- * ordinary slowness — the direction that errs toward keeping the animation.
- */
-const WATCHDOG_STALL_S = 0.5;
+const RENDER_PRIORITY = 1;
 
 /**
  * Each stage is named after the section it belongs to, and `page.tsx` already
@@ -662,7 +631,7 @@ const StaticBlocks = memo(function StaticBlocks({ compact }: { compact: boolean 
 });
 
 // ---------------------------------------------------------------------------
-// Frame-time watchdog
+// Session downgrade latch
 // ---------------------------------------------------------------------------
 
 /**
@@ -679,102 +648,6 @@ let sessionDowngraded = false;
 
 /** `useState` initialiser: has some earlier mount already downgraded? */
 const readSessionDowngrade = (): boolean => sessionDowngraded;
-
-/**
- * Rolling frame-time window. One instance per mounted frame loop, allocated
- * once — `sample` below touches nothing but these fields and the ring buffer,
- * so the watchdog costs the loop no allocation and no garbage.
- */
-interface FrameWatchdog {
-  /** Ring buffer of the last `WATCHDOG_SAMPLES` frame durations, in seconds. */
-  frames: Float32Array;
-  /** Next slot to overwrite. */
-  cursor: number;
-  /** How many slots are populated, capped at `frames.length`. */
-  filled: number;
-  /** Running sum of `frames`, so the average is O(1) per frame. */
-  sum: number;
-  /** Seconds of loop time observed, used to skip the warm-up. */
-  elapsed: number;
-  /** Seconds the rolling average has been continuously below the floor. */
-  badFor: number;
-  /** Latched: once true this watchdog is inert for good. */
-  tripped: boolean;
-}
-
-function createFrameWatchdog(): FrameWatchdog {
-  return {
-    frames: new Float32Array(WATCHDOG_SAMPLES),
-    cursor: 0,
-    filled: 0,
-    sum: 0,
-    elapsed: 0,
-    badFor: 0,
-    tripped: false,
-  };
-}
-
-/**
- * Feeds one frame to the watchdog, and calls `onTooSlow` at most once, ever.
- *
- * The rule is deliberately hard to satisfy. A single bad frame proves nothing —
- * so does a bad tenth of a second — and a backdrop that flickered between
- * animated and still would be worse than either. What trips it is the rolling
- * average of the window (up to `WATCHDOG_SAMPLES` frames) staying under
- * `WATCHDOG_MIN_FPS` for `WATCHDOG_SUSTAIN_S` of continuous loop time, after
- * the warm-up. Any single recovery above the floor resets the streak to zero.
- *
- * It is one-way on purpose. There is no promotion path back to the animation:
- * the downgrade latches on the watchdog AND at module scope, so a device that
- * has proved itself once is never re-measured and the scene cannot oscillate.
- */
-function sampleFrame(watchdog: FrameWatchdog, delta: number, onTooSlow: () => void): void {
-  if (watchdog.tripped) return;
-
-  // A stall is not a frame rate. Drop the window on the floor and start over:
-  // the samples on either side of a multi-second gap are not a sequence.
-  if (delta > WATCHDOG_STALL_S || delta <= 0) {
-    // `fill` matters: `sum` is maintained by subtracting the slot being
-    // overwritten, so leaving stale durations in the ring while zeroing `sum`
-    // would drive it negative, and a negative sum reads as a negative frame
-    // rate — which is below any floor, and would downgrade a device whose only
-    // crime was being alt-tabbed. It is 60 floats, on an event that happens
-    // when a tab comes back.
-    watchdog.frames.fill(0);
-    watchdog.cursor = 0;
-    watchdog.filled = 0;
-    watchdog.sum = 0;
-    watchdog.badFor = 0;
-    return;
-  }
-
-  watchdog.elapsed += delta;
-  if (watchdog.elapsed < WATCHDOG_WARMUP_S) return;
-
-  const { frames } = watchdog;
-  // The slot being overwritten is 0 until the ring has wrapped once, so this
-  // keeps `sum` equal to the sum of exactly `filled` samples either way.
-  watchdog.sum += delta - frames[watchdog.cursor];
-  frames[watchdog.cursor] = delta;
-  watchdog.cursor = (watchdog.cursor + 1) % frames.length;
-  if (watchdog.filled < frames.length) watchdog.filled++;
-
-  // Judge nothing until there is enough of a window to average.
-  if (watchdog.filled < WATCHDOG_MIN_SAMPLES) return;
-
-  const averageFps = watchdog.filled / watchdog.sum;
-  if (averageFps >= WATCHDOG_MIN_FPS) {
-    watchdog.badFor = 0;
-    return;
-  }
-
-  watchdog.badFor += delta;
-  if (watchdog.badFor < WATCHDOG_SUSTAIN_S) return;
-
-  watchdog.tripped = true;
-  sessionDowngraded = true;
-  onTooSlow();
-}
 
 /** The live arrangement: scroll-driven, imperative, zero re-renders. */
 const MorphingBlocks = memo(function MorphingBlocks({
@@ -811,9 +684,9 @@ const MorphingBlocks = memo(function MorphingBlocks({
   }, [block, dim]);
 
   useFrame((state, delta) => {
-    // Measured before the work, on the raw delta: this is the previous frame's
-    // real duration, and clamping it for the morph must not launder it here.
-    sampleFrame(watchdog, delta, onTooSlow);
+    // Everything the frame costs this device happens between here and the
+    // `gl.render` below, so this is where the span opens.
+    const startedAt = performance.now();
 
     // Clamp delta so a backgrounded tab resuming does not teleport the morph.
     const step = delta > 0.1 ? 0.1 : delta;
@@ -833,7 +706,17 @@ const MorphingBlocks = memo(function MorphingBlocks({
     if (groupRef.current) {
       groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * SWAY_SPEED) * SWAY_AMPLITUDE;
     }
-  });
+
+    // R3F skipped its own render because of `RENDER_PRIORITY`, so the draw is
+    // ours to issue. It is the same call on the same scene and camera R3F
+    // would have made; issuing it here is what brings it inside the span.
+    state.gl.render(state.scene, state.camera);
+
+    // `delta` says only how long ago the previous frame was, which the
+    // compositor decides. `performance.now() - startedAt` says what this frame
+    // cost, which the device decides. The watchdog judges the second one.
+    sampleFrame(watchdog, delta, performance.now() - startedAt, onTooSlow);
+  }, RENDER_PRIORITY);
 
   return (
     <group ref={groupRef}>
@@ -914,7 +797,11 @@ export default function MorphCanvas() {
    * can only touch it once — `sampleFrame` latches before it calls back.
    */
   const [downgraded, setDowngraded] = useState(readSessionDowngrade);
-  const onTooSlow = useCallback(() => setDowngraded(true), []);
+  const onTooSlow = useCallback(() => {
+    // `sampleFrame` latches before it calls this, so it arrives exactly once.
+    sessionDowngraded = true;
+    setDowngraded(true);
+  }, []);
 
   // Animate by default; the three exits are a stated accessibility preference,
   // a stated data preference, and a measured failure to keep up.
