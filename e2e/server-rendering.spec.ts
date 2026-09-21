@@ -28,13 +28,13 @@ import { CONTACT_INFO, SUMMARY } from '../src/data/resumeData';
 const HERO_HEADING = 'I build the platform other frontend teams ship on.';
 
 /**
- * `career`'s heading is derived from resumeData (role count, years), so it is
- * matched by shape rather than pinned to today's résumé; the rest are literal
- * copy in the components.
+ * `career`'s heading is derived from resumeData (career start year, role
+ * count), so it is matched by shape rather than pinned to today's résumé; the
+ * rest are literal copy in the components.
  */
 const SECTION_HEADINGS: ReadonlyArray<{ id: string; heading: string | RegExp }> = [
   { id: 'work', heading: 'Things I’ve shipped.' },
-  { id: 'career', heading: /years, .+ steps up\./i },
+  { id: 'career', heading: /since \d{4}, .+ steps up\./i },
   { id: 'process', heading: 'The background is a Blender file.' },
   { id: 'contact', heading: 'Let’s build the next platform.' },
 ];

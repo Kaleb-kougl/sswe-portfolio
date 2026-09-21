@@ -169,6 +169,25 @@ const Stage = memo(function Stage({
  * `activeBulletCount` changes every frame; routing it through React state would
  * re-render this subtree 60 times a second to update one number. A 200ms
  * interval and one `textContent` write is the whole readout.
+ *
+ * BOTH HALVES OF THIS LINE ARE MEASURED, and the reason to say so is that one
+ * of them is a string literal: "1 draw call" would go on reading "1 draw call"
+ * after a regression that made it four thousand. `e2e/projectile-demo.spec.ts`
+ * holds all three claims down:
+ *
+ *   - the count, read back out of this DOM node and required above zero;
+ *   - the draw call, counted at the WebGL entry point on this canvas alone —
+ *     `draw*Instanced` is the field and only the field, since the floor and
+ *     the grid are ordinary meshes — and measured at exactly one per frame,
+ *     out of three the canvas issues in total;
+ *   - and the projectiles themselves, as pixels, by diffing a frame against
+ *     the same frame with the field's draw call suppressed.
+ *
+ * That last one is not belt-and-braces. `mesh.count` is the POOL size and a
+ * dead instance is parked off screen at scale zero rather than removed, so the
+ * field issues its one draw identically whether it is full or empty: a draw
+ * call is evidence the renderer ran, and no evidence at all that this number
+ * describes anything a visitor can see.
  */
 function InstanceReadout() {
   const ref = useRef<HTMLSpanElement>(null);

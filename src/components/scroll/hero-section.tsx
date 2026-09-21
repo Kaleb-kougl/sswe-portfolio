@@ -1,4 +1,4 @@
-import { CONTACT_INFO, RESUME_DATA, SUMMARY } from '@/data/resumeData';
+import { CAREER_START_YEAR, CONTACT_INFO, RESUME_DATA } from '@/data/resumeData';
 
 /**
  * Every number and proper noun below is READ OUT OF `resumeData`, never
@@ -6,9 +6,6 @@ import { CONTACT_INFO, RESUME_DATA, SUMMARY } from '@/data/resumeData';
  * changes with it and can never quietly contradict the PDF a recruiter has
  * open in the next tab.
  */
-
-/** "7+" — pulled from SUMMARY so the figure can never drift from the résumé. */
-const YEARS = /(\d+\+?)\s*years/i.exec(SUMMARY)?.[1] ?? '7+';
 
 /** "San Francisco, CA" -> "San Francisco". */
 const CITY = CONTACT_INFO.location.split(',')[0].trim();
@@ -43,7 +40,7 @@ const NPM_PACKAGES = Object.values(RESUME_DATA).filter(
 
 /** Also rendered, verbatim, on the OG card. */
 export const HERO_STATS = [
-  { term: 'Experience', detail: `${YEARS} years` },
+  { term: 'Experience', detail: `Since ${CAREER_START_YEAR}` },
   { term: 'Teams', detail: COMPANIES.join(' · ') },
   {
     term: 'Open source',
@@ -77,10 +74,10 @@ export function HeroSection() {
           internal AI platforms to third-party agents.
         */}
         <p className="mt-7 max-w-[54ch] text-[17px] leading-relaxed text-body min-[900px]:text-[19px]">
-          {YEARS} years of TypeScript and React: component libraries, module
-          federation, Core Web Vitals and frontend SLOs. Lately, AI in the
-          delivery path — code-generation harnesses, and a secure gateway that
-          opens internal AI platforms to third-party agents.
+          {`TypeScript and React since ${CAREER_START_YEAR}: component libraries, module federation, Core Web Vitals and frontend SLOs.`}{' '}
+          Lately, AI in the delivery path — code-generation harnesses, and a
+          secure gateway that opens internal AI platforms to third-party
+          agents.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-3">
