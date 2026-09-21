@@ -47,8 +47,21 @@ export const CONTACT_INFO: ContactInfo = {
   github: 'https://github.com/Kaleb-kougl',
 };
 
+/**
+ * The first year of the earliest role on the résumé (the 2018 J.B. Hunt
+ * internship). Every "since <year>" on the site interpolates this constant —
+ * the hero stat, the hero paragraph, the EXPERIENCE eyebrow and the career
+ * heading — so the site states a start date and never a years-of-experience
+ * count, which automated résumé filters read literally and mis-score.
+ *
+ * Authored here rather than derived from `RESUME_DATA` because SUMMARY (below)
+ * needs it, and RESUME_DATA quotes SUMMARY in turn. If the earliest role
+ * changes, change this with it.
+ */
+export const CAREER_START_YEAR = 2018;
+
 export const SUMMARY =
-  'Software engineer with 7+ years making high-traffic web applications faster, more accessible and easier for others to build on. I\u2019ve focused on work that compounds such as platform migrations, shared component systems and now AI-assisted development workflows. This improves not only my work but other engineers\u2019 ability to ship features. Most recently I\u2019ve led frontend platform and AI-tooling initiatives at Indeed across software applications serving 680M+ users.';
+  `Software engineer making high-traffic web applications faster, more accessible and easier for others to build on since ${CAREER_START_YEAR}. I\u2019ve focused on work that compounds such as platform migrations, shared component systems and now AI-assisted development workflows. This improves not only my work but other engineers\u2019 ability to ship features. Most recently I\u2019ve led frontend platform and AI-tooling initiatives at Indeed across software applications serving 680M+ users.`;
 
 export const EDUCATION = [
   {
@@ -143,7 +156,7 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     company: '',
     dates: '',
     type: 'profile',
-    headline: '7+ years building front-end platforms.',
+    headline: `Building front-end platforms since ${CAREER_START_YEAR}.`,
     summary:
       'Front-end platform engineer who builds the component libraries, build pipelines, and SLOs that other product teams ship on.',
     bullets: [SUMMARY],
@@ -191,9 +204,10 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
    * ONE DELIBERATE DIVERGENCE: `jbhunt-intern` is not on the current one-page
    * résumé, which drops the 2018 internship for space. It stays here on
    * purpose — the site is not constrained to a page. Do not "resync" by
-   * deleting it. Removing it would also move CareerSection's derived
-   * numbers: the eyebrow's start year (2018 → 2019) and the "N steps up."
-   * heading (five → four).
+   * deleting it. Removing it would also move CareerSection's numbers: the
+   * "N steps up." heading (five → four) is derived from these entries, and
+   * `CAREER_START_YEAR` above — which the eyebrow and every "since <year>"
+   * line interpolate — would have to move with it (2018 → 2019).
    */
   'indeed-sr-swe': {
     fileId: 'indeed-sr-swe',

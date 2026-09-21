@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Manrope, Space_Mono } from 'next/font/google';
+import { CAREER_START_YEAR } from '@/data/resumeData';
 import { SITE_URL } from '@/data/site';
 import './globals.css';
 
@@ -27,7 +28,7 @@ const label = Space_Mono({
 export const metadata: Metadata = {
   title: 'Kaleb Kougl | Senior Software Engineer',
   description:
-    'Front-end platform engineer with 7+ years in TypeScript and React: component libraries, module federation, Core Web Vitals, and frontend SLOs.',
+    `Front-end platform engineer in TypeScript and React since ${CAREER_START_YEAR}: component libraries, module federation, Core Web Vitals, and frontend SLOs.`,
   openGraph: {
     title: 'Kaleb Kougl — Senior Software Engineer',
     description:

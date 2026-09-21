@@ -1,4 +1,9 @@
-import { EDUCATION, RESUME_DATA, SUMMARY, TESTIMONIALS } from '@/data/resumeData';
+import {
+  CAREER_START_YEAR,
+  EDUCATION,
+  RESUME_DATA,
+  TESTIMONIALS,
+} from '@/data/resumeData';
 
 /**
  * CareerSection — the "EXPERIENCE" block of the scrolling page.
@@ -27,9 +32,6 @@ const ROLES = Object.values(RESUME_DATA).filter((entry) => entry.type === 'work'
 function yearsIn(dates: string): number[] {
   return (dates.match(/\d{4}/g) ?? []).map(Number);
 }
-
-/** The first year of the whole career — drives the eyebrow's range. */
-const CAREER_START_YEAR = Math.min(...ROLES.flatMap((role) => yearsIn(role.dates)));
 
 /** A role is current when resumeData says the end is open-ended. */
 function isCurrentRole(dates: string): boolean {
@@ -66,25 +68,14 @@ function toWord(n: number): string {
   return NUMBER_WORDS[n] ?? String(n);
 }
 
-function capitalize(word: string): string {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
 /**
- * Years of experience, read out of SUMMARY ("...7+ years building...") so the
- * heading and the résumé summary can never disagree. If SUMMARY ever stops
- * stating a number, fall back to the elapsed time since the first role.
+ * "Since 2018, five steps up." — a start date rather than a years count, on
+ * purpose: `CAREER_START_YEAR` is a fact the reader can check against the
+ * dates below it, while "N years" is a number that goes stale every January
+ * and that automated résumé filters score literally. The role count is still
+ * derived from RESUME_DATA.
  */
-function yearsOfExperience(): number {
-  const stated = SUMMARY.match(/(\d+)\+?\s*years/i);
-  if (stated) return Number(stated[1]);
-  return new Date().getFullYear() - CAREER_START_YEAR;
-}
-
-/** "Seven years, four steps up." — both numbers derived, neither hardcoded. */
-const HEADING = `${capitalize(toWord(yearsOfExperience()))} years, ${toWord(
-  ROLES.length
-)} steps up.`;
+const HEADING = `Since ${CAREER_START_YEAR}, ${toWord(ROLES.length)} steps up.`;
 
 /**
  * Education, oldest first, folded into one line. Degrees are authored as

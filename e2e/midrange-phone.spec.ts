@@ -38,6 +38,21 @@ import { test, expect, type Page, type TestInfo } from '@playwright/test';
  *     handset would display. It is used as a liveness signal — frames
  *     happening at all versus a flat zero — and never quoted as fps.
  *
+ * COLD CACHE, AND WHY THAT IS NOT AN ACCIDENT
+ * ------------------------------------------
+ * Every figure here is a first visit. Playwright gives each test a fresh
+ * context, so the cache starts empty and stays that way for the one load
+ * being measured — verified, not assumed: the cold load pulls all 21
+ * subresources over the wire (~507 KB) with zero cache hits.
+ *
+ * It matters more than it looks. A second load in the same context scores
+ * LCP 0.35s against the same 4x/1.6Mbps handicap, because 19 of those 21
+ * resources come back from cache. That is less than half the published
+ * number. So a `storageState`, a reused context, or a `reuseExistingServer`
+ * that outlives a run would quietly turn this file into a warm-cache
+ * benchmark, and every assertion here would still pass while the number the
+ * page quotes stopped being true. The cold path is the claim; keep it cold.
+ *
  * WHY THE THRESHOLDS ARE THE PUBLIC ONES
  * -------------------------------------
  * 2500ms LCP and 0.1 CLS are the "good" boundaries Google publishes, not
