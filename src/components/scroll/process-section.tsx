@@ -59,8 +59,16 @@ const PREVIEW_CHECKS: PreviewCheck[] = [
   { name: 'lint', value: 'npm run lint', status: 'passing' },
   { name: 'unit tests', value: 'npm run test:unit', status: 'passing' },
   { name: 'production build', value: 'npm run build', status: 'passing' },
-  { name: 'end-to-end + visual snapshots', value: 'npm run test:e2e', status: 'passing' },
+  // NOT "+ visual snapshots": `e2e/visual-regression.spec.ts` skips itself in
+  // CI (its baselines are macOS-only), so the snapshots are a local check.
+  { name: 'end-to-end', value: 'npm run test:e2e', status: 'passing' },
   { name: 'hero.glb size', value: '8.5 KB of 500 KB budget', status: 'passing' },
+  {
+    name: 'homepage JS',
+    value: '160.3 KB gzip, ≤ baseline + 1 KB',
+    status: 'passing',
+    note: 'every <script src> in the prerendered page; the lazy 3D scene is not counted',
+  },
   {
     name: 'mid-range phone',
     value: 'LCP 0.8s, CLS 0.00',
