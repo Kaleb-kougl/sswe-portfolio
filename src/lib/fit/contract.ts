@@ -16,7 +16,8 @@ import { SKILLS_TABLE } from '@/data/corpus/skills';
  */
 
 export const JD_MAX_CHARS = 12_000;
-export const MAX_REQUIREMENTS = 15;
+/** Merged requirement rows; code-first extraction can find more than a model listed. */
+export const MAX_REQUIREMENTS = 25;
 
 const skillIds = SKILLS_TABLE.map((skill) => skill.id);
 
@@ -60,15 +61,86 @@ export type Requirement = z.infer<typeof Requirement>;
 
 export const FitReport = z.object({
   role: z.string(),
-  /** `model`: from an Extraction. `scan`: the no-model keyword scan. */
+  /**
+   * `model`: code-first extraction with the model's per-segment decisions.
+   * `scan`: the same pipeline with default decisions (no model).
+   */
   mode: z.enum(['model', 'scan']),
   requirements: z.array(Requirement),
-  /** Null in `scan` mode: without extraction there are no must-haves. */
+  /** Null when no must-haves could be identified (e.g. a headerless JD in scan mode). */
   coverage: z
     .object({ covered: z.number().min(0), mustHaves: z.number().int().min(0) })
     .nullable(),
 });
 export type FitReport = z.infer<typeof FitReport>;
+
+// ---------------------------------------------------------------------------
+// Code-first extraction (plan v4, Phase 2a).
+//
+// Code segments the JD and finds everything it can deterministically:
+// section, priority, skills, years. The model then makes one small decision
+// per candidate segment, and the grammar forces exactly one decision per
+// segment, in order, so it cannot skip a requirement. Merging code's findings
+// with the model's decisions produces the `ExtractedRequirement[]` that
+// `judge` already consumes. Without a model the same pipeline runs with
+// `defaultDecision`, which is the no-model ("scan") path.
+// ---------------------------------------------------------------------------
+
+/** Upper bound on segments sent to the model; keeps the prompt small. */
+export const MAX_CANDIDATES = 40;
+
+export const Section = z.enum([
+  'requirements', // "Requirements", "Qualifications", "What you bring"
+  'preferred', // "Nice to have", "Preferred", "Bonus"
+  'responsibilities', // "What you'll do", "Responsibilities"
+  'about', // company / team blurb, never a requirement
+  'benefits', // pay, perks, EEO text, never a requirement
+  'unknown', // before any header, or a header code didn't recognise
+]);
+export type Section = z.infer<typeof Section>;
+
+export const Segment = z.object({
+  /** Position among ALL segments, stable for the report. */
+  index: z.number().int().min(0),
+  /** The JD's own words, trimmed of bullet markers. Never paraphrased. */
+  text: z.string().min(1),
+  section: Section,
+  /** From the section header; null when code can't tell. */
+  priority: z.enum(['must', 'nice']).nullable(),
+  /** Found by code (alias scan). The model may add, never remove. */
+  skills: z.array(CanonicalSkillId),
+  /** Gap-vocabulary terms found by code, e.g. "Go". */
+  otherSkills: z.array(z.string().min(1).max(40)),
+  /** From a years regex; null when none is stated. */
+  minYears: z.number().int().min(0).max(30).nullable(),
+});
+export type Segment = z.infer<typeof Segment>;
+
+export const SegmentedJd = z.object({
+  /** Determined by code; "Role not stated" when it can't. */
+  role: z.string().min(1).max(120),
+  segments: z.array(Segment),
+  /** Indices (into `segments`) the model is asked about, in order. */
+  candidates: z.array(z.number().int().min(0)).max(MAX_CANDIDATES),
+});
+export type SegmentedJd = z.infer<typeof SegmentedJd>;
+
+/** The model's whole job, per candidate segment. */
+export const SegmentDecision = z.object({
+  /** Is this segment a requirement of the candidate (not a duty, perk or blurb)? */
+  requirement: z.boolean(),
+  /** Used only when the segment's code-derived priority is null. */
+  priority: z.enum(['must', 'nice']),
+  /** Canonical skills the segment names that code's alias scan missed. */
+  addSkills: z.array(CanonicalSkillId).max(4),
+});
+export type SegmentDecision = z.infer<typeof SegmentDecision>;
+
+/** Exactly `candidates.length` decisions, in candidate order (grammar-enforced). */
+export const Decisions = z.object({
+  decisions: z.array(SegmentDecision),
+});
+export type Decisions = z.infer<typeof Decisions>;
 
 /** A chat message in the shape WebLLM and llama.cpp both accept. */
 export interface ChatMessage {

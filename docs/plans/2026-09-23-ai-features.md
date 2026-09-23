@@ -1,8 +1,8 @@
-# Portfolio AI features: implementation plan (v3)
+# Portfolio AI features: implementation plan (v4)
 
 2026-09-23 · refined from "Portfolio AI Features Implementation Plan.docx" against the repo as it stands on `scroll-redesign` (13ebc38).
 
-**Status:** Phase 0 done (`919cdff`, `f1f95ab`, `fd7e84f`). Phase 1 done in code (`3fc1542`, `e4560ba`); it still needs the Vercel env vars and the live connector smoke test. **v3 (2026-09-23): the fit checker runs entirely in the visitor's browser.** No hosted model, no server spend, no `/api/fit`.
+**Status:** Phase 0 done (`919cdff`, `f1f95ab`, `fd7e84f`). Phase 1 done in code (`3fc1542`, `e4560ba`); it still needs the Vercel env vars and the live connector smoke test. **v3 (2026-09-23): the fit checker runs entirely in the visitor's browser.** No hosted model, no server spend, no `/api/fit`. **v4 (same day): code-first extraction.** The model only makes one grammar-forced decision per JD segment (Phase 2a). Phase 2 baseline: `b00cebc`, `6ecec7a`, `0dcc26c`.
 
 ## What changed from v1
 
@@ -109,39 +109,32 @@ Stateless Streamable HTTP at `/api/mcp`. All tools are read-only.
 
 ## Phase 2: JD fit checker, in the browser
 
-The model only extracts requirements; code judges them. That split makes a small on-device model workable and removes the oversell risk at the source.
+**v4: code first, model last.** Code finds everything it can deterministically. The model makes one small, grammar-forced decision per JD segment, and code judges. In the first real run, a model asked to extract requirements freely dropped 3 of 5 and mapped "Go or Kubernetes" to `html`. Letting code enumerate the requirements makes skipping impossible, and every step except the model's decision is exact and the same on every device.
 
-### 2a. Contract (`src/lib/fit/`)
+### 2a. Extraction pipeline (`src/lib/fit/`; types in `contract.ts`)
 
-```ts
-// What the model must produce, enforced by constrained (JSON-schema) decoding.
-const ExtractedRequirement = z.object({
-  text: z.string().max(200),                 // paraphrased from the JD
-  priority: z.enum(['must', 'nice']),
-  skills: z.array(CanonicalSkillId).max(6),  // enum of the corpus's canonical tags
-  otherSkills: z.array(z.string().max(40)).max(6), // named in the JD, not in the vocabulary
-  minYears: z.number().int().min(0).max(30).nullable(),
-});
-const Extraction = z.object({
-  role: z.string().max(120),
-  requirements: z.array(ExtractedRequirement).max(15),
-});
+| Step | Who | How |
+|---|---|---|
+| 1. Segment | Code | Split into bullets and lines, and sentences for prose. Strip bullet markers. The text stays verbatim, never paraphrased |
+| 2. Section → priority | Code | Header lexicon: requirements/qualifications → `must`; nice to have/preferred/bonus → `nice`; responsibilities → no priority; about/benefits/EEO → never a requirement; anything else → `unknown`. Inline cues ("preferred", "a plus", "bonus") override to `nice` |
+| 3. Skills | Code | `detectSkills` (the alias scan) plus the gap vocabulary, per segment |
+| 4. Years | Code | Regex: "5+ years", "at least five years", "3-5 years" (takes the minimum) |
+| 5. Role | Code | Title heuristics (first short line, "Job title:", "We're hiring a …"); otherwise "Role not stated" |
+| 6. Candidates | Code | Segments not in about/benefits, capped at `MAX_CANDIDATES` = 40 |
+| 7. Decide | **Model** | Per candidate, in order: `{requirement: bool, priority, addSkills[]}`. The grammar is built per run with **exactly N items**. `addSkills` is limited to canonical IDs, and code's findings can't be removed. `priority` is used only where code's was null |
+| 8. Merge | Code | Kept segments → `ExtractedRequirement[]` (text = segment text; skills = code ∪ model's additions; priority = code's, else the model's) |
+| 9. Judge | Code | Unchanged: per-skill verdicts, evidence, coverage |
 
-// What the UI renders, computed in code from Extraction + CORPUS.
-const Requirement = ExtractedRequirement.extend({
-  verdict: z.enum(['strong', 'partial', 'gap', 'not_assessed']),
-  evidenceIds: z.array(z.string()).max(3),
-  note: z.string().max(200),                 // templated, not generated
-});
-const FitReport = z.object({
-  role: z.string(),
-  mode: z.enum(['model', 'scan']),
-  requirements: z.array(Requirement),
-  coverage: z.object({ covered: z.number(), mustHaves: z.number() }).nullable(),
-});
-```
+**`defaultDecision` (no model, the "scan" mode):**
+- A requirements/preferred segment is kept if it names a skill or years, or isn't just a blurb.
+- A responsibilities segment is kept as `nice` only if it names a skill.
+- An unknown-section segment is kept only if it names a skill, with priority null, so it's left out of coverage.
 
-The prompt gives the model the canonical skill vocabulary (ids + labels, about 500 tokens) so it maps "micro-frontends" to `module-federation` itself. It never sees evidence, so it has nothing to cite. The JD goes inside `<job_description>` tags and is declared to be data.
+Same `FitReport`. Coverage is shown whenever the JD had recognisable sections.
+
+**Prompt:** a short rules block, the canonical vocabulary (id: names), and the numbered candidate segments inside `<job_description>` tags, declared to be data. The model sees only segment text, never evidence.
+
+**Determinism:** greedy decoding plus the grammar gives the same output for the same input on a given device. Across GPUs, float differences can rarely flip a decision. Because code's findings are a floor, a flip can only add or drop a model-added skill or a keep/drop call, never a code-found skill.
 
 ### 2b. Deterministic judging (pure, fully unit-tested)
 
@@ -156,9 +149,9 @@ The prompt gives the model the canonical skill vocabulary (ids + labels, about 5
 - **Notes are templates:** "Evidence: OneHost migration (Indeed), …", or for gaps "Not in my work yet. Closest: …", where "closest" means records sharing a skill *category*. Unsoftened.
 - **Injection can't upgrade anything:** the worst a hostile JD can do is add or drop extracted requirements. Verdicts are computed from the corpus.
 
-### 2c. Fallback: skill scan (no model, every device)
+### 2c. No-model path
 
-Scan the JD with `normalizeSkill` over every alias (word-boundary matching), plus a small **gap vocabulary** in `skills.ts` of common terms that aren't claimed (Go, Kubernetes, Swift, …) so it can report "mentioned in the JD, not in my work". Output uses the same `FitReport` with `mode: 'scan'`, one row per detected skill, and `priority` omitted. There's **no coverage number**, because without extraction there are no must-haves. The UI says plainly that this is a keyword scan, and points to Private mode (if the device qualifies) or the MCP server.
+Devices that can't run the model get steps 1–6, 8 and 9 with `defaultDecision`. That gives real requirement rows with must/nice from headers, the gap vocabulary for "mentioned, not in my work", and coverage when sections were recognised. `SCAN_DISCLAIMER` states the limits: engineering terms only, and priorities only from headers.
 
 ### 2d. Local runtime (`src/lib/fit/local/`)
 
@@ -187,13 +180,12 @@ Scan the JD with `normalizeSkill` over every alias (word-boundary matching), plu
 
 **Golden set (`evals/cases/`, about 28):** the same groups as before: strong (6), partial/poor (6), non-engineering (2), injection (6), MCP read tools (8). Each fit case is labeled with its requirements (text, priority, skills) and expected verdicts for 3–5 key ones.
 
-**Graders:**
-- schema validity
-- requirement recall and precision against the labels (fuzzy text match)
-- priority accuracy
-- skill-mapping accuracy
+**Graders (v4):** the code steps are unit-tested exactly, so the evals judge the pipeline end to end and the model's added value separately:
+- segmentation and priority: labeled requirement segments found (recall), priority accuracy; deterministic, must be 100% on the golden set
+- model decisions: keep/drop accuracy per segment, and precision of `addSkills` (a wrong added skill is worse than a missed one)
+- **model vs no-model delta:** end-to-end verdict accuracy with the model minus with `defaultDecision`. If the model doesn't beat the no-model path, it doesn't ship
 - end-to-end verdict accuracy through the real `src/lib/fit` code
-- injection cases: verdicts equal the clean JD's, and no injected text appears as a requirement
+- injection cases: verdicts equal the clean JD's
 
 There's no LLM judge, because notes are templates. That's one less model and one less source of noise.
 
@@ -207,9 +199,10 @@ Decoding is greedy (temperature 0) and deterministic, so each case runs **once**
 
 | Metric | Gate |
 |---|---|
-| Must-have recall | ≥ 85% |
+| Requirement segments found (code) | 100% on the golden set |
 | Verdict accuracy (end to end) | ≥ 85% and ≥ main − 3 pts |
-| Skill-mapping accuracy | ≥ 80% |
+| `addSkills` precision | ≥ 90% |
+| Model vs no-model verdict accuracy | > 0 pts (the model must earn its download) |
 | Injection cases | 100% |
 | Scan-mode cases | 100% (deterministic) |
 
