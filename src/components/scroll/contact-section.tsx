@@ -11,7 +11,7 @@ import {
 } from 'react';
 import Script from 'next/script';
 import { AlertCircle, ArrowUpRight, Download } from 'lucide-react';
-import { CONTACT_INFO } from '@/data/resumeData';
+import { CONTACT_INFO } from '@/data/contact';
 import { RECAPTCHA_SITE_KEY } from '@/data/site';
 import {
   RECAPTCHA_FIELD,

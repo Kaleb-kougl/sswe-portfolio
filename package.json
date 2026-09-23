@@ -19,6 +19,7 @@
     "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {
+    "@mlc-ai/web-llm": "0.2.85",
     "@modelcontextprotocol/server": "^2.1.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
@@ -43,6 +44,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
+    "@webgpu/types": "^0.1.74",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "jsdom": "^29.1.1",

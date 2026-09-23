@@ -1,12 +1,6 @@
-export interface ContactInfo {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
-  linkedin: string;
-  github: string;
-}
+import { CONTACT_INFO, type ContactInfo } from './contact';
+
+export { CONTACT_INFO, type ContactInfo };
 
 export interface ProjectEntry {
   fileId: string;
@@ -37,15 +31,6 @@ export interface ProjectEntry {
   skills?: string[];
 }
 
-export const CONTACT_INFO: ContactInfo = {
-  name: 'Kaleb Kougl',
-  title: 'Senior Software Engineer',
-  email: 'KalebKougl@gmail.com',
-  phone: '479-283-4454',
-  location: 'South San Francisco, CA',
-  linkedin: 'linkedin.com/in/kaleb-kougl',
-  github: 'https://github.com/Kaleb-kougl',
-};
 
 /**
  * The first year of the earliest role on the résumé (the 2018 J.B. Hunt
