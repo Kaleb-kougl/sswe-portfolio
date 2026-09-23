@@ -1,61 +1,63 @@
-# Portfolio AI features: implementation plan (v2)
+# Portfolio AI features: implementation plan (v3)
 
 2026-09-23 · refined from "Portfolio AI Features Implementation Plan.docx" against the repo as it stands on `scroll-redesign` (13ebc38).
 
+**Status:** Phase 0 done (`919cdff`, `f1f95ab`, `fd7e84f`). Phase 1 done in code (`3fc1542`, `e4560ba`); it still needs the Vercel env vars and the live connector smoke test. **v3 (2026-09-23): the fit checker runs entirely in the visitor's browser.** No hosted model, no server spend, no `/api/fit`.
+
 ## What changed from v1
 
-| v1 said | Repo reality | v2 does |
+| v1 said | Repo reality | Now |
 |---|---|---|
 | `content/`, `lib/`, `app/`, `pnpm` | `src/` layout, npm (`package-lock.json`) | `src/data/`, `src/lib/`, `src/app/`, `npm run …` |
 | "Is it Next.js App Router on Vercel?" | Yes: Next 16.2.7, React 19.2, `@vercel/speed-insights` | Closed. Next 16 has breaking changes: read `node_modules/next/dist/docs/` before each new route handler (AGENTS.md) |
-| Build the corpus from scratch | `src/data/resumeData.ts` (17 entries, 34 records) and `workProjects.ts` (4 cards, with a `verified` sourcing rule) already drive the site | Phase 0 turns existing bullets into `Evidence` records, with no new copy |
-| `send_message` via Resend | Contact goes through Formspree with reCAPTCHA v3. Formspree rejects posts with no browser token, and Resend needs a verified domain the site doesn't have (`docs/contact-delivery.md`) | **Dropped from v1 of the MCP server.** `get_profile` returns the email and contact-form link |
-| MCP `check_fit` calls our model | The calling agent is already an LLM | **No model calls behind MCP.** Agents get the corpus and search tools and do the reasoning themselves. Our spend is limited to the `/fit` web route |
-| "Process page", "8.5 KB asset budget", "like your Core Web Vitals comment" | Process is a **section** on the one page. 8.5 KB is hero.glb's *size* against a **500 KB** budget. The vitals job is pass/fail and posts no PR comment | The eval PR comment is new work. AI rows join `PREVIEW_CHECKS` in `process-section.tsx` |
-| "Homepage JS size unchanged in CI" | No JS bundle gate exists | Add one in Phase 2 before `/fit` ships (see below) |
-| "Playwright snapshots pass with no diff" | `ci.yml` **auto-regenerates and commits snapshots on failure**, so a diff never fails CI | Phase 0 and Phase 2 PRs must show no auto-snapshot commit. Better: stop auto-committing on PRs (see Phase 0) |
-| Turnstile / BotID on `/api/fit` | reCAPTCHA v3 is already on the page, but its secret lives only in Formspree, so this server can't verify tokens | Either add `RECAPTCHA_SECRET_KEY` to Vercel env and verify in the guard, or use Vercel BotID. Decide in Phase 2 |
+| Build the corpus from scratch | `src/data/resumeData.ts` and `workProjects.ts` already drive the site | Phase 0 turned existing bullets into `Evidence` records, with no new copy |
+| `send_message` via Resend | Contact goes through Formspree with reCAPTCHA v3; Resend needs a verified domain the site doesn't have (`docs/contact-delivery.md`) | **Dropped.** `get_profile` returns the email and contact-form link |
+| MCP `check_fit` calls our model | The calling agent is already an LLM | **No model calls behind MCP.** Agents get the corpus and search tools |
+| Fit checker on a hosted model behind `/api/fit` | – | **v3: browser-only.** A small model runs in a Web Worker on WebGPU and only *extracts* requirements. Code does all the matching and verdicts. Devices that can't run it get a deterministic skill scan. $0 to run; the JD never leaves the device |
+| "Process page", "8.5 KB asset budget", "like your Core Web Vitals comment" | Process is a **section**. 8.5 KB is hero.glb's *size* against a **500 KB** budget. The vitals job posts no PR comment | The eval PR comment is new work. AI rows join `PREVIEW_CHECKS` in `process-section.tsx` |
+| "Homepage JS size unchanged in CI" | No JS bundle gate existed | Added in Phase 0 (`scripts/check-homepage-js.mjs`) |
+| "Playwright snapshots pass with no diff" | Snapshot PNGs are gitignored and the visual spec skips in CI | Visual snapshots are a local check. The CI auto-commit steps were removed |
+| Turnstile / BotID / spend cap on `/api/fit` | – | **Not needed in v3:** there is no server endpoint that costs money |
 
 ## Scope
 
-Three features, one foundation, about 3 weekends:
-
 1. **MCP server + `/llms.txt`**: recruiters' agents can query the portfolio. No model calls, no write tools.
-2. **JD fit checker (`/fit`)**: paste a job description and get requirement-by-requirement evidence and honest gaps. The only feature that spends money.
-3. **AI eval gates in CI**: accuracy, latency and cost are budgets, shown in the Process section next to the hero budget and vitals.
+2. **JD fit checker (`/fit`)**: paste a job description and get requirement-by-requirement evidence and honest gaps, computed on the visitor's device.
+3. **AI eval gates in CI**: extraction accuracy and on-device latency are budgets, shown in the Process section next to the hero budget and vitals.
 
-Non-goals are unchanged: no chat assistant, no embeddings or vector DB, no accounts, and no stored JDs. Also out of scope for now: `send_message` (see Open questions).
+Non-goals: no chat assistant, no embeddings or vector DB, no accounts, no stored JDs, no hosted model, and no telemetry about what visitors paste.
 
 ## Architecture
 
 ```
-Visitor ─▶ /fit (lazy page) ─▶ /api/fit ─▶ guard ─▶ fit pipeline ─▶ model provider
-                                                        │
-Agent ─▶ /api/mcp (stateless) ─▶ read tools ────────────┤
-                                                        ▼
-CI evals ─────────────────────────────────▶ src/lib/tools + src/data/corpus
+Visitor ─▶ /fit ─┬─ capable device ─▶ Web Worker (WebGPU model) ─▶ extraction ─┐
+                 └─ everyone else ──▶ deterministic skill scan ─────────────────┤
+                                                                               ▼
+                                                      src/lib/fit (matching, verdicts, coverage)
+                                                                               │
+Agent ─▶ /api/mcp (stateless) ─▶ src/lib/tools ────────────────────────────────┤
+                                                                               ▼
+CI evals ──────────────────────────────────────────────────────▶ src/data/corpus
 ```
 
-- `src/lib/tools/*` are plain functions with Zod inputs, used by MCP, `/api/fit` and the eval runner. CI tests the same code visitors hit.
-- The guard sits only in front of `/api/fit`. MCP gets a cheap per-IP rate limit because it costs CPU but no tokens.
-
-**Dependencies to add:** `zod`, `ai` + one provider package, `mcp-handler` (fall back to `@modelcontextprotocol/sdk` if it lags Next 16), `@upstash/ratelimit` + `@upstash/redis`.
+- The model's only job is to turn a JD into `{role, requirements: [{text, priority, skills[]}]}`. It never sees the corpus and never produces a verdict, so it can't invent a citation or oversell.
+- `src/lib/fit/*` is pure TypeScript shared by the worker, the fallback and the eval runner. CI tests the same code visitors run.
 
 **Layout:**
 
 | Path | Holds |
 |---|---|
-| `src/data/corpus/` | `evidence.ts`, `skills.ts` (tags + aliases), `profile.ts`, and `index.ts` exporting the validated corpus |
-| `src/lib/tools/` | One file per tool: Zod input + handler |
-| `src/lib/fit/` | Prompt, FitReport schema, grounding filter, coverage math |
-| `src/lib/guard.ts` | Rate limit, spend cap, input limits, bot check |
-| `src/app/api/mcp/[transport]/route.ts` | MCP server |
-| `src/app/api/fit/route.ts` | Streaming fit endpoint |
+| `src/data/corpus/` | Evidence, skills + aliases, profile, validated `CORPUS` |
+| `src/lib/tools/` | MCP tools as plain functions |
+| `src/lib/guard.ts` | MCP rate limit |
+| `src/lib/fit/` | Extraction schema + prompt, matcher, verdicts, coverage, fallback scan, Markdown export |
+| `src/lib/fit/local/` | Worker, runtime adapter, capability gate, benchmark |
+| `src/app/api/mcp/route.ts` | MCP server |
 | `src/app/fit/page.tsx` | Fit UI, its own route so the homepage bundle is untouched |
-| `src/app/llms.txt/route.ts`, `src/app/llms-full.txt/route.ts` | Generated from the corpus, statically rendered |
-| `evals/` | Cases, graders, runner, `thresholds.json`, `rubric.md` |
+| `src/app/llms.txt/`, `src/app/llms-full.txt/` | Generated from the corpus, static |
+| `evals/` | Cases, graders, runner, `thresholds.json` |
 
-## Phase 0: corpus (no visible change)
+## Phase 0: corpus (done)
 
 Move facts into typed `Evidence` records with stable IDs. **The site must render byte-for-byte the same.**
 
@@ -83,7 +85,7 @@ Steps:
 
 **Done when:** `npm run test:unit` and `npm run test:e2e` pass locally with **no snapshot updates**, the link-check job is green, and `corpus:tokens` is under budget.
 
-## Phase 1: MCP server + `/llms.txt` (no model, no spend)
+## Phase 1: MCP server + `/llms.txt` (done in code)
 
 Stateless Streamable HTTP at `/api/mcp`. All tools are read-only.
 
@@ -104,194 +106,200 @@ Stateless Streamable HTTP at `/api/mcp`. All tools are read-only.
 
 **Done when:** Inspector lists all five tools, Claude answers "What has Kaleb built with module federation?" citing `webpack-federation.*` or the Indeed OneHost record, and a unit test shows the 61st request in a minute gets a 429.
 
-## Phase 2: JD fit checker
 
-One streaming model call produces a FitReport. Code, not the model, validates citations and computes the headline number.
+## Phase 2: JD fit checker, in the browser
+
+The model only extracts requirements; code judges them. That split makes a small on-device model workable and removes the oversell risk at the source.
+
+### 2a. Contract (`src/lib/fit/`)
 
 ```ts
-const Requirement = z.object({
-  text: z.string(),
+// What the model must produce, enforced by constrained (JSON-schema) decoding.
+const ExtractedRequirement = z.object({
+  text: z.string().max(200),                 // paraphrased from the JD
   priority: z.enum(['must', 'nice']),
-  verdict: z.enum(['strong', 'partial', 'gap']),
+  skills: z.array(CanonicalSkillId).max(6),  // enum of the corpus's canonical tags
+  otherSkills: z.array(z.string().max(40)).max(6), // named in the JD, not in the vocabulary
+  minYears: z.number().int().min(0).max(30).nullable(),
+});
+const Extraction = z.object({
+  role: z.string().max(120),
+  requirements: z.array(ExtractedRequirement).max(15),
+});
+
+// What the UI renders, computed in code from Extraction + CORPUS.
+const Requirement = ExtractedRequirement.extend({
+  verdict: z.enum(['strong', 'partial', 'gap', 'not_assessed']),
   evidenceIds: z.array(z.string()).max(3),
-  note: z.string().max(200),
+  note: z.string().max(200),                 // templated, not generated
 });
 const FitReport = z.object({
   role: z.string(),
-  requirements: z.array(Requirement).max(15),
-  summary: z.string().max(400),
+  mode: z.enum(['model', 'scan']),
+  requirements: z.array(Requirement),
+  coverage: z.object({ covered: z.number(), mustHaves: z.number() }).nullable(),
 });
 ```
 
-**Grounding (in code, after the model call; unchanged from v1):** drop unknown IDs and count them as hallucinations. Strong with no valid evidence becomes partial, and partial with none becomes gap. Coverage = (strong + 0.5 × partial) / must-haves, rendered as "7 of 9 must-haves covered."
+The prompt gives the model the canonical skill vocabulary (ids + labels, about 500 tokens) so it maps "micro-frontends" to `module-federation` itself. It never sees evidence, so it has nothing to cite. The JD goes inside `<job_description>` tags and is declared to be data.
 
-**Prompt:** rules + corpus JSON as a cacheable system prefix. The JD goes inside `<job_description>` tags and is declared to be data. Temperature 0. The model is set by `FIT_MODEL`, so evals can compare models.
+### 2b. Deterministic judging (pure, fully unit-tested)
 
-**Model:** see "Can this use a small local model?" below. The v2 default is a small hosted model tier, chosen by eval score and cost per check.
+- **Evidence** for a requirement = corpus records sharing any of its `skills`, ranked by skill overlap, then records with a metric first; keep the top 3.
+- **Verdict:**
+  - `strong`: ≥ 2 matching records, or 1 with a metric
+  - `partial`: 1 matching record without a metric
+  - `gap`: no matching records, but the requirement names skills (`skills` or `otherSkills`)
+  - `not_assessed`: names no skills (for example "excellent communication"). Shown, but excluded from coverage
+- **Years:** when `minYears` is set, compare it to years since `CAREER_START_YEAR`, stated in the note either way.
+- **Coverage** = (strong + 0.5 × partial) / must-haves, rendered as "7 of 9 must-haves covered".
+- **Notes are templates:** "Evidence: OneHost migration (Indeed), …", or for gaps "Not in my work yet. Closest: …", where "closest" means records sharing a skill *category*. Unsoftened.
+- **Injection can't upgrade anything:** the worst a hostile JD can do is add or drop extracted requirements. Verdicts are computed from the corpus.
 
-**UI (`/fit`):**
-- Its own route, so the homepage bundle is unaffected by construction. The hero gets only a plain `<Link>`.
-- Rows stream in grouped by Must-have / Nice-to-have, with verdict badges and evidence chips that link to anchors, npm or commits.
-- Gap rows read "Not in my work yet. Closest: …", unsoftened.
-- An `aria-live="polite"` summary line announces progress per row, not per token. Respect reduced motion and make everything keyboard-operable.
-- "Copy as Markdown", and "Email me about this role", which opens `/#contact` with the Reason pill set to "Full-time role" and a prefilled message. The JD itself isn't forwarded.
-- Budget message: "The fit checker is resting until tomorrow" + a mailto when the cap is hit.
+### 2c. Fallback: skill scan (no model, every device)
 
-**New CI gate (land it before `/fit`):** after `next build`, a script sums the homepage's first-load JS from the build manifest and compares it to a committed `budgets/homepage-js.json`. Fail at +1 KB. It gets its own `PREVIEW_CHECKS` row once it runs.
+Scan the JD with `normalizeSkill` over every alias (word-boundary matching), plus a small **gap vocabulary** in `skills.ts` of common terms that aren't claimed (Go, Kubernetes, Swift, …) so it can report "mentioned in the JD, not in my work". Output uses the same `FitReport` with `mode: 'scan'`, one row per detected skill, and `priority` omitted. There's **no coverage number**, because without extraction there are no must-haves. The UI says plainly that this is a keyword scan, and points to Private mode (if the device qualifies) or the MCP server.
 
-**Done when:** 5 real JDs (frontend, design engineer, AI platform, poor match, non-engineering) give reports you'd defend; the homepage JS gate is unchanged; and a Playwright snapshot of a finished report from a **recorded** response is stable. The route reads a fixture when `FIT_FIXTURE` is set, so e2e never calls the provider. Per the dev-server memory, stop `next dev` before e2e runs.
+### 2d. Local runtime (`src/lib/fit/local/`)
+
+- **Runtime:** WebLLM (MLC) in a dedicated worker (`WebWorkerMLCEngine`), for its JSON-schema-constrained decoding (XGrammar). transformers.js is the fallback if WebLLM's worker or schema support disappoints.
+- **Model:** chosen by the Phase 3 evals from WebLLM's prebuilt list. Start with a ~1–1.5B instruct model at 4-bit (roughly 1 GB). Pin the exact model id and revision in code.
+- **Weights host:** WebLLM's default (Hugging Face CDN). Vercel isn't suitable for 1 GB of static weights. The consent dialog says the model downloads from Hugging Face, which sees an IP address but never the JD. The weights are cached in the browser's Cache Storage, so the next visit is instant.
+- **Gating and threading:** as in "Private mode" below. Opt-in only, hard requirements before offering, a pre-download benchmark, a runtime watchdog, and nothing heavy on the main thread.
+
+### 2e. UI (`/fit`)
+
+- Its own route; the homepage only gets a plain `<Link>`. The fallback scan is instant and runs first. The Private-mode button offers the model-based report.
+- Rows grouped Must-have / Nice-to-have / Not assessed, each with a verdict badge and evidence chips linking to the source.
+- The runtime's rows arrive as each requirement finishes (one worker message per row). An `aria-live="polite"` line announces progress per row. Respect reduced motion; everything keyboard-operable.
+- Download progress as a real `<progress>` with bytes, cancellable.
+- Actions: "Copy as Markdown", and "Email me about this role", which links to `/#contact` with the "Full-time role" pill preselected. The JD itself is never sent.
+
+**Done when:**
+- A unit test suite covers judging and the scan.
+- An e2e test with a **mocked worker** (fixture extraction) produces a stable report.
+- An e2e test asserts **no network request carries JD text** during a check.
+- 5 real JDs (frontend, full stack, AI platform, poor match, non-engineering) give reports you'd defend on your own laptop.
+- The homepage JS gate is unchanged.
+- Main-thread long tasks stay ≤ 50 ms during a local run.
 
 ## Phase 3: eval gates
 
-**Golden set (`evals/cases/`, about 28 to start):**
+**Golden set (`evals/cases/`, about 28):** the same groups as before: strong (6), partial/poor (6), non-engineering (2), injection (6), MCP read tools (8). Each fit case is labeled with its requirements (text, priority, skills) and expected verdicts for 3–5 key ones.
 
-| Group | n | Checked by |
-|---|---|---|
-| Fit: strong | 6 | Labeled verdicts on 3–5 key requirements |
-| Fit: partial / poor | 6 | Gaps marked `gap` |
-| Fit: non-engineering | 2 | Mismatch stated, no invented evidence |
-| Prompt injection | 6 | Output matches the same JD with the injection removed |
-| MCP read tools | 8 | Returned IDs include the expected records (deterministic, no model) |
+**Graders:**
+- schema validity
+- requirement recall and precision against the labels (fuzzy text match)
+- priority accuracy
+- skill-mapping accuracy
+- end-to-end verdict accuracy through the real `src/lib/fit` code
+- injection cases: verdicts equal the clean JD's, and no injected text appears as a requirement
 
-**Graders, cheapest first:** schema → raw citation check (before grounding) → verdict accuracy (strong↔partial is a half-miss) → LLM judge (a different model) scoring notes 1–3 against `evals/rubric.md`.
+There's no LLM judge, because notes are templates. That's one less model and one less source of noise.
+
+**Running the model in CI (spike first, pick one):**
+1. **Same weights, native runtime:** `node-llama-cpp` with the GGUF of the same model at the nearest quantization, plus the same JSON schema as a grammar. Fast on a CPU runner, but a proxy, and labeled as one.
+2. **Same runtime:** Playwright Chromium with WebGPU on a software (SwiftShader) adapter, running the real worker. Exact, but possibly too slow for more than a handful of cases.
+
+Decoding is greedy (temperature 0) and deterministic, so each case runs **once**, not 2-of-3. Results are cached by hash(prompt, vocabulary, model id, case).
 
 **Thresholds (`evals/thresholds.json`, retune after 20 runs):**
 
 | Metric | Gate |
 |---|---|
-| Verdict accuracy | ≥ 85% and ≥ main − 3 pts |
-| Raw hallucinated citations | ≤ 2% |
+| Must-have recall | ≥ 85% |
+| Verdict accuracy (end to end) | ≥ 85% and ≥ main − 3 pts |
+| Skill-mapping accuracy | ≥ 80% |
 | Injection cases | 100% |
-| Judge faithfulness | mean ≥ 2.6 |
-| p95 time to first row | ≤ 2.5 s |
-| p95 full report | ≤ 12 s |
-| Cost per check | ≤ cap ÷ planned daily checks (from token usage) |
+| Scan-mode cases | 100% (deterministic) |
 
-**CI (`ai-evals` job in `ci.yml`):**
-- Runs when a PR touches `src/data/corpus/`, `src/lib/tools/`, `src/lib/fit/` or `evals/`, and nightly on `main`. Model changes happen in code (a `FIT_MODEL` default in `src/lib/fit/`), so a path filter can see them. An env var in the Vercel dashboard can't be path-filtered.
-- Each model case runs 3×, pass on 2/3. Results are cached on hash(prompt, corpus, model, case) with `actions/cache`.
-- Needs `pull-requests: write` for the comment. This is **new**, since no vitals comment exists today. Use a sticky comment (update, don't append).
-- Separate `EVAL_PROVIDER_KEY` GitHub secret with its own provider-side monthly cap.
-- Nightly writes `public/evals/latest.json` **only when scores change**, so there isn't a daily commit and redeploy for nothing. The Process section reads it at build time.
-- `PREVIEW_CHECKS` rows: "fit accuracy", "injection cases", "p95 first row" and "cost / check". Each row is `pending` until the job actually runs, following the section's existing rule that every row maps to a real CI step.
+**Latency is measured on devices, not in CI.** CI runners have no representative GPU. `npm run fit:bench` runs a fixed JD through the real worker in a real browser and records time to first row, total time and tokens/s. Its results are committed to `evals/devices.json` for the reference laptop and phone. The Process section shows them labelled "measured on <device>, not in CI", following the mid-range phone row's precedent.
+
+**CI job `ai-evals`:** runs on PRs touching `src/data/corpus/`, `src/lib/fit/` or `evals/`, and nightly on `main`. Sticky PR comment with each metric against main (needs `pull-requests: write`). Nightly writes `public/evals/latest.json` only when scores change. The Process section reads it at build time; rows stay `pending` until the job really runs.
 
 **Done when:** a PR that deletes the "JD is data" rule fails the injection gate, and the Process section shows the scores with a run date.
 
-## Security, cost, abuse
+## Security and privacy
 
-| Control | Setting | Where |
-|---|---|---|
-| Fit rate limit | 5/h, 15/day per hashed IP | Upstash |
-| MCP rate limit | 60/min per hashed IP | Upstash |
-| Daily spend cap | $3, then 503 + "back tomorrow" + mailto. Fails **closed** if Redis is unreachable | Redis counter from real usage |
-| Provider cap | Monthly limit in the provider console; separate CI key | Provider |
-| Input | JD ≤ 12k chars; reject mostly-URL or binary input | Zod |
-| Output | `maxTokens`; ≤ 15 requirements | Model call |
-| Keys | Server env only, never `NEXT_PUBLIC_`; Production env only (previews return 503, the same pattern as `CONTACT_DELIVERY_KEY`) | Vercel |
-| Bot friction | reCAPTCHA v3 (add the secret to env) or Vercel BotID on `/api/fit` | Guard |
-| Injection | JD tagged as data, schema-only output, citation check, 100% eval gate | Prompt + code + CI |
-| PII | No JD storage; logs keep lengths and hashes only | Logging |
+| Concern | Control |
+|---|---|
+| Cost / abuse | Nothing server-side costs money. MCP has a 60/min per-IP limit (`src/lib/guard.ts`) |
+| JD privacy | Processed only in the worker. An e2e test fails if any request body or URL contains the JD. No analytics events carry JD content |
+| Model supply chain | Pinned model id and revision; WebLLM loads only from its configured host |
+| Prompt injection | JD tagged as data; constrained decoding; verdicts computed in code; 100% injection gate |
+| XSS | JD and extracted text rendered as React text only, never as HTML; Markdown export is plain text |
+| Input | JD ≤ 12k chars; reject mostly-URL or binary input before the model runs |
 
-A "How this is secured" panel goes in the Process section.
+A short "How this works and what stays on your device" panel goes on `/fit` and in the Process section.
 
 ## Observability
 
-One structured log line per request: `route`, `model`, `input_tokens`, `output_tokens`, `cached_tokens`, `cost_usd`, `ttfr_ms`, `total_ms`, `status`, `guard_outcome`, `citations_dropped`, `client`. Ship them to Axiom through a Vercel log drain. Alerts: spend > 80% of the cap, and nightly eval failure (GitHub already emails on a failed scheduled run, so that one is free).
+- **MCP:** one structured log line per request (already built). Ship to Axiom through a Vercel log drain when convenient.
+- **`/fit`:** no telemetry, by design. The only numbers are the device benchmarks and CI evals.
 
-SLOs (28-day): fit success ≥ 99% excluding cap hits, p95 time to first row ≤ 2.5 s, dropped citations ≤ 2%.
+## Private mode: optional, and never on devices that can't run it
 
-## Can this use a small local model?
+The scan is always available and instant. The local model is something a visitor opts into. It is never auto-loaded, never prefetched, and never on the homepage.
 
-Partly. It depends on where "local" is.
+**Load boundary.** The runtime sits behind a dynamic `import()` inside the Private-mode handler on `/fit`. Until that button is pressed, the page ships zero bytes of it. The homepage JS gate and a `/fit` first-load check keep it that way.
 
-| Where it runs | Works? | Trade-off |
-|---|---|---|
-| **Behind MCP** | Not needed | The calling agent is the model. v2 already does this: zero model cost |
-| **In the visitor's browser** (WebLLM / transformers.js on WebGPU, a 1–3B model at 4-bit) | Feasible as an opt-in mode | **Pros:** no API cost, no key, no spend cap, and the JD never leaves the device, which is a strong privacy story. **Cons:** a download of roughly 1 GB or more. WebGPU isn't universal, and mid-range phones (the device the vitals job targets) will struggle. Prefilling an ~8k-token corpus plus the JD on an integrated GPU likely takes well over the 2.5 s first-row SLO. Small models are weakest at exactly what this feature needs: long-context grounding and strict JSON. That's the "oversells you" risk |
-| **Self-hosted server** (Ollama on a VPS or home box) | Not on Vercel | Vercel functions have no GPU, so this means a separate box to run and secure. At portfolio traffic that costs more than a hosted small model, and it adds an uptime dependency |
-| **CI evals** | Only if production uses it too | Evaluating a different model than the one you ship proves nothing |
-
-**How to make a small model viable:** shrink its job. Have the model only **extract requirements** from the JD (`{text, priority, skills[]}`), a short, easy task. Then let deterministic code map skills to evidence through the alias table and assign verdicts: strong means ≥ 2 matching records or 1 with a metric, partial means 1, gap means 0. The model never sees the corpus, so it can't hallucinate a citation. The prompt is about 3k tokens instead of 11k, and the verdict logic becomes unit-testable. What you lose is nuance: "partial" gets mechanical, and notes become templates.
-
-**Recommendation:** ship v1 on a small hosted model with the full prompt, because it has the best chance of clearing 85% accuracy. Build the eval suite so the extraction-only pipeline can be scored as a second contender. If extraction-only plus a hosted model scores close, that's the cheaper design anyway. If it holds up, a browser "private mode" becomes a Weekend 4 experiment (gating below).
-
-### Private mode: optional, and never on devices that can't run it
-
-The hosted path is always the default and always works. The local model is something a visitor opts into. It is never auto-loaded, never prefetched, and never on the homepage.
-
-**Load boundary.** The runtime (WebLLM or transformers.js) sits behind a dynamic `import()` inside the Private-mode handler on `/fit`. Until that button is pressed, the page ships zero bytes of it. The homepage JS gate (Phase 2) and a `/fit` first-load check keep it that way.
-
-**Gating follows `morph-canvas.tsx`: no guessing from hardware hints; hard requirements first, then measure.** `navigator.deviceMemory` and `hardwareConcurrency` are not used, for the reason that file records: the first is missing on iOS Safari and the second counts CPU cores, not GPU throughput.
+**Gating follows `morph-canvas.tsx`: no guessing from hardware hints; hard requirements first, then measure.** `navigator.deviceMemory` is missing on iOS Safari and `hardwareConcurrency` counts CPU cores, not GPU throughput, so neither is used.
 
 | Step | When | Rule | If it fails |
 |---|---|---|---|
-| 1. Hard requirements | On `/fit`, at idle after `load` (see Threading) | `navigator.gpu` exists; `requestAdapter()` returns an adapter; adapter limits (`maxBufferSize`, `maxStorageBufferBindingSize`) fit the model's largest weight buffer | No button. Hosted only, and nothing tells the visitor they're missing out |
-| 2. Stated preferences | On page load | `useSaveData()` is false (reuse the existing hook) | Button shown but disabled: "Private mode is off because Data Saver is on." |
-| 3. Storage | When the button is pressed | `navigator.storage.estimate()` shows room for the model plus a margin | "Not enough storage for the ~1 GB model." Stay hosted |
-| 4. Consent | When the button is pressed | Dialog states the download size, that it's cached for next time, and that the JD stays on the device | Cancel means hosted |
-| 5. Microbenchmark | Before the download | About 200 ms of WebGPU matmuls sized like the model's layers, turned into an estimated time to first row for a ~3k-token prompt | Estimate > 10 s: "This device would take about N s. Use the standard checker?" Default to hosted, with an override |
-| 6. Runtime watchdog | During inference | Measured prefill tokens/s. If time to first row passes 15 s, stop | Abort, then offer a hosted retry *with* consent (the JD would leave the device). Latch "too slow" in `sessionStorage` so the button is disabled for the rest of the session |
+| 1. Hard requirements | On `/fit`, at idle after `load` | WebGPU is available **in a worker**; `requestAdapter()` returns an adapter whose limits (`maxBufferSize`, `maxStorageBufferBindingSize`) fit the model | No button. The scan only, with no nagging |
+| 2. Stated preferences | Same | `useSaveData()` is false | Button disabled: "Private mode is off because Data Saver is on." |
+| 3. Storage | When the button is pressed | `navigator.storage.estimate()` has room for the model plus a margin | "Not enough storage for the ~1 GB model." |
+| 4. Consent | When the button is pressed | Dialog: download size, from Hugging Face, cached for next time, the JD stays on this device | Cancel keeps the scan |
+| 5. Microbenchmark | Before the download | About 200 ms of WebGPU matmuls sized like the model's layers → an estimated time to first row | Estimate > 10 s: "This device would take about N s." The download isn't started by default; the visitor can override |
+| 6. Runtime watchdog | During inference | Time to first row > 15 s | Abort and keep the scan result; latch "too slow" in `sessionStorage` |
 
-**Threading: nothing heavy on the main thread, nothing during load.**
+**Threading.**
 
-| Work | Where it runs | Why |
-|---|---|---|
-| Step 1 adapter probe | `requestIdleCallback` after the `load` event on `/fit` (with `setTimeout` as the fallback for Safari), never on the homepage. The button renders disabled ("Checking…") until the probe resolves, and its box is reserved so there's no layout shift | `requestAdapter()` is async but can start the GPU process. It must not compete with LCP |
-| Steps 3–4 | Main thread; they're trivial | A storage estimate and a dialog |
-| Step 5 benchmark, the download, cache writes, tokenizer, inference, JSON parsing, step 6 watchdog | **One dedicated Web Worker** (WebLLM's `WebWorkerMLCEngine`, or transformers.js in a worker), created when the button is pressed. Only `create*PipelineAsync` is used | Keeps the token loop, weight parsing and shader compilation off the main thread |
-| Worker → UI | `postMessage` once per completed requirement row, never per token | React renders about 15 times per report, not hundreds |
-| Hosted path | Streaming `fetch` on the main thread; partial-object renders throttled to one per animation frame | Small payload (≤ 15 rows), so no worker is needed |
+| Work | Where it runs |
+|---|---|
+| Step 1 probe | `requestIdleCallback` after `load` (with `setTimeout` as the fallback), in a throwaway worker. The button's box is reserved while it's "Checking…" |
+| Benchmark, download, cache writes, tokenizer, inference, JSON parsing, watchdog | One dedicated Web Worker, created on press. Only `create*PipelineAsync` is used |
+| Judging (`src/lib/fit`) | In the worker too, so the main thread receives finished `Requirement` rows |
+| Worker → UI | One `postMessage` per finished row |
 
-Fallback: if WebGPU isn't exposed in workers on a browser (check support per browser at build time), that browser fails step 1 and gets no button. **Inference never falls back to the main thread.**
+If WebGPU isn't available in workers on a browser, that browser fails step 1. **Inference never falls back to the main thread.** A worker frees the main thread but not the GPU, so a Playwright test asserts no main-thread long task > 50 ms and INP ≤ 200 ms during a local run.
 
-A worker frees the main thread, not the GPU. Heavy inference can still steal frames from the compositor on integrated GPUs. `/fit` has no 3D backdrop, and its UI is mostly static during a run, but this still gets measured: a Playwright test runs a local-model check and asserts INP ≤ 200 ms and no long tasks > 50 ms on the main thread (a `PerformanceObserver` on `longtask`), under the vitals job's mid-range profile.
+## Milestones
 
-Step 5 is the important one. The ~1 GB download is the expensive, irreversible part, so a device that can't run the model should find out *before* it spends that bandwidth. The benchmark only estimates, so step 6 is the backstop, the same way the frame watchdog backs up the backdrop.
+**Weekend 1 (done):** corpus, CI gates, MCP, `/llms.txt`, "Use with your AI" block.
+- ☐ Still open: Vercel env vars (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `IP_HASH_SALT`); live Claude connector smoke test.
 
-**Measured, not assumed.** Before shipping, run a benchmark on the vitals job's emulated mid-range phone profile plus one real iPhone and one integrated-GPU laptop. Record the thresholds in the plan's Weekend 4 notes. The Process section only gets a Private-mode row once those numbers exist.
+**Weekend 2: fit checker (about 13 h)**
+- ☐ `src/lib/fit`: contract, prompt, judging, coverage, scan + gap vocabulary, Markdown export; unit tests (3 h)
+- ☐ `src/lib/fit/local`: worker, WebLLM adapter, gate steps 1–6, benchmark (4 h)
+- ☐ `/fit` UI: scan-first, Private mode, streaming rows, a11y, fixture-mode e2e, no-JD-on-the-wire e2e (4 h)
+- ☐ Label the first 15 cases; local eval runner; pick the model (2 h)
+- ☐ Ship: "Check your role against my work" link in the hero
 
-**Evals.** Private mode must pass the same golden set (via transformers.js in Node, on a small nightly subset because CPU inference is slow) before the button ships. Fail the gate and the button stays hidden.
+**Weekend 3: CI gates + Process section (about 7 h)**
+- ☐ CI model-runtime spike (node-llama-cpp vs SwiftShader) (1 h)
+- ☐ Grow to about 28 cases incl. 6 injection (2 h)
+- ☐ `ai-evals` job: path filter, cache, sticky PR comment, nightly `latest.json` (2 h)
+- ☐ `fit:bench` on the reference devices; Process rows + privacy panel (2 h)
 
-## Milestones (about 26 h)
-
-**Weekend 1: corpus + MCP (about 9 h)**
-- ☐ Corpus schema, split records, skills and aliases, unit tests (3 h)
-- ☐ Sections read from the corpus with no snapshot diff; restrict the CI snapshot auto-commit (2 h)
-- ☐ Link-check job, `corpus:tokens` (1 h)
-- ☐ Read tools + unit tests; `/api/mcp` + rate limit (2 h)
-- ☐ `/llms.txt`, `/llms-full.txt`, Inspector + connector smoke test, "Use with your AI" block (1 h)
-
-**Weekend 2: fit checker + eval harness (about 11 h)**
-- ☐ Homepage JS budget gate (1 h)
-- ☐ FitReport, prompt, grounding, guard, `/api/fit` streaming (3 h)
-- ☐ 15 labeled cases + local runner with schema, citation and verdict graders (3 h)
-- ☐ Tune to ≥ 85% locally; score extraction-only as a contender (1 h)
-- ☐ `/fit` UI with fixture mode for e2e (3 h)
-- ☐ Spend cap + provider cap set; hero link ships
-
-**Weekend 3: CI gates + Process section (about 6 h)**
-- ☐ Grow to about 28 cases incl. 6 injection; LLM judge (2 h)
-- ☐ `ai-evals` job: path filter, 2/3, cache, sticky PR comment (2 h)
-- ☐ Nightly `latest.json` (write-on-change); `PREVIEW_CHECKS` rows + security panel (1 h)
-- ☐ Structured logs, Axiom drain, spend alert (1 h)
-
-**Project done when:** a recruiter can use `/fit` or their own agent, every claim links to a source, and CI has blocked at least one deliberate regression.
+**Project done when:** a recruiter can use `/fit` (on any device, at the level it supports) or their own agent, every claim links to a source, and CI has blocked at least one deliberate regression.
 
 ## Open questions
 
-- ☐ **Model provider:** pick by eval score and cost per check. The provider SDK is the only piece that changes.
-- ☐ **Bot check:** add the reCAPTCHA secret to env (reuses the existing widget) or adopt Vercel BotID?
-- ☐ **Phone number** in `get_profile` / `llms-full.txt`: include or omit?
-- ☐ **`send_message` later?** Only if it's worth a second Formspree form without reCAPTCHA plus a per-IP limit. It's the only write tool and the largest abuse surface.
-- ☐ **Browser private mode (Weekend 4)?** Only if extraction-only scores within about 5 points of the full prompt. It's opt-in and gated by hard requirements, a pre-download benchmark and a runtime watchdog (see "Private mode" above).
+- ☐ **Model:** which WebLLM prebuilt model clears the gates at the smallest download? Decided by evals.
+- ☐ **CI runtime:** node-llama-cpp proxy or real-runtime SwiftShader? Decided by the Weekend 3 spike.
+- ☐ **Reference devices** for `fit:bench`: which laptop and phone?
+- ☐ **`send_message` later?** Only if it's worth a second Formspree form without reCAPTCHA plus a per-IP limit.
 
 ## Risks
 
 | Risk | Mitigation |
 |---|---|
-| Fit checker oversells you | Code-level downgrades, gap rows always visible, poor-match cases in evals |
-| Abuse drains the cap | Per-IP limits, a daily cap that fails closed, provider cap, bot check; MCP spends nothing |
-| Eval flakiness gets ignored | 2-of-3, relative-to-main gate, retune after 20 runs |
-| Snapshot gate silently auto-updates | Phase 0 step 8 |
-| `mcp-handler` lags Next 16 | Tools are plain functions; swap to `@modelcontextprotocol/sdk` directly |
-| Corpus goes stale | The site renders from it (or it derives from the site's data); the link check runs in CI |
+| Fit checker oversells you | The model never judges; verdicts are code; gap rows are always shown; poor-match cases in evals |
+| Small model extracts badly | Constrained decoding, a skill vocabulary in the prompt, recall/precision gates, model choice by eval |
+| Most visitors can't run the model | The scan works everywhere; the MCP server serves recruiters' own agents |
+| 1 GB download feels heavy | Opt-in only, pre-download benchmark, clear size and progress, cached after the first time |
+| CI eval is a proxy for the browser runtime | Same weights and schema; device benchmarks measured separately; SwiftShader spike as an alternative |
+| `mcp-handler` / MCP spec churn | Tools are plain functions; the transport is a thin layer |
+| Corpus goes stale | The link check runs in CI; tests hold numbers to the source data |
