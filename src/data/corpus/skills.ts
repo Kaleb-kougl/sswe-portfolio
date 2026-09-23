@@ -126,3 +126,219 @@ const LOOKUP: ReadonlyMap<string, string> = new Map(
 export function normalizeSkill(term: string): string | undefined {
   return LOOKUP.get(skillKey(term));
 }
+
+/**
+ * SKILL CATEGORIES — what the fit checker means by "related".
+ *
+ * When a requirement has no evidence, its note may point at the closest work
+ * the corpus does have: a record carrying a skill in the same category as
+ * one the requirement names. Categories are domains of work, not language
+ * families, so Go's closest work is backend work (whatever it was written in)
+ * rather than a TypeScript game. Kept apart from `SKILLS_TABLE` so the corpus
+ * that agents read (and its token budget) doesn't change; the fit tests hold
+ * every canonical tag to a category.
+ */
+export const SKILL_CATEGORIES = {
+  frontend: 'frontend',
+  mobile: 'mobile',
+  platform: 'frontend platform',
+  'cloud-infra': 'cloud and delivery',
+  backend: 'backend',
+  data: 'data',
+  ai: 'AI',
+  testing: 'testing',
+  leadership: 'leadership',
+  'graphics-games': '3D and games',
+  practice: 'engineering practice',
+  research: 'research',
+} as const;
+export type SkillCategory = keyof typeof SKILL_CATEGORIES;
+
+export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
+  typescript: 'frontend',
+  javascript: 'frontend',
+  html: 'frontend',
+  css: 'frontend',
+  react: 'frontend',
+  'web-applications': 'frontend',
+  'component-libraries': 'frontend',
+  'design-systems': 'frontend',
+  'design-tokens': 'frontend',
+  storybook: 'frontend',
+  wcag: 'frontend',
+  'state-management': 'frontend',
+  animation: 'frontend',
+  'chrome-extensions': 'frontend',
+  'frontend-security': 'frontend',
+
+  'react-native': 'mobile',
+
+  webpack: 'platform',
+  'module-federation': 'platform',
+  'micro-frontends': 'platform',
+  'build-systems': 'platform',
+  'web-performance': 'platform',
+  'core-web-vitals': 'platform',
+  seo: 'platform',
+  'developer-productivity': 'platform',
+  'codebase-migrations': 'platform',
+
+  'ci-cd': 'cloud-infra',
+  aws: 'cloud-infra',
+  slos: 'cloud-infra',
+  datadog: 'cloud-infra',
+
+  python: 'backend',
+  'node-js': 'backend',
+  graphql: 'backend',
+  'apollo-graphql': 'backend',
+  microservices: 'backend',
+  'full-stack': 'backend',
+  'system-design': 'backend',
+  'api-design': 'backend',
+
+  postgresql: 'data',
+
+  genai: 'ai',
+  'ai-assisted-development': 'ai',
+  'ai-platform': 'ai',
+  'agentic-workflows': 'ai',
+  gemini: 'ai',
+  langchain: 'ai',
+  pydantic: 'ai',
+  'structured-output': 'ai',
+  'output-validation': 'ai',
+
+  'automated-testing': 'testing',
+  jest: 'testing',
+  appium: 'testing',
+
+  'tech-leadership': 'leadership',
+  mentoring: 'leadership',
+  'cross-functional-collaboration': 'leadership',
+
+  'react-three-fiber': 'graphics-games',
+  threejs: 'graphics-games',
+  webgl: 'graphics-games',
+  'gpu-instancing': 'graphics-games',
+  'roblox-ts': 'graphics-games',
+  'game-development': 'graphics-games',
+  ecs: 'graphics-games',
+  'state-machines': 'graphics-games',
+  'game-ai': 'graphics-games',
+
+  'dependency-injection': 'practice',
+  'functional-programming': 'practice',
+  parsers: 'practice',
+  'open-source': 'practice',
+
+  'scientific-research': 'research',
+};
+
+export interface GapTerm {
+  id: string;
+  label: string;
+  aliases: readonly string[];
+  category: SkillCategory;
+}
+
+/**
+ * GAP VOCABULARY — common engineering terms the corpus does NOT claim.
+ *
+ * The no-model skill scan only finds what it has words for. Without this
+ * list, a JD asking for Go and Kubernetes would scan as a clean page of
+ * React matches; with it, the scan can say "mentioned in the JD, not in my
+ * work". The fit tests hold every term here to `normalizeSkill` returning
+ * nothing, so a term can't be listed as a gap and claimed at once.
+ *
+ * Deliberately absent: things this portfolio is built with but the corpus
+ * has no record of (Next.js, Tailwind, Playwright, Vitest). Calling those
+ * gaps would be false; claiming them needs a record first. Also absent:
+ * iOS and Android, which React Native JDs name as platforms, not skills.
+ *
+ * Matching quirks (case-sensitive "Go", "Swift", "Spark"; no bare "Spring")
+ * live in `src/lib/fit/scan.ts`, next to the code that applies them.
+ */
+export const GAP_VOCABULARY: readonly GapTerm[] = [
+  // Languages and backend frameworks
+  { id: 'go', label: 'Go', aliases: ['golang'], category: 'backend' },
+  { id: 'rust', label: 'Rust', aliases: [], category: 'backend' },
+  { id: 'java', label: 'Java', aliases: [], category: 'backend' },
+  { id: 'cpp', label: 'C++', aliases: [], category: 'backend' },
+  { id: 'csharp', label: 'C#', aliases: ['csharp'], category: 'backend' },
+  { id: 'dotnet', label: '.NET', aliases: ['dotnet', 'asp.net'], category: 'backend' },
+  { id: 'ruby', label: 'Ruby', aliases: [], category: 'backend' },
+  { id: 'rails', label: 'Ruby on Rails', aliases: ['Rails'], category: 'backend' },
+  { id: 'php', label: 'PHP', aliases: [], category: 'backend' },
+  { id: 'scala', label: 'Scala', aliases: [], category: 'backend' },
+  { id: 'elixir', label: 'Elixir', aliases: ['phoenix framework'], category: 'backend' },
+  { id: 'django', label: 'Django', aliases: [], category: 'backend' },
+  { id: 'flask', label: 'Flask', aliases: [], category: 'backend' },
+  { id: 'fastapi', label: 'FastAPI', aliases: [], category: 'backend' },
+  { id: 'spring-boot', label: 'Spring Boot', aliases: ['spring framework'], category: 'backend' },
+  { id: 'grpc', label: 'gRPC', aliases: [], category: 'backend' },
+
+  // Frontend frameworks not in the corpus
+  { id: 'angular', label: 'Angular', aliases: ['angularjs'], category: 'frontend' },
+  { id: 'vue', label: 'Vue', aliases: ['vue.js'], category: 'frontend' },
+  { id: 'svelte', label: 'Svelte', aliases: ['sveltekit'], category: 'frontend' },
+
+  // Native mobile
+  { id: 'swift', label: 'Swift', aliases: ['swiftui'], category: 'mobile' },
+  { id: 'kotlin', label: 'Kotlin', aliases: [], category: 'mobile' },
+  { id: 'objective-c', label: 'Objective-C', aliases: [], category: 'mobile' },
+  { id: 'flutter', label: 'Flutter', aliases: [], category: 'mobile' },
+
+  // Infrastructure and operations
+  { id: 'kubernetes', label: 'Kubernetes', aliases: ['k8s'], category: 'cloud-infra' },
+  { id: 'docker', label: 'Docker', aliases: ['containerization'], category: 'cloud-infra' },
+  { id: 'terraform', label: 'Terraform', aliases: ['infrastructure as code'], category: 'cloud-infra' },
+  { id: 'gcp', label: 'Google Cloud', aliases: ['gcp', 'google cloud platform'], category: 'cloud-infra' },
+  { id: 'azure', label: 'Azure', aliases: ['microsoft azure'], category: 'cloud-infra' },
+  { id: 'prometheus', label: 'Prometheus', aliases: [], category: 'cloud-infra' },
+  { id: 'grafana', label: 'Grafana', aliases: [], category: 'cloud-infra' },
+
+  // Data
+  { id: 'sql', label: 'SQL', aliases: [], category: 'data' },
+  { id: 'nosql', label: 'NoSQL', aliases: [], category: 'data' },
+  { id: 'mysql', label: 'MySQL', aliases: [], category: 'data' },
+  { id: 'mongodb', label: 'MongoDB', aliases: ['mongo'], category: 'data' },
+  { id: 'redis', label: 'Redis', aliases: [], category: 'data' },
+  { id: 'dynamodb', label: 'DynamoDB', aliases: [], category: 'data' },
+  { id: 'elasticsearch', label: 'Elasticsearch', aliases: [], category: 'data' },
+  { id: 'kafka', label: 'Kafka', aliases: ['apache kafka'], category: 'data' },
+  { id: 'spark', label: 'Apache Spark', aliases: ['pyspark'], category: 'data' },
+  { id: 'airflow', label: 'Airflow', aliases: ['apache airflow'], category: 'data' },
+  { id: 'snowflake', label: 'Snowflake', aliases: [], category: 'data' },
+
+  // Machine learning beyond using hosted models
+  { id: 'machine-learning', label: 'Machine learning', aliases: ['deep learning', 'model training'], category: 'ai' },
+  { id: 'pytorch', label: 'PyTorch', aliases: [], category: 'ai' },
+  { id: 'tensorflow', label: 'TensorFlow', aliases: [], category: 'ai' },
+  { id: 'rag', label: 'RAG', aliases: ['retrieval-augmented generation'], category: 'ai' },
+  { id: 'vector-databases', label: 'Vector databases', aliases: ['vector database', 'vector db'], category: 'ai' },
+  { id: 'fine-tuning', label: 'Model fine-tuning', aliases: ['fine-tuning'], category: 'ai' },
+
+  // Testing and engines
+  { id: 'cypress', label: 'Cypress', aliases: [], category: 'testing' },
+  { id: 'selenium', label: 'Selenium', aliases: [], category: 'testing' },
+  { id: 'unreal-engine', label: 'Unreal Engine', aliases: ['unreal'], category: 'graphics-games' },
+];
+
+const GAP_LOOKUP: ReadonlyMap<string, GapTerm> = new Map(
+  GAP_VOCABULARY.flatMap((term) =>
+    [term.id, term.label, ...term.aliases].map((t) => [skillKey(t), term] as const),
+  ),
+);
+
+/**
+ * The gap term a name refers to, or `undefined`. Symbols are dropped by
+ * `skillKey`, so "C++" and "C#" both key to "c"; they are looked up by their
+ * spelled-out ids ("cpp", "csharp") and by exact label instead.
+ */
+export function gapTerm(name: string): GapTerm | undefined {
+  const exact = GAP_VOCABULARY.find((t) => t.label.toLowerCase() === name.trim().toLowerCase());
+  if (exact) return exact;
+  const key = skillKey(name);
+  return key === 'c' || key === 'net' ? undefined : GAP_LOOKUP.get(key);
+}
