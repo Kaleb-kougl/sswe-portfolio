@@ -2,6 +2,7 @@
 
 import {
   type FormEvent,
+  type ReactNode,
   useCallback,
   useId,
   useMemo,
@@ -142,7 +143,16 @@ function validateClientSide(values: {
   return errors;
 }
 
-export function ContactSection() {
+export function ContactSection({
+  children,
+}: {
+  /**
+   * Server-rendered content placed under the secondary links. page.tsx passes
+   * `<UseWithYourAi />` here so its static markup ships as HTML rather than as
+   * part of this Client Component's JS.
+   */
+  children?: ReactNode;
+}) {
   const uid = useId();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -613,6 +623,8 @@ export function ContactSection() {
           <Download size={15} strokeWidth={2.5} aria-hidden="true" />
         </a>
       </div>
+
+      {children}
 
       {/* --- Footer ------------------------------------------------------- */}
       <p className="mx-auto mt-10 max-w-[640px] text-center font-mono text-xs tracking-[0.06em] text-muted">

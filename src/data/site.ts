@@ -31,3 +31,11 @@ export const SITE_URL = 'https://kalebkougl-portfolio.vercel.app';
  * deploy-level fact, and the one place to change it is this file.
  */
 export const RECAPTCHA_SITE_KEY = '6Lchp78tAAAAAECkHg6mrEAqYpbj8W83vVroPoXa';
+
+/**
+ * The public MCP endpoint (Streamable HTTP, read-only tools over the corpus).
+ * Derived from `SITE_URL` so a domain change moves it too. `/llms.txt` and the
+ * "Use with your AI" block in the contact section both advertise it; the
+ * handler lives at `src/app/api/mcp/[transport]/route.ts`.
+ */
+export const MCP_URL = `${SITE_URL}/api/mcp`;
