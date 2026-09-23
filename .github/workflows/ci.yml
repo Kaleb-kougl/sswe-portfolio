@@ -13,9 +13,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Follow principle of least privilege
+# Follow principle of least privilege. Nothing in this workflow writes to the
+# repository any more (see "No snapshot auto-commit" in build-and-test), so the
+# default is read-only and no job asks for more.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-and-test:
@@ -51,25 +53,44 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      # Offline and deterministic (a chars/4 estimate unless a provider key is
+      # present), so it belongs with the unit tests. The corpus is what the
+      # MCP tools and /fit hand a model whole; the budget is <= 8k tokens.
+      - name: Check corpus token budget
+        run: npm run corpus:tokens
+
       - name: Verify Next.js Build
         run: npm run build
+
+      # Next 16 no longer prints "First Load JS" from `next build`, so this
+      # measures it from the prerendered .next/server/app/index.html: every
+      # <script src> the homepage loads on first paint, gzipped, against the
+      # committed budgets/homepage-js.json (+1 KB tolerance). Lazy chunks --
+      # the 3D scene, the projectile demo -- are not in that HTML, so moving
+      # code behind dynamic() is how you get under it. `--update` rebaselines.
+      - name: Check homepage JS budget
+        run: node scripts/check-homepage-js.mjs
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      # No snapshot auto-commit. This job used to re-run the suite with
+      # --update-snapshots and commit the result whenever ANY earlier step
+      # failed, on PRs included -- so a visual diff could never fail CI, it
+      # just became the new baseline. Restricting that to pushes on main was
+      # the other option; removing it is cleaner, for three reasons:
+      #   - visual-regression.spec.ts skips itself in CI (its baselines are
+      #     *-darwin.png; Linux rasterises fonts differently), so the step
+      #     had nothing legitimate to update -- it only re-ran e2e and pushed
+      #     empty-handed
+      #   - were that skip ever lifted, a bot writing baselines to main after
+      #     a failure is the same hole moved one merge later: whatever broke
+      #     becomes the reference image
+      #   - it was the only reason this workflow needed `contents: write`
+      # Baselines are updated deliberately, locally, and reviewed in the diff:
+      #   npx playwright test e2e/visual-regression.spec.ts --update-snapshots
       - name: Run End-to-End Tests
         run: npm run test:e2e
-
-      - name: Update Snapshots on Failure
-        if: failure()
-        run: npm run test:e2e -- --update-snapshots
-
-      - name: Commit updated snapshots
-        if: failure()
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "test(e2e): auto-update Playwright visual snapshots"
-          file_pattern: "e2e/**/*-snapshots/*"
 
       - name: Upload Playwright Report
         if: always()
@@ -121,6 +142,34 @@ jobs:
           name: playwright-report-vitals
           path: playwright-report/
           retention-days: 14
+
+  corpus-links:
+    name: Corpus Source Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Its own job because it is the one check here that depends on the
+    # network: it HEADs every `source.href` in src/data/corpus (with retries).
+    # A slow or flaky third-party site should turn this job red on its own,
+    # not take the unit tests and the build down with it -- and a dead link
+    # stays visible as a distinct failure instead of being lost in a log.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check every corpus source link resolves
+        run: npm run corpus:links
 
   asset-budget:
     name: Hero Asset Budget
