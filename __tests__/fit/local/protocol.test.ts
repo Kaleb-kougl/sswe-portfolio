@@ -135,3 +135,18 @@ describe('toLoadProgress', () => {
     expect(toLoadProgress({ progress: 3, text: 'Fetching param cache' }, total).fraction).toBe(1);
   });
 });
+
+describe('generate (chat spike)', () => {
+  it('runs and returns to ready, keeping the model loaded', () => {
+    const loaded = { ...INITIAL_SESSION, phase: 'ready' as const, loaded: true };
+    let s = startRequest(loaded, { type: 'generate', id: 7, messages: [{ role: 'user', content: 'hi' }], maxTokens: 16 });
+    expect(s).toMatchObject({ phase: 'running', activeId: 7 });
+    s = reduceSession(s, {
+      type: 'generated',
+      id: 7,
+      text: 'hello',
+      stats: { firstTokenMs: 1, totalMs: 2, promptTokens: 3, completionTokens: 1, prefillTokensPerSecond: null, decodeTokensPerSecond: null, finishReason: 'stop' },
+    });
+    expect(s).toMatchObject({ phase: 'ready', activeId: null, loaded: true });
+  });
+});

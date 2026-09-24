@@ -67,3 +67,4 @@ docs/*
 # Eval results on the held-out JDs quote their text: keep them local too.
 /evals/local/results/holdout/
 /evals/embed/results/holdout/
+/evals/chat/results/holdout/

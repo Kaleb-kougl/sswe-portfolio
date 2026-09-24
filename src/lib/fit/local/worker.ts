@@ -41,7 +41,9 @@ import {
 import { runBench } from './bench';
 import { probeGpu } from './gate';
 import { LOCAL_MODEL, LOCAL_MODELS, weightsUrl, type LocalModel, type LocalModelId } from './model';
+import { SPIKE_MODELS, type SpikeModelId } from './spike-models';
 import { toLoadProgress, type FromWorker, type RunStrategy, type ToWorker } from './protocol';
+import type { ChatMessage } from '@/lib/fit/contract';
 import { classifyError, errorMessage, runExtraction, type RunDeps, type RunEngine, type RunHandle } from './run';
 import { runQuestions } from './run-v2';
 import type { QuestionMode } from '@/lib/fit/abstain';
@@ -93,8 +95,9 @@ async function handleBench(id: number) {
   }
 }
 
-async function handleLoad(id: number, modelId?: LocalModelId) {
-  const wanted: LocalModel | undefined = modelId ? LOCAL_MODELS[modelId] : LOCAL_MODEL;
+async function handleLoad(id: number, modelId?: LocalModelId | SpikeModelId) {
+  const pinned: Record<string, LocalModel> = { ...LOCAL_MODELS, ...SPIKE_MODELS };
+  const wanted: LocalModel | undefined = modelId ? pinned[modelId] : LOCAL_MODEL;
   if (!wanted) return post({ type: 'error', id, code: 'load_failed', message: `Unknown model ${String(modelId)}.` });
   if (loaded && engine && model.id === wanted.id) return post({ type: 'loaded', id, fromCache: true, elapsedMs: 0 });
   if (engine) {
@@ -229,6 +232,73 @@ async function handleRun(id: number, jd: string, strategy: RunStrategy = 'v1', q
   }
 }
 
+/**
+ * Chat spike (evals/chat): one greedy free-text completion of messages built
+ * by src/lib/chat. No grammar, temperature 0, penalties off so decoding is
+ * the same for every model family. Timed from here: first non-empty delta
+ * (prefill included) and total.
+ */
+async function handleGenerate(id: number, messages: ChatMessage[], maxTokens: number) {
+  if (!engine || !loaded) {
+    return post({ type: 'error', id, code: 'not_loaded', message: 'Load the model first.' });
+  }
+  const mlc = engine;
+  let cancelled = false;
+  current = {
+    id,
+    cancel: () => {
+      cancelled = true;
+      void mlc.interruptGenerate();
+      post({ type: 'cancelled', id });
+    },
+  };
+  const started = now();
+  let firstTokenMs: number | null = null;
+  let text = '';
+  let finishReason: string | null = null;
+  let usage: ChatCompletionChunk['usage'] | undefined;
+  try {
+    const chunks: AsyncIterable<ChatCompletionChunk> = await mlc.chat.completions.create({
+      messages,
+      stream: true,
+      stream_options: { include_usage: true },
+      temperature: 0,
+      max_tokens: maxTokens,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      repetition_penalty: 1,
+      ...(model.extraBody ? { extra_body: model.extraBody } : {}),
+    });
+    for await (const chunk of chunks) {
+      const delta = chunk.choices[0]?.delta?.content ?? '';
+      if (delta && firstTokenMs === null) firstTokenMs = now() - started;
+      text += delta;
+      finishReason = chunk.choices[0]?.finish_reason ?? finishReason;
+      if (chunk.usage) usage = chunk.usage;
+    }
+    if (cancelled) return;
+    const extra = (usage as { extra?: { prefill_tokens_per_s?: number; decode_tokens_per_s?: number } } | undefined)?.extra;
+    post({
+      type: 'generated',
+      id,
+      text,
+      stats: {
+        firstTokenMs,
+        totalMs: now() - started,
+        promptTokens: usage?.prompt_tokens ?? null,
+        completionTokens: usage?.completion_tokens ?? null,
+        prefillTokensPerSecond: extra?.prefill_tokens_per_s ?? null,
+        decodeTokensPerSecond: extra?.decode_tokens_per_s ?? null,
+        finishReason,
+      },
+    });
+  } catch (err) {
+    if (!cancelled) post({ type: 'error', id, code: classifyError(err), message: errorMessage(err) });
+  } finally {
+    if (current?.id === id) current = null;
+  }
+}
+
 scope.addEventListener('message', (event) => {
   const msg = event.data;
   switch (msg.type) {
@@ -246,6 +316,9 @@ scope.addEventListener('message', (event) => {
       return;
     case 'run':
       if (!busy(msg.id)) void handleRun(msg.id, msg.jd, msg.strategy, msg.questions);
+      return;
+    case 'generate':
+      if (!busy(msg.id)) void handleGenerate(msg.id, msg.messages, msg.maxTokens);
       return;
     case 'cancel':
       current?.cancel();

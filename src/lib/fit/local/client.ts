@@ -1,5 +1,5 @@
 import type { QuestionMode } from '@/lib/fit/abstain';
-import type { FitReport, Requirement } from '@/lib/fit/contract';
+import type { ChatMessage, FitReport, Requirement } from '@/lib/fit/contract';
 
 import { isModelCached } from './cache';
 import {
@@ -14,6 +14,7 @@ import {
   type StorageCheck,
 } from './gate';
 import { LOCAL_MODEL, type LocalModelId } from './model';
+import type { SpikeModelId } from './spike-models';
 import {
   INITIAL_SESSION,
   reduceSession,
@@ -21,6 +22,7 @@ import {
   type BenchResult,
   type ErrorCode,
   type FromWorker,
+  type GenerateStats,
   type LoadProgress,
   type ProbeFailure,
   type ProbeResult,
@@ -53,6 +55,7 @@ export { LOCAL_MODEL, LOCAL_MODEL_ID, LOCAL_MODELS, formatBytes } from './model'
 export type { LocalModelId } from './model';
 export type {
   AnswerRecord,
+  GenerateStats,
   BenchResult,
   LoadProgress,
   RunStats,
@@ -215,6 +218,11 @@ export interface LocalFitSession {
     /** The dev harness and evals only; the /fit page runs the default (v1). */
     opts?: { strategy?: RunStrategy; questions?: QuestionMode },
   ): Promise<FitReport>;
+  /**
+   * Chat spike only (evals/chat, via the dev harness): one greedy free-text
+   * completion. No page calls this.
+   */
+  generate(messages: ChatMessage[], maxTokens: number): Promise<{ text: string; stats: GenerateStats }>;
   /** Stops the in-flight load or run; its promise rejects with code `cancelled`. */
   cancel(): void;
   /** Terminates the worker (frees GPU memory). The session is unusable after. */
@@ -233,7 +241,7 @@ interface Pending {
  * the /fit page leaves it out and gets `LOCAL_MODEL_ID`.
  */
 export function createLocalFitSession(
-  opts: { createWorker?: WorkerFactory; storage?: Storage; modelId?: LocalModelId } = {},
+  opts: { createWorker?: WorkerFactory; storage?: Storage; modelId?: LocalModelId | SpikeModelId } = {},
 ): LocalFitSession {
   const createWorker = opts.createWorker ?? defaultRuntimeWorker;
   let worker: Worker | null = null;
@@ -349,6 +357,10 @@ export function createLocalFitSession(
         },
       );
       return msg.report;
+    },
+    async generate(messages, maxTokens) {
+      const msg = await request<FromWorker & { type: 'generated' }>((id) => ({ type: 'generate', id, messages, maxTokens }));
+      return { text: msg.text, stats: msg.stats };
     },
     cancel() {
       if (worker && pending.size > 0) worker.postMessage({ type: 'cancel' } satisfies ToWorker);

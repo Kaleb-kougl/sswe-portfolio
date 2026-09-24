@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import type { FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
+import type { ChatMessage, FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
 import type {
   AnswerRecord,
+  GenerateStats,
   LocalFitSession,
   LocalModelId,
   ProbeOutcome,
@@ -12,6 +13,8 @@ import type {
   RunStats,
   RunStrategy,
 } from '@/lib/fit/local/client';
+
+import type { SpikeModelId } from '@/lib/fit/local/spike-models';
 
 type ClientModule = typeof import('@/lib/fit/local/client');
 
@@ -53,8 +56,11 @@ export interface EvalRunOptions {
  * page itself (the route 404s in production builds).
  */
 export interface FitEvalHook {
-  load(modelId?: LocalModelId): Promise<{ fromCache: boolean; elapsedMs: number; modelId: string }>;
+  /** Any pinned id: LOCAL_MODELS, or SPIKE_MODELS (evals only). */
+  load(modelId?: LocalModelId | SpikeModelId): Promise<{ fromCache: boolean; elapsedMs: number; modelId: string }>;
   run(jd: string, opts?: EvalRunOptions): Promise<EvalRun>;
+  /** The on-device chat spike (evals/chat): one greedy completion of prepared messages. */
+  generate(messages: ChatMessage[], maxTokens: number): Promise<{ text: string; stats: GenerateStats }>;
   dispose(): void;
 }
 
@@ -106,7 +112,7 @@ export function Harness() {
 
   useEffect(() => {
     let evalSession: LocalFitSession | null = null;
-    let evalModel: LocalModelId | undefined;
+    let evalModel: LocalModelId | SpikeModelId | undefined;
     window.__fitEval = {
       async load(modelId) {
         const c = await loadClient();
@@ -131,6 +137,10 @@ export function Harness() {
           rows,
           wallMs: performance.now() - t0,
         };
+      },
+      async generate(messages, maxTokens) {
+        if (!evalSession) throw new Error('load() first');
+        return evalSession.generate(messages, maxTokens);
       },
       dispose() {
         evalSession?.dispose();

@@ -1,7 +1,8 @@
 import type { QuestionKind, QuestionMode } from '@/lib/fit/abstain';
-import type { CanonicalSkillId, FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
+import type { CanonicalSkillId, ChatMessage, FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
 
 import type { LocalModelId } from './model';
+import type { SpikeModelId } from './spike-models';
 
 /**
  * THE WORKER PROTOCOL — every message between `client.ts` (main thread) and
@@ -22,15 +23,22 @@ export type ToWorker =
   | { type: 'bench'; id: number }
   /**
    * `modelId` picks another pinned model from `LOCAL_MODELS` (the dev
-   * harness and the model comparison use it); omitted → `LOCAL_MODEL_ID`.
+   * harness and the model comparison use it), or from `SPIKE_MODELS`
+   * (evals only); omitted → `LOCAL_MODEL_ID`.
    */
-  | { type: 'load'; id: number; modelId?: LocalModelId }
+  | { type: 'load'; id: number; modelId?: LocalModelId | SpikeModelId }
   /**
    * `strategy` (default v1): v1 decides every candidate in one generation;
    * v2 asks short yes/no questions where code is unsure (plan 2f). `questions`
    * is v2's question set (default `routed`; evals use `all`).
    */
   | { type: 'run'; id: number; jd: string; strategy?: RunStrategy; questions?: QuestionMode }
+  /**
+   * Free-text generation for the on-device chat spike (evals/chat): the
+   * messages as built by src/lib/chat, greedy (temperature 0), no grammar.
+   * Evals and the dev harness only; no page sends it.
+   */
+  | { type: 'generate'; id: number; messages: ChatMessage[]; maxTokens: number }
   /**
    * Cancels whatever is in flight (a load or a run). The reply is `cancelled`
    * carrying the id of the request it stopped.
@@ -144,6 +152,19 @@ export interface RunStats {
   overrides?: { keep: number; drop: number; priority: number; skills: number };
 }
 
+/** One free-text generation, as the chat spike records it. */
+export interface GenerateStats {
+  /** From the request reaching the worker to the first non-empty delta (includes prefill). */
+  firstTokenMs: number | null;
+  totalMs: number;
+  promptTokens: number | null;
+  completionTokens: number | null;
+  /** WebLLM's usage.extra, when reported. */
+  prefillTokensPerSecond: number | null;
+  decodeTokensPerSecond: number | null;
+  finishReason: string | null;
+}
+
 export type ErrorCode =
   | 'busy'
   | 'invalid_jd'
@@ -174,6 +195,8 @@ export type FromWorker =
       /** v2: every question asked, with P(yes). */
       answers?: AnswerRecord[];
     }
+  /** A `generate` request's text and timings (chat spike). */
+  | { type: 'generated'; id: number; text: string; stats: GenerateStats }
   /** The watchdog fired: no first row within the budget. Generation stopped. */
   | { type: 'too_slow'; id: number; elapsedMs: number }
   | { type: 'cancelled'; id: number }
@@ -232,6 +255,8 @@ export function startRequest(state: SessionState, request: ToWorker): SessionSta
       return { ...state, phase: 'benching', activeId: request.id, error: null };
     case 'load':
       return { ...state, phase: 'loading', activeId: request.id, progress: null, error: null };
+    case 'generate':
+      return { ...state, phase: 'running', activeId: request.id, error: null };
     case 'run':
       return {
         ...state,
@@ -287,6 +312,9 @@ export function reduceSession(state: SessionState, msg: FromWorker): SessionStat
         activeId: null,
         loaded: msg.code === 'device_lost' || msg.code === 'load_failed' ? false : state.loaded,
       };
+    case 'generated':
+      // The chat spike reads the text from the request's promise.
+      return { ...state, phase: 'ready', activeId: null };
     case 'probe_result':
       return state;
   }
