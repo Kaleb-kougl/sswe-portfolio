@@ -53,6 +53,26 @@ async function runScan(page: Page, jd: string) {
   await expect(page.getByTestId('fit-report-scan')).toBeVisible();
 }
 
+/**
+ * The key that moves focus to the next control. WebKit on macOS follows the
+ * platform default ("Press Tab to highlight each item" off): Tab reaches only
+ * text fields, and Option+Tab reaches buttons and links too. That is Safari's
+ * behaviour for every site, not something a page can change, so the tests use
+ * the key a Safari keyboard user would press. Only on macOS: WebKit's Linux
+ * ports (CI) tab to every control, like the other engines.
+ */
+const nextKey = (browserName: string) => (browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+
+/**
+ * `layout-shift` and `longtask` entries are Chromium-only; WebKit and Firefox
+ * ignore the observer, so assertions on them are empty there. The tests still
+ * run (the geometry and streaming checks hold everywhere); this says so in the report.
+ */
+function noteChromiumOnlyObserver(browserName: string, what: string) {
+  if (browserName !== 'chromium')
+    test.info().annotations.push({ type: 'note', description: `${what} is Chromium-only; that assertion is vacuous in ${browserName}` });
+}
+
 // --------------------------------------------------------------- fake worker
 
 interface FakeWorkerOptions {
@@ -301,7 +321,11 @@ test.describe('/fit privacy', () => {
 // --------------------------------------------------------------- Private mode
 
 test.describe('/fit Private mode', () => {
-  test('no WebGPU: the box is hidden, and nothing shifts when it goes', async ({ page }) => {
+  test('no WebGPU: the box is hidden, and nothing shifts when it goes', async ({ page, browserName }) => {
+    // This one runs the REAL probe, premised on headless Chromium having no
+    // usable adapter. WebKit and Firefox ship WebGPU on some platforms, so
+    // whether the box hides there depends on the machine, not on this page.
+    test.skip(browserName !== 'chromium', 'relies on headless Chromium having no WebGPU adapter');
     await page.addInitScript(() => {
       const w = window as unknown as { __shifts: number[] };
       w.__shifts = [];
@@ -322,7 +346,8 @@ test.describe('/fit Private mode', () => {
     expect(await page.evaluate(() => (window as unknown as { __shifts: number[] }).__shifts)).toEqual([]);
   });
 
-  test('a slow probe reserves the box while "Checking…", then hides without a layout shift', async ({ page }) => {
+  test('a slow probe reserves the box while "Checking…", then hides without a layout shift', async ({ page, browserName }) => {
+    noteChromiumOnlyObserver(browserName, 'the layout-shift observer');
     await withFakeWorker(page, { supported: false, probeDelayMs: 2_500 });
     await openFit(page);
     await runScan(page, FULLSTACK.jd);
@@ -354,7 +379,8 @@ test.describe('/fit Private mode', () => {
     expect(await page.evaluate(() => (window as unknown as { __shifts: number[] }).__shifts)).toEqual([]);
   });
 
-  test('streams model rows into the report, announces progress per row, keeps the scan', async ({ page }) => {
+  test('streams model rows into the report, announces progress per row, keeps the scan', async ({ page, browserName }) => {
+    noteChromiumOnlyObserver(browserName, 'the longtask observer');
     await page.addInitScript(() => {
       const w = window as unknown as { __longTasks: { start: number; duration: number }[]; __status: string[] };
       w.__longTasks = [];
@@ -433,7 +459,7 @@ test.describe('/fit Private mode', () => {
     ]);
   });
 
-  test('a slow bench asks first; the dialog is keyboard operable and Escape returns focus', async ({ page }) => {
+  test('a slow bench asks first; the dialog is keyboard operable and Escape returns focus', async ({ page, browserName }) => {
     await withFakeWorker(page, { estimatedFirstRowMs: 42_000 });
     await openFit(page);
     await runScan(page, FRONTEND.jd);
@@ -452,7 +478,7 @@ test.describe('/fit Private mode', () => {
 
     await page.keyboard.press('Enter');
     await expect(dialog).toBeVisible();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(nextKey(browserName));
     await expect(dialog.getByRole('button', { name: /Download .* and run/ })).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.getByTestId('private-mode')).toContainText('would take about 42 s');
