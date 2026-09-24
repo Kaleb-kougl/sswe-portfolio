@@ -24,10 +24,10 @@ Level: Senior, the same as my most recent title (Senior Software Engineer, Indee
   Evidence: GolfTV API, PostgreSQL tuned for launch (IBM).
   - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Designing REST and GraphQL APIs
-  Evidence: GolfTV GraphQL API on AWS (IBM), Co-architected OneHost, led 6 engineers (Indeed), Pattern system of pure functions (r3f-projectiles).
+  Evidence: GolfTV GraphQL API on AWS (IBM), Co-architected OneHost, led 6 engineers (Indeed), GolfTV API, PostgreSQL tuned for launch (IBM).
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
-  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Shipping on AWS with CI/CD
   Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM), GolfTV API, PostgreSQL tuned for launch (IBM).
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)

@@ -21,9 +21,9 @@ Level: Senior, the same as my most recent title (Senior Software Engineer, Indee
 ## Nice-to-have
 
 - **Partial**: Design and build payment APIs used by thousands of merchants
-  Evidence: Pattern system of pure functions (r3f-projectiles), GolfTV GraphQL API on AWS (IBM), Variant-driven animation primitives (roblox-css). Nothing for payments. No evidence at that scale.
-  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
+  Evidence: GolfTV GraphQL API on AWS (IBM), Pattern system of pure functions (r3f-projectiles), Variant-driven animation primitives (roblox-css). Nothing for payments. No evidence at that scale.
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
   - Variant-driven animation primitives (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)
 - **Strong**: Mentor engineers and lead technical design reviews
   Evidence: Mentored ~12 engineers (Indeed).

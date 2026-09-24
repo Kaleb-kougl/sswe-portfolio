@@ -9,10 +9,10 @@ Level: Senior, the same as my most recent title (Senior Software Engineer, Indee
 ## Must-have
 
 - **Strong**: 5+ years building production React and TypeScript applications
-  Evidence: Hand-written CSS value parsers (roblox-css), WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked.
-  - Hand-written CSS value parsers (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)
+  Evidence: WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked.
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
+  - React features with Redux (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Deep knowledge of web accessibility (WCAG 2.1 AA)
   Evidence: WCAG across 20+ React components (Indeed), Cross-browser Playwright with axe scans (This portfolio site).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)

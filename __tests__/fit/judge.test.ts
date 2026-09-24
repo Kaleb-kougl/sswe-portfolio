@@ -528,7 +528,7 @@ describe('notes', () => {
       `"8 years in software since 2018, including an internship (2026 − 2018), short of the 10 asked."`,
     );
     expect(notes({ skills: ['node-js', 'typescript'] })).toMatchInlineSnapshot(`"Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles)."`);
-    expect(notes({ skills: ['react', 'typescript'], otherSkills: ['Next.js'], minYears: 12 })).toMatchInlineSnapshot(`"Evidence: Hand-written CSS value parsers (roblox-css). Years: 8 years in software since 2018, including an internship (2026 − 2018), under the 12 asked, so at most partial."`);
+    expect(notes({ skills: ['react', 'typescript'], otherSkills: ['Next.js'], minYears: 12 })).toMatchInlineSnapshot(`"Evidence: WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), under the 12 asked, so at most partial."`);
     expect(notes({ otherSkills: ['Kubernetes'] })).toMatchInlineSnapshot(`"Not in my work yet."`);
   });
 });
