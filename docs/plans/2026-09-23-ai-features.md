@@ -2,7 +2,7 @@
 
 2026-09-23 · refined from "Portfolio AI Features Implementation Plan.docx" against the repo as it stands on `scroll-redesign` (13ebc38).
 
-**Status:** Phase 0 done (`919cdff`, `f1f95ab`, `fd7e84f`). Phase 1 done in code (`3fc1542`, `e4560ba`); it still needs the Vercel env vars and the live connector smoke test. **v3 (2026-09-23): the fit checker runs entirely in the visitor's browser.** No hosted model, no server spend, no `/api/fit`. **v4 (same day): code-first extraction.** The model only makes one grammar-forced decision per JD segment (Phase 2a). Phase 2 baseline: `b00cebc`, `6ecec7a`, `0dcc26c`.
+**Status:** Phase 0 done (`919cdff`, `f1f95ab`, `fd7e84f`). Phase 1 done in code (`3fc1542`, `e4560ba`); it still needs the Vercel env vars and the live connector smoke test. **v3 (2026-09-23): the fit checker runs entirely in the visitor's browser.** No hosted model, no server spend, no `/api/fit`. **v4 (same day): code-first extraction.** The model only makes one grammar-forced decision per JD segment (Phase 2a). Phase 2 baseline: `b00cebc`, `6ecec7a`, `0dcc26c`. **Phase 2 result (same day): no on-device model beat code, so `/fit` ships code-only and Private mode is behind `NEXT_PUBLIC_FIT_PRIVATE_MODE` (off).** See 2f.
 
 ## What changed from v1
 
@@ -176,6 +176,39 @@ Devices that can't run the model get steps 1–6, 8 and 9 with `defaultDecision`
 - The homepage JS gate is unchanged.
 - Main-thread long tasks stay ≤ 50 ms during a local run.
 
+### 2f. Result: code beat every model; model + code v2 experiment
+
+**Comparison (2026-09-23, `evals/local/results/2026-09-23-summary.md`):** 8 labelled JDs, 81 candidate segments, 70 requirements, run on this Mac's GPU in headless Chromium.
+
+| | No model | Llama-3.2-1B | Qwen2.5-1.5B | Qwen3-1.7B |
+|---|---|---|---|---|
+| Download | 0 | 695 MB | 869 MB | 968 MB |
+| Keep/drop accuracy | **93.8%** | 53.1% | 55.6% | 82.7% |
+| Row agreement with the ideal report | **55/70** | 22/70 | 25/70 | 2/70 |
+| Total time (median) | instant | 2.7 s | 7.7 s | 5.2 s |
+
+With numbered items, the best model reached 29/70. Letting the model decide only headerless segments gained 1–3 rows on one JD. That's not worth a 0.7 GB download.
+
+**Why it lost:**
+- One long N-item generation: every model shifted skills by one segment (0 of 87 added skills were correct).
+- Llama copied the prompt's example.
+- The model was asked about every segment, including those code was certain about.
+
+**Caveats:**
+- The rules and the labels were written against the same 8 JDs, so code's score is optimistic.
+- The 0% `addSkills` precision may be partly a prompt or scoring artefact: re-listing a skill code already found counts as an error.
+
+**Decision:** ship `/fit` code-only. Private mode stays in the repo behind `NEXT_PUBLIC_FIT_PRIVATE_MODE=1`, which is off in production and on in e2e against a mocked worker. The Process section says why.
+
+**v2 experiment (before turning the flag on):**
+1. **A fair test set first:** 10–15 real JDs the rules have never seen, labelled independently (ideally by Kaleb), in `evals/cases/holdout/`. Code's score on these is the real bar.
+2. **Ask only where code is unsure:** segments with no header, no skill found, or a possible intro/duty line. Code-certain segments never reach the model.
+3. **One segment per call, one-token answer:** "Is this a requirement the candidate must meet? yes/no", constrained to a single token, reading the logprob (confirm WebLLM exposes `logprobs`). This removes the alignment failure. Try a smaller model too (Qwen2.5-0.5B, about 400 MB).
+4. **Abstain unless confident:** override code only when the probability passes a threshold tuned on labelled JDs. At a high enough threshold it *is* code, so on the tuning set it can't score below code.
+5. **Check skills instead of choosing them:** code proposes likely matches from a fuzzy lexical match against labels and aliases, and the model answers yes/no for each.
+6. **Alternative for synonyms:** a tiny embedding model (about 25 MB, transformers.js) matches phrases to the vocabulary above a strict similarity threshold. It's deterministic and small enough to consider for everyone; it could also back better "Closest" links.
+7. **Rules:** each variant is scored against code on the holdout set. The flag turns on only if one variant wins by a margin larger than the noise, and after re-checking the gate, bench and watchdog on real devices.
+
 ## Phase 3: eval gates
 
 **Golden set (`evals/cases/`, about 28):** the same groups as before: strong (6), partial/poor (6), non-engineering (2), injection (6), MCP read tools (8). Each fit case is labeled with its requirements (text, priority, skills) and expected verdicts for 3–5 key ones.
@@ -280,7 +313,8 @@ If WebGPU isn't available in workers on a browser, that browser fails step 1. **
 
 ## Open questions
 
-- ☐ **Model:** which WebLLM prebuilt model clears the gates at the smallest download? Decided by evals.
+- ☐ **Model + code v2:** does routed, per-segment yes/no with abstention, or a 25 MB embedding model, beat code on a held-out set? (2f)
+- ☐ **Holdout JDs:** 10–15 real postings, labelled independently.
 - ☐ **CI runtime:** node-llama-cpp proxy or real-runtime SwiftShader? Decided by the Weekend 3 spike.
 - ☐ **Reference devices** for `fit:bench`: which laptop and phone?
 - ☐ **`send_message` later?** Only if it's worth a second Formspree form without reCAPTCHA plus a per-IP limit.
