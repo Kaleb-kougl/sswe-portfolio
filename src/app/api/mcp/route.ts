@@ -32,7 +32,7 @@ import { TOOLS, ToolInputError } from '@/lib/tools';
 const SERVER_INFO = { name: 'kaleb-kougl-portfolio', version: '1.0.0' };
 const SERVER_OPTIONS = {
   instructions:
-    'Read-only evidence about Kaleb Kougl’s engineering work. Start with get_profile for who he is and how to reach him; use search_evidence or list_projects for specific skills; use get_corpus to compare his work against a job description. Cite evidence ids and their source links; where nothing matches, say there is no evidence rather than inferring it.',
+    'Read-only evidence about Kaleb Kougl’s engineering work. Start with get_profile for who he is and how to reach him; use search_evidence or list_projects for specific skills; to compare his work against a job description, call check_fit (verdicts are computed by code: present them as given, gaps included), or use get_corpus to read everything yourself. Cite evidence ids and their source links; where nothing matches, say there is no evidence rather than inferring it.',
 };
 
 /** Every tool in the registry, read-only, JSON text out, input mistakes as tool errors. */

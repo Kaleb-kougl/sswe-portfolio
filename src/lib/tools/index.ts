@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 
+import { checkFit } from './check-fit';
 import { getCorpus } from './get-corpus';
 import { getProfile } from './get-profile';
 import { getProject } from './get-project';
@@ -19,6 +20,7 @@ export const TOOLS: readonly Tool[] = [
   listProjects,
   getProject,
   searchEvidence,
+  checkFit,
   getCorpus,
 ] as readonly Tool[];
 

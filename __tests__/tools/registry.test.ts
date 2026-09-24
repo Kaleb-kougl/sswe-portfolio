@@ -3,12 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { TOOLS, ToolInputError, runTool } from '@/lib/tools';
 
 describe('tool registry', () => {
-  it('serves exactly the five read tools', () => {
+  it('serves exactly the six read tools', () => {
     expect(TOOLS.map((t) => t.name)).toEqual([
       'get_profile',
       'list_projects',
       'get_project',
       'search_evidence',
+      'check_fit',
       'get_corpus',
     ]);
   });
@@ -21,7 +22,11 @@ describe('tool registry', () => {
   });
 
   it('produces JSON-serializable output for every tool', () => {
-    const inputs: Record<string, object> = { get_project: { id: 'roblox-css' }, search_evidence: { query: 'react' } };
+    const inputs: Record<string, object> = {
+      get_project: { id: 'roblox-css' },
+      search_evidence: { query: 'react' },
+      check_fit: { job_description: 'Requirements:\n- 5+ years of React and TypeScript' },
+    };
     for (const t of TOOLS) {
       const out = runTool(t.name, inputs[t.name] ?? {});
       expect(JSON.parse(JSON.stringify(out))).toEqual(out);

@@ -96,6 +96,7 @@ Stateless Streamable HTTP at `/api/mcp`. All tools are read-only.
 | `get_project` | `id` | Full record + its evidence |
 | `search_evidence` | `skills[]` or `query` | Matching records (keyword + alias, no embeddings) |
 | `get_corpus` | – | The whole corpus as JSON (≤ 8k tokens), so an agent can run its own fit check |
+| `check_fit` (added 2026-09-24) | `job_description` (≤ 12k chars) | The `/fit` report, computed by the same code-only pipeline: rows, verdicts, notes, evidence with source links. No model runs server-side; the caller's model writes the prose and is told not to upgrade verdicts. The JD is processed in memory and never logged |
 
 - Tool descriptions are written for a model. `get_corpus` says: "Use this to compare Kaleb's work to a job description; cite evidence IDs and their source links."
 - Rate limit: 60 requests / min / hashed IP (Upstash). No other guard is needed, because nothing costs tokens.
