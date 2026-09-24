@@ -59,6 +59,9 @@ export default defineConfig({
     // live Formspree endpoint — burning quota, and mailing them if it were
     // accepted. contact-form.spec.ts asserts the 503 path by design, so the
     // absence of a key is the condition under test, not an accident.
-    env: { CONTACT_DELIVERY_KEY: '' },
+    //
+    // NEXT_PUBLIC_FIT_PRIVATE_MODE turns the (production-off) Private mode on
+    // so e2e/fit.spec.ts keeps exercising it against a mocked worker.
+    env: { CONTACT_DELIVERY_KEY: '', NEXT_PUBLIC_FIT_PRIVATE_MODE: '1' },
   },
 });

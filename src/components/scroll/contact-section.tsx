@@ -4,6 +4,7 @@ import {
   type FormEvent,
   type ReactNode,
   useCallback,
+  useEffect,
   useId,
   useMemo,
   useRef,
@@ -53,6 +54,10 @@ const REASONS = [
 ] as const;
 
 type Reason = (typeof REASONS)[number];
+
+/** The message a visitor from /fit starts with; they can edit it. */
+const FIT_MESSAGE =
+  "Hi Kaleb, I checked a role against your work with the fit checker and would like to talk about it.";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MESSAGE_LIMIT = 4000;
@@ -162,6 +167,19 @@ export function ContactSection({
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>({ tone: 'idle' });
+
+  // Arriving from /fit's "Email me about this role" (`/?reason=role#contact`):
+  // preselect the reason and start the message. Read after hydration so the
+  // page stays static. Nothing from the job description is in the URL.
+  // One render after hydration, once per visit: the cascade the lint rule
+  // guards against can't happen, and a lazy initial state would mismatch the
+  // prerendered HTML.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('reason') !== 'role') return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReason('Full-time role');
+    setMessage((current) => current || FIT_MESSAGE);
+  }, []);
 
   /** Flips on the first focus/keystroke anywhere in the form, and never back.
    *  Rendering the <Script> is what starts the download, so this is the whole

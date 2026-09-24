@@ -94,6 +94,18 @@ export function HeroSection() {
           >
             GitHub
           </a>
+          {/* Its own route (plan v4, Phase 2e): the fit checker's code never
+              ships with this page, only this link does. A plain <a>, not
+              next/link: <Link> is a Client Component, and this page doesn't
+              otherwise load it — it measured +2.3 KB gzip on the homepage JS
+              budget (scripts/check-homepage-js.mjs) for a prefetch of a page
+              few visitors open. */}
+          <a
+            href="/fit"
+            className="inline-flex min-h-[44px] items-center rounded-pill border border-control bg-surface px-6 text-[15px] font-semibold text-ink transition-colors hover:bg-panel"
+          >
+            Check your role against my work
+          </a>
         </div>
 
         <dl className="mt-14 grid grid-cols-1 border-t border-hairline min-[900px]:grid-cols-3">
