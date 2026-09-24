@@ -201,23 +201,24 @@ export function ProcessSection() {
         </div>
 
         {/* --- Why the fit checker has no model --------------------------
-            Numbers from evals/local/results/2026-09-23-summary.md ("row
-            agreement"). Keep the caveat: the rules were written against the
-            same 8 JDs, so this is not yet a held-out result. */}
+            Sources: evals/local/results/2026-09-23-summary.md (8 fixtures) and
+            2026-09-24-summary-v2.md; held-out numbers are in the commit message
+            of the v2 experiment (the postings themselves are not in the repo). */}
         <div className="mt-12 md:mt-14">
           <h3 className="font-display text-lg leading-tight text-ink">
             The fit checker ships without a model.
           </h3>
           <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-body-soft">
-            I measured three on-device language models (0.7–1 GB downloads) against plain code on
-            8 labelled job descriptions. Code matched the ideal report on 55 of 70 requirements; the
-            best model, 29. So{' '}
+            I tested on-device language models (0.3–1 GB downloads) against plain code, first on 8
+            job descriptions, then on 12 real postings the rules had never seen, labelled
+            independently. Asked to read whole postings, the models lost badly. Redesigned to answer
+            only the yes/no questions code was unsure about, they matched code within noise, which
+            doesn&rsquo;t justify the download. So{' '}
             <a href="/fit" className="font-semibold text-ink underline underline-offset-4">
               the fit checker
             </a>{' '}
             runs no model: it is instant, works on every device, and the job description never
-            leaves the page. The rules were written against those same 8, so a rematch on unseen
-            postings comes next.
+            leaves the page.
           </p>
         </div>
       </div>
