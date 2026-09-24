@@ -1,9 +1,18 @@
 /**
- * The fit checker's pure core: contract, prompt, judging, scan and export.
+ * The fit checker's pure core: contract, segmentation, prompt, merge,
+ * judging, the skill scan and export.
  * Safe to import in a Web Worker — no DOM, no Node APIs, no React.
  */
 export * from './contract';
-export { buildExtractionMessages, SYSTEM_PROMPT, validateJd, vocabularyLines } from './prompt';
+export {
+  buildDecisionMessages,
+  candidateLines,
+  PROMPT_SEGMENT_CHARS,
+  SECTION_TAGS,
+  SYSTEM_PROMPT,
+  validateJd,
+  vocabularyLines,
+} from './prompt';
 export type { JdCheck, JdRejection } from './prompt';
 export type { SkillAssessment } from './judge';
 export {
@@ -26,6 +35,24 @@ export {
   ROLE_FALLBACK,
   sanitizeRequirement,
 } from './judge';
-export { detectSkills, SCAN_DISCLAIMER, SCAN_PRIORITY, SCAN_STOP_TERMS, scanJd, scanRole, termPattern } from './scan';
-export { coverageLine, escapeMarkdown, reportToMarkdown, VERDICT_LABELS } from './markdown';
+export { detectSkills, SCAN_DISCLAIMER, SCAN_SHADOW_TERMS, SCAN_STOP_TERMS, termPattern } from './scan';
+export {
+  analyzeText,
+  BOILERPLATE,
+  classifyHeader,
+  findRole,
+  HEADER_LEXICON,
+  MUST_CUE,
+  NICE_CUE,
+  normalizeHeader,
+  parseMinYears,
+  yearsAreSoftware,
+  segmentJd,
+  segmentPriority,
+  selectCandidates,
+  splitSentences,
+} from './segment';
+export { capRequirements, defaultDecision, isBlurb, mergeDecisions, mergeOne } from './merge';
+export { analyzeWithDecisions, analyzeWithoutModel, reportCoverage } from './analyze';
+export { coverageLine, escapeMarkdown, NO_COVERAGE_LINE, reportToMarkdown, VERDICT_LABELS } from './markdown';
 export { entryLabel, EVIDENCE_LABELS, evidenceLabel } from './labels';

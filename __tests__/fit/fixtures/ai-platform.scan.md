@@ -1,47 +1,49 @@
 # Fit report: Senior Software Engineer, AI Platform
 
-Keyword scan: recognises engineering terms only, so it can miss requirements outside that vocabulary and can't tell must-haves from nice-to-haves. There's no coverage score without extracted requirements.
+Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-The skills this job description mentions, checked against Kaleb Kougl's portfolio.
+**5 of 6 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
-## In my work
+## Must-have
 
-- **Partial**: AI platform integration
-  Evidence: AI gateway for third-party agents (Indeed).
-  - AI gateway for third-party agents (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
-- **Strong**: Generative AI
+- **Strong**: 5+ years of software engineering
+  8 years in software since 2018, including an internship (2026 − 2018), meets the 5 asked.
+- **Strong**: Built production applications on large language models
   Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator).
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
   - Model output bound to a Pydantic schema (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
-- **Strong**: Agentic workflows
+- **Strong**: Agentic workflows: tool use, multi-step agents
   Evidence: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator), Scored quality-gate validators (Agentic AI Video Creator).
   - Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
   - Scored quality-gate validators (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
-- **Partial**: Structured model output
-  Evidence: Model output bound to a Pydantic schema (Agentic AI Video Creator).
+- **Strong**: Structured outputs, evals and guardrails for model quality
+  Evidence: Model output bound to a Pydantic schema (Agentic AI Video Creator), Scored quality-gate validators (Agentic AI Video Creator).
   - Model output bound to a Pydantic schema (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
-- **Partial**: Output validation and quality gates
-  Evidence: Scored quality-gate validators (Agentic AI Video Creator).
   - Scored quality-gate validators (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
 - **Strong**: Python
   Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), 149 passing tests (Agentic AI Video Creator).
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - 149 passing tests (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
   - Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator): [video-pipeline on GitHub](https://github.com/Kaleb-kougl/video-pipeline)
+- **Gap**: RAG and vector databases
+  Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator).
+
+## Nice-to-have
+
 - **Strong**: TypeScript
   Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Pattern system of pure functions (r3f-projectiles), GPU-instanced projectile engine on npm (r3f-projectiles).
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
   - GPU-instanced projectile engine on npm (r3f-projectiles): [@k9kbdev/r3f-projectiles on npm](https://www.npmjs.com/package/@k9kbdev/r3f-projectiles)
-
-## Not in my work
-
-- **Gap**: RAG
-  Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator).
-- **Gap**: Vector databases
-  Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator).
 - **Gap**: Model fine-tuning
   Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator).
+
+## Not assessed
+
+- **Not assessed**: Exposing AI capabilities through a gateway or internal platform
+  Not something my portfolio shows either way.
+- **Not assessed**: Model Context Protocol (MCP)
+  Not something my portfolio shows either way.
 
 Generated by the fit checker at https://kalebkougl-portfolio.vercel.app/fit

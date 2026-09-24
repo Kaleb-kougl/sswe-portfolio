@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { CORPUS } from '@/data/corpus';
 import type { FitReport } from '@/lib/fit/contract';
 import { judge } from '@/lib/fit/judge';
-import { coverageLine, escapeMarkdown, reportToMarkdown } from '@/lib/fit/markdown';
-import { SCAN_DISCLAIMER, scanJd } from '@/lib/fit/scan';
+import { analyzeWithoutModel } from '@/lib/fit/analyze';
+import { coverageLine, escapeMarkdown, NO_COVERAGE_LINE, reportToMarkdown } from '@/lib/fit/markdown';
+import { SCAN_DISCLAIMER } from '@/lib/fit/scan';
 
 const NOW = new Date('2026-09-23T12:00:00Z');
 
@@ -48,7 +49,7 @@ describe('reportToMarkdown', () => {
     expect(reportToMarkdown(report)).toMatchInlineSnapshot(`
       "# Fit report: Senior \\[Frontend\\](https://evil.example) Engineer
 
-      Checked against Kaleb Kougl's portfolio. A model extracted the requirements; the verdicts are computed from the evidence below, not generated.
+      Checked against Kaleb Kougl's portfolio. A model picked the requirements from the job description's lines; the verdicts are computed from the evidence below, not generated.
 
       **1 of 2 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
@@ -86,18 +87,21 @@ describe('reportToMarkdown', () => {
     }
   });
 
-  it('renders scan mode without coverage, grouped by found / not found', () => {
-    const md = reportToMarkdown(scanJd('Staff Engineer\nReact and Go.', CORPUS, NOW));
+  it('renders the no-model report grouped by priority, led by the disclaimer', () => {
+    const md = reportToMarkdown(analyzeWithoutModel('Staff Engineer\nRequirements:\n- React\nNice to have:\n- Go', NOW));
     expect(md).toContain(SCAN_DISCLAIMER);
-    expect(SCAN_DISCLAIMER).toMatch(/^Keyword scan: recognises engineering terms only/);
-    expect(md).not.toContain('must-haves covered');
-    expect(md.indexOf('## In my work')).toBeLessThan(md.indexOf('## Not in my work'));
+    expect(SCAN_DISCLAIMER).toMatch(/^Quick check without a model/);
+    expect(md).toContain('must-have covered');
+    expect(md.indexOf('## Must-have')).toBeLessThan(md.indexOf('## Nice-to-have'));
     expect(md).toContain('- **Gap**: Go');
   });
 
-  it('says so when a scan finds nothing', () => {
-    const md = reportToMarkdown(scanJd('Barista\nMust love coffee.', CORPUS, NOW));
-    expect(md).toContain('No skills from my vocabulary were mentioned.');
+  it('says so when there is no coverage or nothing was found', () => {
+    const headerless = reportToMarkdown(analyzeWithoutModel('Staff Engineer\nYou know React.', NOW));
+    expect(headerless).toContain(NO_COVERAGE_LINE);
+    expect(headerless).not.toContain('must-haves covered');
+    const md = reportToMarkdown(analyzeWithoutModel('Barista\nMust love coffee.', NOW));
+    expect(md).toContain('No requirements were found in this job description.');
   });
 
   it('skips evidence ids the corpus does not know rather than inventing a link', () => {

@@ -3,54 +3,171 @@
 exports[`fixture verdicts that must not drift > verdict tallies match the reviewed reports 1`] = `
 {
   "ai-platform": {
-    "coverage": {
-      "covered": 5,
-      "mustHaves": 7,
+    "model": {
+      "coverage": {
+        "covered": 5.5,
+        "mustHaves": 7,
+      },
+      "gap": 2,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 6,
     },
-    "gap": 3,
-    "not_assessed": 0,
-    "partial": 2,
-    "strong": 5,
+    "scan": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 6,
+      },
+      "gap": 2,
+      "not_assessed": 2,
+      "partial": 0,
+      "strong": 6,
+    },
+  },
+  "boilerplate-payments": {
+    "model": {
+      "coverage": {
+        "covered": 1,
+        "mustHaves": 3,
+      },
+      "gap": 3,
+      "not_assessed": 3,
+      "partial": 0,
+      "strong": 4,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 1,
+        "mustHaves": 3,
+      },
+      "gap": 3,
+      "not_assessed": 3,
+      "partial": 0,
+      "strong": 2,
+    },
   },
   "frontend-senior": {
-    "coverage": {
-      "covered": 4.5,
-      "mustHaves": 5,
+    "model": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 5,
+      },
+      "gap": 0,
+      "not_assessed": 2,
+      "partial": 0,
+      "strong": 8,
     },
-    "gap": 1,
-    "not_assessed": 1,
-    "partial": 1,
-    "strong": 7,
+    "scan": {
+      "coverage": {
+        "covered": 4.5,
+        "mustHaves": 5,
+      },
+      "gap": 0,
+      "not_assessed": 2,
+      "partial": 1,
+      "strong": 7,
+    },
   },
   "fullstack-senior": {
-    "coverage": {
-      "covered": 4.5,
-      "mustHaves": 6,
+    "model": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 6,
+      },
+      "gap": 2,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 6,
     },
-    "gap": 2,
-    "not_assessed": 1,
-    "partial": 2,
-    "strong": 4,
+    "scan": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 6,
+      },
+      "gap": 2,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 6,
+    },
   },
   "non-engineering-marketing": {
-    "coverage": {
-      "covered": 0.5,
-      "mustHaves": 5,
+    "model": {
+      "coverage": null,
+      "gap": 0,
+      "not_assessed": 5,
+      "partial": 2,
+      "strong": 0,
     },
-    "gap": 4,
-    "not_assessed": 1,
-    "partial": 2,
-    "strong": 0,
+    "scan": {
+      "coverage": null,
+      "gap": 0,
+      "not_assessed": 5,
+      "partial": 2,
+      "strong": 0,
+    },
   },
   "poor-match-backend": {
-    "coverage": {
-      "covered": 0.5,
-      "mustHaves": 5,
+    "model": {
+      "coverage": {
+        "covered": 1,
+        "mustHaves": 5,
+      },
+      "gap": 6,
+      "not_assessed": 1,
+      "partial": 0,
+      "strong": 1,
     },
-    "gap": 6,
-    "not_assessed": 1,
-    "partial": 1,
-    "strong": 0,
+    "scan": {
+      "coverage": {
+        "covered": 0.5,
+        "mustHaves": 5,
+      },
+      "gap": 6,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 0,
+    },
+  },
+  "prose-only-startup": {
+    "model": {
+      "coverage": {
+        "covered": 2,
+        "mustHaves": 2,
+      },
+      "gap": 0,
+      "not_assessed": 2,
+      "partial": 0,
+      "strong": 3,
+    },
+    "scan": {
+      "coverage": null,
+      "gap": 0,
+      "not_assessed": 0,
+      "partial": 0,
+      "strong": 2,
+    },
+  },
+  "responsibilities-tech": {
+    "model": {
+      "coverage": {
+        "covered": 4,
+        "mustHaves": 4,
+      },
+      "gap": 1,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 7,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 4,
+        "mustHaves": 4,
+      },
+      "gap": 1,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 7,
+    },
   },
 }
 `;

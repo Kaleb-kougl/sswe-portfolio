@@ -1,48 +1,50 @@
 # Fit report: Senior Full Stack Engineer
 
-Keyword scan: recognises engineering terms only, so it can miss requirements outside that vocabulary and can't tell must-haves from nice-to-haves. There's no coverage score without extracted requirements.
+Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-The skills this job description mentions, checked against Kaleb Kougl's portfolio.
+**5 of 6 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
-## In my work
+## Must-have
 
-- **Partial**: Full-stack development
-  Evidence: Full-stack single-click workflow (Indeed Analytics Extension).
-  - Full-stack single-click workflow (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
-- **Partial**: Node.js
-  Evidence: Node.js video upload pipeline (IBM).
+- **Strong**: 6+ years of professional software engineering experience
+  8 years in software since 2018, including an internship (2026 − 2018), meets the 6 asked.
+- **Strong**: Node.js and TypeScript on the backend
+  Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles).
+  - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-- **Strong**: React
+  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
+- **Strong**: React on the frontend
   Evidence: WCAG across 20+ React components (Indeed), IBM Developer rebuild for SEO and vitals (IBM), Full-stack single-click workflow (Indeed Analytics Extension).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Full-stack single-click workflow (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
-- **Strong**: TypeScript
-  Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Pattern system of pure functions (r3f-projectiles), GPU-instanced projectile engine on npm (r3f-projectiles).
-  - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
-  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
-  - GPU-instanced projectile engine on npm (r3f-projectiles): [@k9kbdev/r3f-projectiles on npm](https://www.npmjs.com/package/@k9kbdev/r3f-projectiles)
-- **Strong**: GraphQL
+- **Gap**: PostgreSQL schema design and query tuning
+  Not in my work yet.
+- **Strong**: Designing REST and GraphQL APIs
   Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM).
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-- **Partial**: AWS
-  Evidence: GolfTV GraphQL API on AWS (IBM).
-  - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-- **Partial**: CI/CD
-  Evidence: Led the OneHost micro-frontend migration (Indeed).
+- **Strong**: Shipping on AWS with CI/CD
+  Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM).
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
-- **Partial**: Microservices
+  - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+
+## Nice-to-have
+
+- **Strong**: You'll build features end to end across our Node.js services and React frontend.
+  Evidence: WCAG across 20+ React components (Indeed), Node.js video upload pipeline (IBM), IBM Developer rebuild for SEO and vitals (IBM).
+  - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+- **Partial**: Microservices at scale
   Evidence: Stateless bridge to microservices (Indeed Analytics Extension).
   - Stateless bridge to microservices (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
+- **Gap**: Docker and Kubernetes
+  Not in my work yet.
 
-## Not in my work
+## Not assessed
 
-- **Gap**: PostgreSQL
-  Not in my work yet.
-- **Gap**: Docker
-  Not in my work yet.
-- **Gap**: Kubernetes
-  Not in my work yet.
+- **Not assessed**: Comfortable owning an on-call rotation
+  Not something my portfolio shows either way.
 
 Generated by the fit checker at https://kalebkougl-portfolio.vercel.app/fit

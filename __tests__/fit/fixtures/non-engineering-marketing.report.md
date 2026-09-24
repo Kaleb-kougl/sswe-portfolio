@@ -1,22 +1,14 @@
 # Fit report: Senior Content Marketing Manager
 
-Checked against Kaleb Kougl's portfolio. A model extracted the requirements; the verdicts are computed from the evidence below, not generated.
+Checked against Kaleb Kougl's portfolio. A model picked the requirements from the job description's lines; the verdicts are computed from the evidence below, not generated.
 
-**0.5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+No coverage score: the must-haves couldn't be identified, or most of them are outside what my portfolio can show either way.
 
 ## Must-have
 
-- **Gap**: 5+ years in B2B content marketing
-  Not in my work yet. Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked.
 - **Partial**: SEO strategy and keyword research
   Evidence: IBM Developer rebuild for SEO and vitals (IBM).
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-- **Gap**: HubSpot
-  Not in my work yet.
-- **Gap**: Google Analytics and campaign reporting
-  Not in my work yet.
-- **Gap**: A/B testing landing pages
-  Not in my work yet.
 
 ## Nice-to-have
 
@@ -26,6 +18,14 @@ Checked against Kaleb Kougl's portfolio. A model extracted the requirements; the
 
 ## Not assessed
 
+- **Not assessed**: 5+ years in B2B content marketing
+  Not something my portfolio shows either way.
+- **Not assessed**: HubSpot
+  Not something my portfolio shows either way.
+- **Not assessed**: Google Analytics and campaign reporting
+  Not something my portfolio shows either way.
+- **Not assessed**: A/B testing landing pages
+  Not something my portfolio shows either way.
 - **Not assessed**: Exceptional storytelling
   Not something my portfolio shows either way.
 

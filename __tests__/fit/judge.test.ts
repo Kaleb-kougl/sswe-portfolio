@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 
 import { CORPUS, type Corpus, type Evidence } from '@/data/corpus';
 import { CAREER_START_YEAR } from '@/data/resumeData';
-import { FitReport, type ExtractedRequirement, type Extraction, type Requirement } from '@/lib/fit/contract';
+import { FitReport, MAX_REQUIREMENTS, type ExtractedRequirement, type Extraction, type Requirement } from '@/lib/fit/contract';
 import {
   careerYears,
   closestRelated,
@@ -367,10 +367,11 @@ describe('input hygiene', () => {
     expect(() => judge({ role: 'x', requirements: 'nope' } as never)).toThrow(ZodError);
   });
 
-  it('caps an extraction at 15 requirements and fills a blank role honestly', () => {
-    const many = Array.from({ length: 20 }, (_, i) => req({ text: `Requirement ${i}` }));
+  it('caps an extraction at MAX_REQUIREMENTS and fills a blank role honestly', () => {
+    const many = Array.from({ length: MAX_REQUIREMENTS + 5 }, (_, i) => req({ text: `Requirement ${i}` }));
     const prepared = prepareExtraction({ role: '  ', requirements: many });
-    expect(prepared.requirements).toHaveLength(15);
+    expect(prepared.requirements).toHaveLength(MAX_REQUIREMENTS);
+    expect(MAX_REQUIREMENTS).toBe(25);
     expect(prepared.role).toBe(ROLE_FALLBACK);
   });
 });

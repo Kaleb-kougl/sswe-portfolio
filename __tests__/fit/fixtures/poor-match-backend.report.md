@@ -1,8 +1,8 @@
-# Fit report: Backend Engineer, Infrastructure
+# Fit report: Backend Engineer, Infrastructure (Go / Kubernetes)
 
-Checked against Kaleb Kougl's portfolio. A model extracted the requirements; the verdicts are computed from the evidence below, not generated.
+Checked against Kaleb Kougl's portfolio. A model picked the requirements from the job description's lines; the verdicts are computed from the evidence below, not generated.
 
-**0.5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**1 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
 ## Must-have
 
@@ -10,8 +10,8 @@ Checked against Kaleb Kougl's portfolio. A model extracted the requirements; the
   Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked.
 - **Gap**: Operating Kubernetes clusters in production
   Not in my work yet.
-- **Partial**: Distributed systems and microservice design
-  Evidence: Stateless bridge to microservices (Indeed Analytics Extension), Co-architected OneHost, led 6 engineers (Indeed), Node.js video upload pipeline (IBM). Nothing for distributed systems.
+- **Strong**: Distributed systems and microservice design
+  Evidence: Stateless bridge to microservices (Indeed Analytics Extension), Co-architected OneHost, led 6 engineers (Indeed), Node.js video upload pipeline (IBM).
   - Stateless bridge to microservices (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)

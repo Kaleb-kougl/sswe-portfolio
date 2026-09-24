@@ -1,31 +1,20 @@
-import { CORPUS, type Corpus } from '@/data/corpus';
 import { GAP_VOCABULARY, SKILLS_TABLE } from '@/data/corpus/skills';
 
-import type { ExtractedRequirement, FitReport } from './contract';
-import { judgeRequirement } from './judge';
-
 /**
- * THE NO-MODEL SKILL SCAN — Phase 2c. Runs on every device, instantly.
- *
- * Finds every canonical skill (id, label, alias) and every gap-vocabulary
- * term the JD mentions, as whole words, and judges each one with the same
- * evidence rules as model mode. One row per detected skill, in order of first
- * mention. No coverage: without extraction there are no must-haves.
- *
- * `priority` has no meaning here, but the contract requires it; every row is
- * `SCAN_PRIORITY` and the UI hides priority in scan mode.
+ * THE SKILL SCAN: the alias matcher behind code-first extraction (plan v4,
+ * step 3). `segmentJd` runs `detectSkills` on each JD segment to find the
+ * canonical skills and gap-vocabulary terms it names, as whole words, in
+ * order of first mention. Pure; runs in the worker and on the main thread.
  */
 
 /**
- * What the UI shows above a scan-mode report, and what the Markdown export
- * leads with. The scan only knows engineering vocabulary, so on a marketing
- * or sales JD it finds a handful of overlaps and no gaps; this says so.
+ * What the UI shows above a no-model report, and what the Markdown export
+ * leads with. Without a model, rows are the JD's own lines chosen by fixed
+ * rules, priorities come only from its section headers, and skills are
+ * matched from engineering vocabulary only.
  */
 export const SCAN_DISCLAIMER =
-  "Keyword scan: recognises engineering terms only, so it can miss requirements outside that vocabulary and can't tell must-haves from nice-to-haves. There's no coverage score without extracted requirements.";
-
-/** Scan rows aren't must-haves; "nice" is the weaker claim if it ever leaks. */
-export const SCAN_PRIORITY = 'nice' as const;
+  "Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only.";
 
 /**
  * Aliases that are right for search but wrong for a keyword scan, because a
@@ -71,7 +60,7 @@ function goInContext(text: string, start: number, end: number): boolean {
   const before = text.slice(Math.max(0, start - 12), start);
   const after = text.slice(end, end + 24);
   if (/^-|^\s+(?:to|ahead|beyond|above|live|get)\b/i.test(after)) return false;
-  if (/(?:\b(?:in|with|using|like|and|or|as)|[,/(&+])\s*$/i.test(before)) return true;
+  if (/(?:\b(?:in|with|using|like|and|or|as)|[,/(&+:])\s*$/i.test(before)) return true;
   return /^(?:\s*[,/)&+]|\s+(?:and|or)\b|\s*\.(?:\s|$)|\s*$|\s+(?:programming|language|lang|developer|engineer|services?|microservices|backend|code|experience)\b)/i.test(
     after,
   );
@@ -170,6 +159,7 @@ export const SCAN_SHADOW_TERMS: readonly string[] = [
   'Ember.js',
   'Backbone.js',
   'Chart.js',
+  'React Testing Library', // a testing library, not a claim of React
 ];
 const SHADOW = '';
 
@@ -225,36 +215,4 @@ export function detectSkills(text: string): { id: string; gap: boolean }[] {
     .filter((hit) => hit.id !== SHADOW)
     .sort((a, b) => a.start - b.start)
     .map(({ id, gap }) => ({ id, gap }));
-}
-
-/**
- * A title for the report: the JD's first line when it is short enough to be
- * one (after list markers and Markdown heading marks), otherwise a plain
- * "Job description". The scan has no model to read the title properly.
- */
-export function scanRole(jd: string): string {
-  const line = jd
-    .split('\n')
-    .map((l) => l.replace(/^[\s#*>•-]+/, '').replace(/[\s:*]+$/, ''))
-    .find(Boolean);
-  return line && line.length >= 3 && line.length <= 80 ? line : 'Job description';
-}
-
-const GAP_LABELS: ReadonlyMap<string, string> = new Map(GAP_VOCABULARY.map((t) => [t.id, t.label]));
-
-/** The scan-mode report. Pure; no network, no model. */
-export function scanJd(jd: string, corpus: Corpus = CORPUS, now: Date = new Date()): FitReport {
-  const labels = new Map(corpus.skills.map((s) => [s.id, s.label]));
-  const requirements = detectSkills(jd).map(({ id, gap }) => {
-    const label = gap ? GAP_LABELS.get(id)! : (labels.get(id) ?? id);
-    const row: ExtractedRequirement = {
-      text: label,
-      priority: SCAN_PRIORITY,
-      skills: gap ? [] : [id],
-      otherSkills: gap ? [label] : [],
-      minYears: null,
-    };
-    return judgeRequirement(row, corpus, now);
-  });
-  return { role: scanRole(jd), mode: 'scan', requirements, coverage: null };
 }
