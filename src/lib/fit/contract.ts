@@ -113,6 +113,13 @@ export const Segment = z.object({
   otherSkills: z.array(z.string().min(1).max(40)),
   /** From a years regex; null when none is stated. */
   minYears: z.number().int().min(0).max(30).nullable(),
+  /**
+   * Set by code on a responsibilities segment of a JD that also lists
+   * requirements, when it isn't worth a row without a model: `summary`, a
+   * prose sentence of the role pitch; `restated`, a duty whose skills the
+   * requirements already name. Absent otherwise.
+   */
+  duty: z.enum(['summary', 'restated']).optional(),
 });
 export type Segment = z.infer<typeof Segment>;
 

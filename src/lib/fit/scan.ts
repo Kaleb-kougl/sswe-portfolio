@@ -66,8 +66,43 @@ function goInContext(text: string, start: number, end: number): boolean {
   );
 }
 
+/** Words before a bare "API" that still mean building one: "REST APIs", "Public API". */
+const API_KINDS = /^(?:rest|restful|http|https|json|graphql|grpc|web|public|internal|partner|platform|developer|backend|external|open|new|our|the|and|or|of|&)$/i;
+
+/**
+ * A bare "API"/"APIs" counts as API design unless it is someone else's API
+ * being used: after a product name ("the Stripe API", "OpenAI APIs"), or
+ * before "key", "token", "credits", "calls". Longer terms ("API design",
+ * "RESTful") are unaffected.
+ */
+function apiInContext(text: string, start: number, end: number): boolean {
+  if (!/^apis?$/i.test(text.slice(start, end))) return true;
+  if (/^\s*(?:keys?|tokens?|credits?|calls?|access|usage|limits?|quotas?)\b/i.test(text.slice(end, end + 12))) return false;
+  const before = /(\S+)\s+$/.exec(text.slice(Math.max(0, start - 40), start));
+  if (!before) return true;
+  const word = before[1].replace(/[(),"“”]/g, '');
+  const sentenceStart = start - before[0].length === 0 || /[.!?:;]\s*$/.test(text.slice(0, start - before[0].length));
+  return sentenceStart || !/^[A-Z]/.test(word) || API_KINDS.test(word);
+}
+
+/**
+ * "Migrate", "migration": a codebase or platform migration, except moving
+ * records ("data migration", "migrate customer records", "email migration"),
+ * which the corpus's codebase-migration work isn't.
+ */
+function migrationInContext(text: string, start: number, end: number): boolean {
+  if (!/^migrat/i.test(text.slice(start, end))) return true;
+  const before = text.slice(Math.max(0, start - 30), start);
+  const after = text.slice(end, end + 40);
+  const records = /\b(?:data|database|db|records?|customers?|users?|accounts?|emails?|mailbox(?:es)?|contacts?|content|crm|salesforce|files?)\b/i;
+  if (new RegExp(`${records.source}[\\s-]*$`, 'i').test(before)) return false;
+  return !new RegExp(`^\\s+(?:of\\s+|the\\s+|our\\s+|all\\s+|existing\\s+)*${records.source}`, 'i').test(after);
+}
+
 const ACCEPT: Readonly<Record<string, (text: string, start: number, end: number) => boolean>> = {
   go: goInContext,
+  'api-design': apiInContext,
+  'codebase-migrations': migrationInContext,
 };
 
 interface ScanTerm {

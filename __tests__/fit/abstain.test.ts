@@ -137,7 +137,8 @@ describe('decideAll: routing decides which answers count', () => {
   });
 
   it('skill answers count only for skills code proposed; null answers are ignored', () => {
-    const s = segmentJd('Requirements:\n- Designing REST and GraphQL APIs');
+    // "APIs" is a scan alias now; "endpoints" and "SDKs" only propose api-design.
+    const s = segmentJd('Requirements:\n- Designing endpoints and SDKs for partners');
     const index = s.candidates[0];
     expect(proposeSkills(s.segments[index])).toContain('api-design');
     const got = (answers: Answer[]) => decideAll(s, answers)[0].decision.addSkills;

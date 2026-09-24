@@ -40,10 +40,10 @@ exports[`fixture verdicts that must not drift > verdict tallies match the review
         "covered": 1,
         "mustHaves": 3,
       },
-      "gap": 3,
+      "gap": 2,
       "not_assessed": 3,
       "partial": 0,
-      "strong": 2,
+      "strong": 4,
     },
   },
   "frontend-senior": {
@@ -144,7 +144,7 @@ exports[`fixture verdicts that must not drift > verdict tallies match the review
       "gap": 0,
       "not_assessed": 0,
       "partial": 0,
-      "strong": 2,
+      "strong": 3,
     },
   },
   "responsibilities-tech": {

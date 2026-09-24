@@ -21,9 +21,10 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 - **Gap**: PostgreSQL schema design and query tuning
   Not in my work yet.
 - **Strong**: Designing REST and GraphQL APIs
-  Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM).
-  - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  Evidence: GolfTV GraphQL API on AWS (IBM), Co-architected OneHost, led 6 engineers (Indeed), Pattern system of pure functions (r3f-projectiles).
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
 - **Strong**: Shipping on AWS with CI/CD
   Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM).
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)

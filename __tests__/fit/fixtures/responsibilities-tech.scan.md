@@ -35,9 +35,9 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Halved Webpack build time (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Migrate legacy services from JavaScript to TypeScript, one package at a time
-  Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Luxon timezone migration (Indeed), Pattern system of pure functions (r3f-projectiles).
-  - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
+  Evidence: Luxon timezone migration (Indeed), GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Pattern system of pure functions (r3f-projectiles).
   - Luxon timezone migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
 - **Strong**: Partner with product teams to improve build times and developer productivity
   Evidence: 10% shorter cycle time with AI tooling (Indeed), Halved Webpack build time (IBM), Bundle cut from 6 MB to 300 KB (IBM).

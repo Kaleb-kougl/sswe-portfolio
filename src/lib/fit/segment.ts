@@ -77,6 +77,13 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           'is (?:this|that) you',
           "to be successful(?: in this role)?(?:,? you(?:'ll| will) (?:need|have))?",
           "we'?d love (?:it )?if you (?:have|had)",
+          // Fit-check headers ("You might thrive in this role if you…"): ambiguous
+          // between must and nice, and read as must (the requirement list).
+          "what you should (?:have|bring|know)",
+          "(?:the )?(?:skill ?sets?|skills?|experience|qualifications|background) you(?:'ll| will| should)? (?:bring|need|have)",
+          "you(?:'ll| will)? (?:might |may )?(?:thrive|excel|succeed|do well)(?: in this (?:role|position|job)| here| with us)?(?: if(?: you(?:'re| are| have)?)?)?",
+          "(?:you'?re|you are|you may be|you might be) (?:a )?(?:great |good |strong )?(?:fit|match)(?: for (?:this|the) (?:role|position|job))?(?: if(?: you)?)?",
+          "this (?:role|job|position) (?:is|might be|may be) (?:for you|a (?:great |good )?fit)(?: if(?: you)?)?",
         ].join('|') +
         ')$',
     ),
@@ -142,6 +149,24 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           'company (?:overview|description|background)',
           'meet the team',
           'life at .{1,40}',
+          // Outcomes ("What success looks like", "Your first 90 days"): what the
+          // employer expects after hiring, not what the candidate brings or does.
+          '(?:what )?success (?:in this (?:role|position) )?(?:looks like|means)(?: in (?:this|the) role)?',
+          "(?:in )?(?:your )?first (?:\\d{1,3}|thirty|sixty|ninety) days(?: (?:and|&) beyond)?",
+          '(?:in )?(?:your )?first (?:week|weeks|month|months|year|six months|few months)',
+          '\\d{2}[/-]\\d{2}(?:[/-]\\d{2,3})?(?: days?)?(?: plan)?',
+          // "Why Acme?", "Why this role": the pitch, not a requirement ("why
+          // join us" and "why you'll love it here" are benefits, checked first).
+          "why (?!you\\b)[a-z0-9&.' -]{1,40}",
+          "(?:engineering|working|culture|careers?|the team) at [a-z0-9&.' -]{1,40}",
+          // A tech-environment list ("Technologies we use:")
+          // describes the employer's stack; the requirements say which of it
+          // the candidate needs. Only when worded as the employer's: a bare
+          // "Tech stack" or "Our tools" header may lead in skills the
+          // candidate needs, so it stays unknown.
+          "(?:our |the )?tech(?:nology)? stack (?:we use|includes|is)",
+          "(?:the )?(?:technologies|tools|stack) we (?:use|work with)",
+          '(?:relevant |key )?(?:technologies|tools) (?:include|includes)',
         ].join('|') +
         ')$',
     ),
@@ -154,7 +179,7 @@ export function normalizeHeader(text: string): string {
     .replace(/[‘’ʼ]/g, "'")
     .replace(/[*_#`]+/g, '')
     .replace(/^[^\p{L}\p{N}]+/u, '')
-    .replace(/[\s:?!.\-–—]+$/u, '')
+    .replace(/[\s:?!.…\-–—]+$/u, '')
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
@@ -421,6 +446,58 @@ export function splitSentences(text: string): string[] {
 export const BOILERPLATE =
   /\b(?:equal (?:employment )?opportunity|EEO|affirmative action|(?:regardless of|on the basis of) (?:race|gender|sex|age|religion|colou?r|national origin)|discriminat(?:e|ion) (?:on the basis|based on)|without regard to|reasonable accommodations?|protected (?:veteran|characteristic|status)|salary range|pay range|base (?:salary|pay)|compensation (?:range|package)|total compensation|401\s?\(?k\)?|health(?:,| and) dental|paid time off|parental leave|pay transparency|E-Verify)\b|\$\s?\d{2,3}(?:,\d{3}|k)|\b(?:USD|EUR|GBP|CAD)\s?\d{2,3}(?:,\d{3}|k)/i;
 
+/**
+ * Where and on what terms the job is done, not a skill: office attendance,
+ * relocation, work authorisation, clearance, background checks. The fit
+ * checker can't judge them from work evidence, and a reader doesn't count
+ * them as requirements of the craft, so they move to `benefits` like pay.
+ */
+export const LOGISTICS =
+  /\b(?:(?:work|working|be|based) (?:in[- ]person|on[- ]?site|onsite)|in[- ]office|in the office|from (?:our|the) (?:[A-Z][\w.-]* ){0,3}office|(?:\d|one|two|three|four|five)(?:\+| or more)? days (?:a|per|each) week|relocat(?:e|ing|ion)|commut(?:e|ing|able)|(?:legally )?authori[sz]ed to work|work authori[sz]ation|(?:visa )?sponsorship|security clearance|(?:u\.?s\.?|uk|eu|canadian|american) citizen(?:ship)?|citizenship|lawful permanent resident|background check|drug (?:test|screen)(?:ing)?|time ?zones? overlap|overlap with (?:\w+ )?(?:business hours|time ?zones?))\b/i;
+
+/** How to apply, not what to bring: "include a cover letter", "apply even if…". */
+export const APPLICATION_NOTE =
+  /\b(?:cover letter|(?:include|submit|attach|send)(?: us)?(?: a| an| your| any)? (?:resume|cv|portfolio|writing samples?|work samples?|links?|github)|in your application|when (?:you )?apply(?:ing)?|apply even if|(?:please |to )?apply (?:now|today|here|through|via)|check every box|meet every (?:single )?(?:requirement|qualification)|click (?:here|apply))\b/i;
+
+/**
+ * How pay is set ("pay depends on location", "salary is based on
+ * level"): boilerplate that BOILERPLATE's amounts and ranges miss.
+ */
+export const PAY_NOTE =
+  /\b(?:individual |base |starting )?(?:pay|salary|salaries|compensation)(?: ranges?| levels?| offers?)? (?:is |are |will be |may be |may )?(?:determined|based on|commensurate|varies|vary|depend(?:s|ent)? on)\b/i;
+
+/**
+ * A sentence that describes the person wanted, wherever it sits: "We're
+ * looking for engineers who…", "We need someone who…", "You'll do
+ * well here if you…", or a trait in the second person ("You have…", "You
+ * are comfortable…", "You enjoy…"). Under a responsibilities header it is
+ * still a requirement, so it moves to `requirements`. With no header it is
+ * kept by `defaultDecision`, as a nice-to-have: without a header code
+ * gives no must-haves (a headerless JD gets no coverage score).
+ *
+ * Not: "We're looking for a Senior Engineer to lead…" (the role, no "who"),
+ * "You'll work with…" or "You build…" (duties), "The ideal candidate…"
+ * (read as nice as often as must, so left to its section). Expects straight
+ * apostrophes (see `straightQuotes`).
+ */
+export const REQUIREMENT_VOICE = new RegExp(
+  [
+    // "We're looking for engineers who", "we need folks who"
+    "\\b(?:we're|we are) (?:looking for|seeking|searching for|hiring)\\s+(?:\\S+\\s+){0,4}?(?:engineers?|developers?|someone|people|folks|candidates?|individuals?|teammates?|builders?)\\s+who\\b",
+    '\\bwe (?:need|want)\\s+(?:\\S+\\s+){0,3}?(?:engineers?|developers?|someone|people|folks|candidates?|individuals?|teammates?|builders?)\\s+who\\b',
+    // "You'll do well here if you…"
+    "\\byou(?:'ll| will| would| might| may)? (?:excel|thrive|succeed|do well|be successful)\\b[^.]{0,40}?\\bif you\\b",
+    // A trait: second person, present tense, at the start. Not a duty or a
+    // perk in the same words ("You are responsible for…", "You have the
+    // opportunity to…").
+    "^you (?:have|are|bring|know|enjoy|love|care|understand|possess|hold|thrive|take pride)\\b(?!\\s+(?:(?:the|full|end-to-end|direct|real)\\s+)?(?:responsib|accountab|in charge|expected|going to|able to work|ownership|opportunit|chance|freedom|autonomy|access|support|budget))",
+  ].join('|'),
+  'i',
+);
+
+/** Curly apostrophes straightened, for the patterns written with "'". */
+export const straightQuotes = (text: string) => text.replace(/[‘’ʼ]/g, "'");
+
 // --- Segmentation -------------------------------------------------------------
 
 /**
@@ -502,7 +579,12 @@ const GAP_LABEL: ReadonlyMap<string, string> = new Map(GAP_VOCABULARY.map((t) =>
 /** Code's findings for one piece of text. */
 export function analyzeText(text: string, section: Section): Omit<Segment, 'index'> {
   const found = detectSkills(text);
-  const effective: Section = section !== 'benefits' && BOILERPLATE.test(text) ? 'benefits' : section;
+  const effective: Section =
+    section !== 'benefits' && [BOILERPLATE, LOGISTICS, APPLICATION_NOTE, PAY_NOTE].some((re) => re.test(text))
+      ? 'benefits'
+      : section === 'responsibilities' && REQUIREMENT_VOICE.test(straightQuotes(text))
+        ? 'requirements'
+        : section;
   const years = parseMinYears(text);
   return {
     text,
@@ -554,10 +636,39 @@ export function segmentJd(jd: string): SegmentedJd {
   const { role, line } = findRole(lines);
 
   const segments: Segment[] = [];
+  const prose = new Set<number>();
   for (const item of toItems(lines, line)) {
     // Bullets are one requirement each; prose is split into sentences.
-    const texts = item.bullet || item.parent ? [item.text] : splitSentences(item.text);
-    for (const text of texts) segments.push({ index: segments.length, ...analyzeText(text, item.section) });
+    const bullet = item.bullet || item.parent;
+    const texts = bullet ? [item.text] : splitSentences(item.text);
+    for (const text of texts) {
+      if (!bullet) prose.add(segments.length);
+      segments.push({ index: segments.length, ...analyzeText(text, item.section) });
+    }
   }
+  markDuties(segments, prose);
   return { role, segments, candidates: selectCandidates(segments) };
+}
+
+/**
+ * Duty lines a JD with a requirements list doesn't need as rows (sets
+ * `duty`; `defaultDecision` then drops them):
+ * - `summary`: a prose sentence under a responsibilities header, the role
+ *   pitch ("Some weeks you'll tune queries, others…"), not a list item;
+ * - `restated`: a duty whose every skill a requirements or preferred line
+ *   already names ("Build pipelines with Kafka" beside "Experience with
+ *   Kafka"), so its row would only repeat that verdict.
+ * A JD without a requirements or preferred section keeps its duties: then
+ * they are the only place its technology is named.
+ */
+function markDuties(segments: Segment[], prose: ReadonlySet<number>): void {
+  const stated = segments.filter((s) => s.section === 'requirements' || s.section === 'preferred');
+  if (stated.length === 0) return;
+  const named = new Set(stated.flatMap((s) => [...s.skills, ...s.otherSkills]));
+  for (const s of segments) {
+    if (s.section !== 'responsibilities') continue;
+    const skills = [...s.skills, ...s.otherSkills];
+    if (prose.has(s.index)) s.duty = 'summary';
+    else if (skills.length > 0 && skills.every((id) => named.has(id))) s.duty = 'restated';
+  }
 }

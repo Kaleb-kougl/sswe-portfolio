@@ -54,7 +54,7 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'slos', label: 'Frontend SLOs', aliases: ['slo', 'service level objectives'] },
   { id: 'datadog', label: 'Datadog', aliases: [] },
   { id: 'developer-productivity', label: 'Developer productivity', aliases: ['developer experience', 'dx'] },
-  { id: 'codebase-migrations', label: 'Codebase migrations', aliases: ['migrations', 'platform migrations', 'large-scale migrations'] },
+  { id: 'codebase-migrations', label: 'Codebase migrations', aliases: ['migrations', 'platform migrations', 'large-scale migrations', 'migrate', 'migrated', 'migrating'] },
 
   // Data and backend
   { id: 'graphql', label: 'GraphQL', aliases: ['gql'] },
@@ -62,15 +62,15 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'postgresql', label: 'PostgreSQL', aliases: ['postgres'] },
   { id: 'aws', label: 'AWS', aliases: ['amazon web services'] },
   { id: 'microservices', label: 'Microservices', aliases: [] },
-  { id: 'full-stack', label: 'Full-stack development', aliases: ['fullstack'] },
+  { id: 'full-stack', label: 'Full-stack development', aliases: ['fullstack', 'entire stack', 'whole stack', 'across the stack'] },
   { id: 'system-design', label: 'System design', aliases: ['software architecture', 'architecture'] },
-  { id: 'api-design', label: 'API and interface design', aliases: ['interface design'] },
+  { id: 'api-design', label: 'API and interface design', aliases: ['interface design', 'api', 'apis', 'restful', 'api development', 'api contracts'] },
 
   // AI
   { id: 'genai', label: 'Generative AI', aliases: ['gen ai', 'llm', 'llms', 'large language models'] },
-  { id: 'ai-assisted-development', label: 'AI-assisted development', aliases: ['ai-assisted code generation', 'ai coding', 'model-assisted workflows', 'ai tooling'] },
+  { id: 'ai-assisted-development', label: 'AI-assisted development', aliases: ['ai-assisted code generation', 'ai coding', 'model-assisted workflows', 'ai tooling', 'ai-assisted engineering', 'ai-supported engineering', 'ai-enhanced engineering', 'ai dev tools', 'ai dev tooling', 'ai development tools', 'agentic development', 'agentic coding', 'claude code', 'github copilot', 'copilot'] },
   { id: 'ai-platform', label: 'AI platform integration', aliases: ['ai gateway', 'ai infrastructure'] },
-  { id: 'agentic-workflows', label: 'Agentic workflows', aliases: ['agents', 'ai agents', 'agentic ai', 'multi-agent systems'] },
+  { id: 'agentic-workflows', label: 'Agentic workflows', aliases: ['agents', 'ai agents', 'agentic ai', 'multi-agent systems', 'agentic systems', 'agentic tooling', 'agentic tools', 'agentic applications'] },
   { id: 'gemini', label: 'Google Gemini', aliases: [] },
   { id: 'langchain', label: 'LangChain', aliases: [] },
   { id: 'pydantic', label: 'Pydantic', aliases: [] },
@@ -78,14 +78,14 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'output-validation', label: 'Output validation and quality gates', aliases: ['quality gates', 'guardrails'] },
 
   // Testing
-  { id: 'automated-testing', label: 'Automated testing', aliases: ['testing', 'unit testing', 'test automation'] },
+  { id: 'automated-testing', label: 'Automated testing', aliases: ['testing', 'unit testing', 'test automation', 'testing strategy', 'test strategy', 'unit tests', 'integration tests', 'end-to-end tests', 'e2e tests', 'automated tests'] },
   { id: 'jest', label: 'Jest', aliases: [] },
   { id: 'appium', label: 'Appium', aliases: [] },
 
   // Leadership
-  { id: 'tech-leadership', label: 'Technical leadership', aliases: ['tech lead', 'team lead', 'technical lead'] },
-  { id: 'mentoring', label: 'Mentoring', aliases: ['mentorship', 'coaching'] },
-  { id: 'cross-functional-collaboration', label: 'Cross-functional collaboration', aliases: ['stakeholder management'] },
+  { id: 'tech-leadership', label: 'Technical leadership', aliases: ['tech lead', 'team lead', 'technical lead', 'leading projects', 'lead projects', 'technical direction'] },
+  { id: 'mentoring', label: 'Mentoring', aliases: ['mentorship', 'coaching', 'mentor', 'mentored'] },
+  { id: 'cross-functional-collaboration', label: 'Cross-functional collaboration', aliases: ['stakeholder management', 'cross-functional', 'cross-team collaboration'] },
 
   // 3D, games, open source
   { id: 'react-three-fiber', label: 'React Three Fiber', aliases: ['r3f'] },
@@ -93,7 +93,7 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'webgl', label: 'WebGL', aliases: [] },
   { id: 'gpu-instancing', label: 'GPU instancing', aliases: ['instanced rendering', 'instancedmesh'] },
   { id: 'roblox-ts', label: 'roblox-ts', aliases: ['roblox', 'rbxts'] },
-  { id: 'game-development', label: 'Game development', aliases: ['gamedev'] },
+  { id: 'game-development', label: 'Game development', aliases: ['gamedev', 'games industry', 'game industry', 'gaming industry', 'game studio'] },
   { id: 'ecs', label: 'Entity-Component-System', aliases: ['entity component system'] },
   { id: 'dependency-injection', label: 'Dependency injection', aliases: ['di'] },
   { id: 'state-machines', label: 'Finite state machines', aliases: ['fsm', 'finite state machine'] },

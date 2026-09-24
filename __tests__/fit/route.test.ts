@@ -89,7 +89,7 @@ describe('uncertainSegments on the fixtures', () => {
     'non-engineering-marketing': [6, 8],
     'prose-only-startup': [10, 10],
     'responsibilities-tech': [5, 11],
-    'boilerplate-payments': [5, 11],
+    'boilerplate-payments': [7, 11],
   };
 
   it.each(FIXTURES)('$name', (f) => {
@@ -115,7 +115,7 @@ describe('uncertainSegments on the fixtures', () => {
         if (!routed.has(index) && proposeSkills(segment).length === 0) unreachable.push(`${f.name}: ${segment.text}`);
       });
     }
-    expect(wrong).toBe(5);
+    expect(wrong).toBe(3);
     expect(unreachable).toEqual([]);
   });
 });
@@ -182,7 +182,7 @@ describe('proposeSkills', () => {
     expect(proposeSkills(seg('Join the platform team'))).toEqual([]);
   });
 
-  it('proposes every labelled skill code missed on the fixtures (14 of 14), with few proposals overall', () => {
+  it('proposes every labelled skill code missed on the fixtures (8 of 8), with few proposals overall', () => {
     let gold = 0;
     let hits = 0;
     let proposals = 0;
@@ -201,7 +201,7 @@ describe('proposeSkills', () => {
       });
     }
     expect(misses).toEqual([]);
-    expect([hits, gold]).toEqual([14, 14]);
+    expect([hits, gold]).toEqual([8, 8]);
     // 81 candidates; each proposal costs one question.
     expect(proposals).toBeLessThanOrEqual(16);
   });

@@ -85,8 +85,9 @@ describe('skill-embeddings.json staleness', () => {
 
 describe('phrase extraction', () => {
   it('takes 1–4 word n-grams that neither start nor end on a stopword', () => {
-    const phrases = extractPhrases('Designing and building REST APIs');
-    expect(phrases).toEqual(expect.arrayContaining(['REST', 'REST APIs', 'APIs', 'building REST APIs']));
+    // "APIs" and "mentored" are scan aliases now, so the examples use words the scan doesn't know.
+    const phrases = extractPhrases('Designing and building REST endpoints');
+    expect(phrases).toEqual(expect.arrayContaining(['REST', 'REST endpoints', 'endpoints', 'building REST endpoints']));
     expect(phrases).not.toContain('and');
     expect(phrases.some((p) => /^(?:and|the|of)\b|\b(?:and|the|of)$/i.test(p))).toBe(false);
     expect(phrases.every((p) => p.split(' ').length <= 4)).toBe(true);
@@ -100,14 +101,15 @@ describe('phrase extraction', () => {
   });
 
   it('drops numbers, and phrases the alias scan already recognises', () => {
-    const phrases = extractPhrases('5+ years with GraphQL APIs and Kubernetes');
+    const phrases = extractPhrases('5+ years with GraphQL endpoints and Kubernetes');
     expect(phrases).not.toContain('5+');
     expect(phrases.filter((p) => /graphql|kubernetes/i.test(p))).toEqual([]);
-    expect(phrases).toContain('APIs');
+    expect(phrases).toContain('endpoints');
+    expect(extractPhrases('Designing REST APIs')).not.toContain('APIs');
   });
 
   it('keeps inflections and synonyms, drops bare pieces of vocabulary terms', () => {
-    expect(extractPhrases("You've mentored junior developers")).toContain('mentored');
+    expect(extractPhrases("You've onboarded junior developers")).toContain('onboarded');
     expect(extractPhrases('Building for screen readers')).toContain('screen readers');
     const trap = extractPhrases('Testing the waters with new design ideas');
     expect(trap).not.toContain('Testing');
@@ -135,7 +137,8 @@ describe('phrase extraction', () => {
 describe('isTermFragment / stem', () => {
   it('flags words that only appear inside a longer vocabulary term', () => {
     for (const p of ['design', 'Testing', 'agents', 'lead', 'Designing', 'research']) expect(isTermFragment(p), p).toBe(true);
-    for (const p of ['mentored', 'APIs', 'screen readers', 'Mentor', 'tests']) expect(isTermFragment(p), p).toBe(false);
+    // "tests" is inside "unit tests" / "integration tests" (scan aliases) now.
+    for (const p of ['mentored', 'APIs', 'screen readers', 'Mentor', 'test suites', 'endpoints']) expect(isTermFragment(p), p).toBe(false);
   });
 
   it('strips verb endings only', () => {

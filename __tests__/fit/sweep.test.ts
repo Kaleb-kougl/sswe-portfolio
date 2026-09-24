@@ -60,8 +60,8 @@ describe('label matching (evals/holdout.ts)', () => {
       expect(mapping.missed).toEqual([]);
     }
     const t = totals(FIXTURES.map((f) => scoreNoModel(f, FIXTURE_NOW)));
-    // evals/local/results/2026-09-23-summary.md
-    expect([t.keep.correct, t.keep.total, t.rowAgreement.correct, t.rowAgreement.total]).toEqual([76, 81, 55, 70]);
+    // evals/local/results/2026-09-23-summary.md had [76, 81, 55, 70]; the 2g code loop raised it.
+    expect([t.keep.correct, t.keep.total, t.rowAgreement.correct, t.rowAgreement.total]).toEqual([78, 81, 57, 70]);
     expect(t.recallInclMissed).toEqual(t.keptLabelled);
     expect(t.labelsMissed).toBe(0);
   });
@@ -101,7 +101,7 @@ describe('sweep (evals/local/sweep.ts)', () => {
   it('a perfect model at the starting thresholds fixes every error the routing reaches', () => {
     const t = replayer.totals(FIXTURES, THRESHOLDS);
     expect(t.keep).toEqual({ correct: 81, total: 81 });
-    expect(t.addSkillsRecall).toEqual({ correct: 14, total: 14 });
+    expect(t.addSkillsRecall).toEqual({ correct: 8, total: 8 });
     expect(t.addSkillsPrecision.correct).toBe(t.addSkillsPrecision.total);
   });
 

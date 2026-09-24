@@ -7,6 +7,7 @@ import {
   type SegmentDecision,
   type SegmentedJd,
 } from './contract';
+import { MUST_CUE, NICE_CUE, REQUIREMENT_VOICE, straightQuotes } from './segment';
 
 /**
  * STEPS 7–8: the per-segment decision and the merge (plan v4, Phase 2a).
@@ -34,7 +35,21 @@ export const COMPANY_VOICE = /^(?:(?:we|we're|we’re|we've|we’ve|we'll|we’l
  * or a whole paragraph (over 300 characters) rather than an item.
  */
 export function isBlurb(text: string): boolean {
-  return /:$/.test(text.trim()) || COMPANY_VOICE.test(text.trim()) || text.length > 300;
+  const t = text.trim();
+  const companyVoice = COMPANY_VOICE.test(t) && !REQUIREMENT_VOICE.test(straightQuotes(t));
+  return /:$/.test(t) || companyVoice || isDescription(t) || text.length > 300;
+}
+
+/**
+ * A name introduced as the subject: "Acme is a platform for…", "Acme Health
+ * is reinventing…". The employer (or its product) describing itself. Not
+ * when it carries a priority cue ("Kubernetes is a must", "Rust is a plus"),
+ * and never a pronoun ("You are a…" is a trait, see REQUIREMENT_VOICE).
+ */
+export const DESCRIPTION = /^(?!(?:[Yy]ou|[Ww]e|[Tt]hey|I)\b)(?:[A-Z][\w&.'’-]*\s+){1,4}(?:is|are)\s+(?:(?:a|an|the)\s|[a-z]+ing\b)/;
+
+function isDescription(text: string): boolean {
+  return DESCRIPTION.test(text) && !NICE_CUE.test(text) && !MUST_CUE.test(text);
 }
 
 /**
@@ -45,9 +60,13 @@ export function isBlurb(text: string): boolean {
  *   Priority comes from the header (or an inline cue) in the merge.
  * - responsibilities: kept only if it names a skill, as `nice` (a duty that
  *   names a technology is worth showing, but it isn't a must-have). An
- *   inline "a plus" cue already made it nice; nothing makes it must.
+ *   inline "a plus" cue already made it nice; nothing makes it must. Not
+ *   when `segment.duty` is set (a JD with requirements: role-pitch prose,
+ *   or a duty whose skills the requirements already name).
  * - unknown (before any header, or under an unrecognised one): kept only if
- *   it names a skill or years and isn't company voice. Priority `nice`
+ *   it names a skill or years, or describes the person wanted
+ *   (REQUIREMENT_VOICE: "You have…", "We need engineers who…"), and isn't
+ *   company voice or a company description. Priority `nice`
  *   unless an inline cue made it must ("Go experience required"), so a
  *   headerless JD's rows stay out of coverage unless it says "required".
  * - about / benefits: never (they aren't candidates anyway).
@@ -65,10 +84,10 @@ export function defaultDecision(segment: Segment): SegmentDecision {
       requirement = skill || years || !isBlurb(segment.text);
       break;
     case 'responsibilities':
-      requirement = skill;
+      requirement = skill && !segment.duty;
       break;
     case 'unknown':
-      requirement = (skill || years) && !isBlurb(segment.text);
+      requirement = (skill || years || REQUIREMENT_VOICE.test(straightQuotes(segment.text))) && !isBlurb(segment.text);
       break;
     default:
       requirement = false;

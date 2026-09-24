@@ -326,6 +326,108 @@ describe('header lexicon', () => {
   });
 });
 
+describe('2g rules: headers, content overrides, voice, duties', () => {
+  const sectionOf = (jd: string, text: string) => find(jd, text)?.section;
+  const kept = (jd: string) =>
+    analyzeWithoutModel(jd, FIXTURE_NOW).requirements.map((r) => [r.text, r.priority]);
+
+  it('reads fit-check headers as the requirement list', () => {
+    for (const h of [
+      'You might thrive in this job if you…',
+      "You'll thrive here if you",
+      "You're a great fit if",
+      'What you should have',
+      "The skill set you'll bring",
+      'This role is for you if',
+    ]) {
+      expect(classifyHeader(h), h).toBe('requirements');
+    }
+    expect(classifyHeader('You might also have')).toBe('preferred');
+  });
+
+  it('reads outcomes, pitches, employer tech lists as never-requirements', () => {
+    for (const h of ['What success looks like', 'Your first 90 days', 'In your first year', 'Why Acme?', 'Why this role', 'Engineering at Acme', 'Key technologies include:', 'Our tech stack includes', 'Tools we use']) {
+      expect(classifyHeader(h), h).toBe('about');
+    }
+    expect(classifyHeader("Why you'll love working here")).toBe('benefits');
+    // A bare "Tech stack" may lead in skills the candidate needs.
+    expect(classifyHeader('Tech stack')).toBeUndefined();
+    expect(classifyHeader('Our tools')).toBeUndefined();
+  });
+
+  it('moves office, eligibility, application and pay lines to benefits', () => {
+    const jd = [
+      'Requirements:',
+      '- Able to work in person at our Austin office',
+      '- Must be authorized to work in the US without sponsorship',
+      '- Please include a cover letter and writing samples',
+      '- Starting salary is based on location and level',
+      '- Strong SQL skills',
+    ].join('\n');
+    expect(segmentJd(jd).segments.map((x) => x.section)).toEqual(['benefits', 'benefits', 'benefits', 'benefits', 'requirements']);
+    expect(kept(jd)).toEqual([['Strong SQL skills', 'must']]);
+  });
+
+  it('a sentence describing the person wanted is a requirement under a role summary', () => {
+    const jd = [
+      'About the role',
+      "We're hiring a Staff Engineer to lead our billing platform.",
+      "We're looking for engineers who enjoy untangling hard problems.",
+      "You'll excel in this role if you've shipped products end to end.",
+      'You are responsible for the billing service.',
+      "You'll work with our finance team.",
+      'Requirements:',
+      '- Clear writing',
+    ].join('\n');
+    expect(sectionOf(jd, "We're looking for engineers who enjoy untangling hard problems.")).toBe('requirements');
+    expect(sectionOf(jd, "You'll excel in this role if you've shipped products end to end.")).toBe('requirements');
+    expect(sectionOf(jd, "We're hiring a Staff Engineer to lead our billing platform.")).toBe('responsibilities');
+    expect(sectionOf(jd, 'You are responsible for the billing service.')).toBe('responsibilities');
+    expect(kept(jd).map(([t]) => t)).toEqual([
+      "We're looking for engineers who enjoy untangling hard problems.",
+      "You'll excel in this role if you've shipped products end to end.",
+      'Clear writing',
+    ]);
+  });
+
+  it('with no header, the person described is kept as a nice-to-have (no coverage)', () => {
+    const report = analyzeWithoutModel('Founding Engineer\nYou care deeply about craft. You will meet our customers.', FIXTURE_NOW);
+    expect(report.requirements.map((r) => [r.text, r.priority])).toEqual([['You care deeply about craft.', 'nice']]);
+    expect(report.coverage).toBeNull();
+  });
+
+  it('a company describing itself is a blurb, a priority cue is not', () => {
+    expect(isBlurb('Acme Health is building the future of clinics with machine learning.')).toBe(true);
+    expect(isBlurb('Acme is a small team in Denver.')).toBe(true);
+    expect(isBlurb('Kubernetes is a must')).toBe(false);
+    expect(isBlurb('Rust is a plus')).toBe(false);
+    expect(isBlurb('You are a clear writer')).toBe(false);
+  });
+
+  it('drops role-pitch prose and restated duties when the JD lists requirements', () => {
+    const jd = [
+      "What you'll do",
+      'The scope is broad: some weeks you tune Kafka, others you build React screens.',
+      '- Build event pipelines on Kafka',
+      '- Own our Terraform modules',
+      'Requirements:',
+      '- Experience with Kafka',
+    ].join('\n');
+    const s = segmentJd(jd);
+    expect(s.segments.map((x) => x.duty)).toEqual(['summary', 'restated', undefined, undefined]);
+    expect(kept(jd)).toEqual([
+      ['Own our Terraform modules', 'nice'],
+      ['Experience with Kafka', 'must'],
+    ]);
+  });
+
+  it('keeps duties that name a skill when the JD lists no requirements', () => {
+    const jd = "What you'll do\nThe scope is broad: you tune Kafka.\n- Build event pipelines on Kafka";
+    expect(segmentJd(jd).segments.map((x) => x.duty)).toEqual([undefined, undefined]);
+    expect(kept(jd).map(([t]) => t)).toEqual(['The scope is broad: you tune Kafka.', 'Build event pipelines on Kafka']);
+  });
+});
+
 describe('priority', () => {
   it('comes from the header: requirements → must, preferred → nice, others → null', () => {
     const s = segmentJd(
@@ -768,9 +870,9 @@ const BASELINE: Readonly<Record<string, readonly [number, number, number, number
   'ai-platform': [10, 10, 10, 10, 10],
   'poor-match-backend': [8, 8, 8, 8, 8],
   'non-engineering-marketing': [7, 7, 7, 7, 7],
-  'prose-only-startup': [2, 5, 2, 2, 0],
+  'prose-only-startup': [3, 5, 3, 3, 1],
   'responsibilities-tech': [10, 10, 10, 10, 10],
-  'boilerplate-payments': [8, 10, 8, 8, 8],
+  'boilerplate-payments': [9, 10, 9, 9, 9],
 };
 
 describe('no-model baseline vs the hand labels', () => {

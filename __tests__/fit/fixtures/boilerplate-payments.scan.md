@@ -15,8 +15,14 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 
 ## Nice-to-have
 
-- **Gap**: Improve reliability and observability of our Java and Kotlin services
-  Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM).
+- **Strong**: Design and build payment APIs used by thousands of merchants
+  Evidence: Pattern system of pure functions (r3f-projectiles), GolfTV GraphQL API on AWS (IBM), Variant-driven animation primitives (roblox-css).
+  - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
+  - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - Variant-driven animation primitives (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)
+- **Strong**: Mentor engineers and lead technical design reviews
+  Evidence: Mentored ~12 engineers (Indeed).
+  - Mentored ~12 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Familiarity with GraphQL
   Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM).
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)

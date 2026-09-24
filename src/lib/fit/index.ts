@@ -38,7 +38,11 @@ export {
 export { detectSkills, SCAN_DISCLAIMER, SCAN_SHADOW_TERMS, SCAN_STOP_TERMS, termPattern } from './scan';
 export {
   analyzeText,
+  APPLICATION_NOTE,
   BOILERPLATE,
+  LOGISTICS,
+  PAY_NOTE,
+  REQUIREMENT_VOICE,
   classifyHeader,
   findRole,
   HEADER_LEXICON,
@@ -52,7 +56,7 @@ export {
   selectCandidates,
   splitSentences,
 } from './segment';
-export { capRequirements, COMPANY_VOICE, defaultDecision, isBlurb, mergeDecisions, mergeOne } from './merge';
+export { capRequirements, COMPANY_VOICE, defaultDecision, DESCRIPTION, isBlurb, mergeDecisions, mergeOne } from './merge';
 export { analyzeWithDecisions, analyzeWithoutModel, reportCoverage } from './analyze';
 export {
   MAX_PROPOSALS,

@@ -124,6 +124,48 @@ describe('detectSkills: false positives', () => {
   });
 });
 
+describe('detectSkills: word forms (plan 2g)', () => {
+  it.each([
+    ['You mentored two junior engineers', 'mentoring'],
+    ['Mentor new hires', 'mentoring'],
+    ['Build and version public APIs', 'api-design'],
+    ['Design a REST API for partners', 'api-design'],
+    ['RESTful services', 'api-design'],
+    ['Build gRPC APIs', 'api-design'],
+    ['Migrate the app from Vue to React', 'codebase-migrations'],
+    ['You have migrated a large codebase', 'codebase-migrations'],
+    ['Led the migration to TypeScript', 'codebase-migrations'],
+    ['Comfortable working across the stack', 'full-stack'],
+    ['Opinions on testing strategy', 'automated-testing'],
+    ['Write unit tests and integration tests', 'automated-testing'],
+    ['Leading projects end to end', 'tech-leadership'],
+    ['Work with cross-functional partners', 'cross-functional-collaboration'],
+    ['Daily use of Copilot or Claude Code', 'ai-assisted-development'],
+    ['Built agentic systems in production', 'agentic-workflows'],
+    ['Games industry background', 'game-development'],
+  ])('%s → %s', (text, id) => {
+    expect(ids(text)).toContain(id);
+  });
+
+  it.each([
+    // Someone else's API being used, not API design.
+    ['Experience calling the OpenAI API', 'api-design'],
+    ['Integrate the Stripe APIs', 'api-design'],
+    ['Rotate API keys safely', 'api-design'],
+    ['OpenAI and Anthropic models', 'api-design'],
+    // Moving records is not a codebase migration.
+    ['Data migration of customer records in a CRM', 'codebase-migrations'],
+    ['Migrate customer accounts to the new plan', 'codebase-migrations'],
+    ['Database migrations', 'codebase-migrations'],
+    // Near-misses of the new aliases.
+    ['A mentorship-free zone', 'tech-leadership'],
+    ['Stack Overflow answers', 'full-stack'],
+    ['A tech lead will guide you', 'mentoring'],
+  ])('%s ↛ %s', (text, id) => {
+    expect(ids(text)).not.toContain(id);
+  });
+});
+
 describe('detectSkills: order and dedupe', () => {
   it('lists each skill once, in order of first mention', () => {
     expect(ids('Kubernetes, then React, then Kubernetes again and React.')).toEqual(['kubernetes', 'react']);
