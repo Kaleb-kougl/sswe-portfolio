@@ -1,0 +1,4 @@
+/* Applied only while toHaveScreenshot captures (stylePath). See screenshots.spec.ts. */
+canvas {
+  visibility: hidden !important;
+}

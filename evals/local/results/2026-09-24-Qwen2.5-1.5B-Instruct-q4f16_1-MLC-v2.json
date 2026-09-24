@@ -1,0 +1,3625 @@
+{
+  "model": "Qwen2.5-1.5B-Instruct-q4f16_1-MLC-v2",
+  "strategy": "v2",
+  "date": "2026-09-24",
+  "cases_set": "fixtures",
+  "downloadBytes": 868547584,
+  "load": {
+    "fromCache": true,
+    "elapsedMs": 1736.1999998092651,
+    "modelId": "Qwen2.5-1.5B-Instruct-q4f16_1-MLC"
+  },
+  "cases": [
+    {
+      "fixture": "frontend-senior",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.5369777838354519,
+          "ms": 123.19999980926514,
+          "promptTokens": 102
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.5559543306394411,
+          "ms": 122.69999980926514,
+          "promptTokens": 100
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.8589901628882458,
+          "ms": 105.30000019073486,
+          "promptTokens": 92
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.958331315302246,
+          "ms": 106,
+          "promptTokens": 96
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.7544795657012555,
+          "ms": 104.7999997138977,
+          "promptTokens": 92
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.8429629687169938,
+          "ms": 105,
+          "promptTokens": 93
+        },
+        {
+          "index": 5,
+          "kind": "skill",
+          "skill": "automated-testing",
+          "pYes": 0.5339342516728887,
+          "ms": 98.30000019073486,
+          "promptTokens": 76
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.8646619527433583,
+          "ms": 104.59999990463257,
+          "promptTokens": 93
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.8273471401473116,
+          "ms": 103.59999990463257,
+          "promptTokens": 86
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.15899923847501485,
+          "ms": 104.59999990463257,
+          "promptTokens": 91
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.14353613642079585,
+          "ms": 104.2000002861023,
+          "promptTokens": 91
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.07438326128310209,
+          "ms": 103.2000002861023,
+          "promptTokens": 86
+        },
+        {
+          "index": 10,
+          "kind": "requirement",
+          "pYes": 0.19262529158441216,
+          "ms": 104.80000019073486,
+          "promptTokens": 90
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 353.2999997138977,
+        "totalMs": 1394.2999997138977,
+        "tokensPerSecond": null,
+        "promptTokens": 1188,
+        "completionTokens": 13,
+        "questionsAsked": 13,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 104.7999997138977,
+          "max": 123.19999980926514
+        },
+        "questionPromptTokens": 92,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 11,
+        "decidedByModel": 11,
+        "firstDecisionMs": 247.59999990463257
+      },
+      "run": {
+        "report": {
+          "role": "Senior Frontend Engineer",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "5+ years building production React and TypeScript applications",
+              "priority": "must",
+              "skills": [
+                "react",
+                "typescript"
+              ],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [
+                "roblox-css.parsers",
+                "indeed-swe-ii.wcag-components",
+                "analytics-extension.troubleshooting-time"
+              ],
+              "note": "Evidence: Hand-written CSS value parsers (roblox-css), WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Deep knowledge of web accessibility (WCAG 2.1 AA)",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "Experience improving Core Web Vitals and frontend performance",
+              "priority": "must",
+              "skills": [
+                "core-web-vitals",
+                "web-performance"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.apply-flow-tti",
+                "ibm-staff-swe.ibm-developer-react",
+                "ibm-staff-swe.bundle-size"
+              ],
+              "note": "Evidence: 15% faster TTI for 680M+ users (Indeed), IBM Developer rebuild for SEO and vitals (IBM), Bundle cut from 6 MB to 300 KB (IBM)."
+            },
+            {
+              "text": "Built or maintained a design system or shared component library",
+              "priority": "must",
+              "skills": [
+                "design-systems",
+                "component-libraries"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "Strong testing habits (Jest, React Testing Library)",
+              "priority": "must",
+              "skills": [
+                "jest"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "jbhunt-intern.react-native"
+              ],
+              "note": "Evidence: React Native features with Jest and Appium (J.B. Hunt)."
+            },
+            {
+              "text": "Excellent written communication",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Micro-frontends or Module Federation",
+              "priority": "nice",
+              "skills": [
+                "micro-frontends",
+                "module-federation"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "Next.js and server-side rendering",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "GraphQL",
+              "priority": "nice",
+              "skills": [
+                "graphql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Mentoring other engineers",
+              "priority": "nice",
+              "skills": [
+                "mentoring"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.mentoring"
+              ],
+              "note": "Evidence: Mentored ~12 engineers (Indeed)."
+            }
+          ],
+          "coverage": {
+            "covered": 4.5,
+            "mustHaves": 5
+          }
+        },
+        "stats": {
+          "firstRowMs": 123,
+          "totalMs": 429.7000002861023,
+          "tokensPerSecond": null,
+          "promptTokens": 355,
+          "completionTokens": 4,
+          "questionsAsked": 4,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 103.54999995231628,
+            "max": 122.30000019073486
+          },
+          "questionPromptTokens": 88.5,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 11,
+          "decidedByModel": 4,
+          "firstDecisionMs": 122.80000019073486
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.5369777838354519,
+            "ms": 122.30000019073486,
+            "promptTokens": 102
+          },
+          {
+            "index": 5,
+            "kind": "skill",
+            "skill": "automated-testing",
+            "pYes": 0.5339342516728887,
+            "ms": 98.2000002861023,
+            "promptTokens": 76
+          },
+          {
+            "index": 6,
+            "kind": "requirement",
+            "pYes": 0.8273471401473116,
+            "ms": 103,
+            "promptTokens": 86
+          },
+          {
+            "index": 8,
+            "kind": "requirement",
+            "pYes": 0.14353613642079585,
+            "ms": 104.09999990463257,
+            "promptTokens": 91
+          }
+        ],
+        "wallMs": 429.7000002861023,
+        "rowTimesMs": [
+          123,
+          123,
+          123,
+          123,
+          222,
+          325,
+          325,
+          429,
+          429,
+          429
+        ]
+      },
+      "score": {
+        "fixture": "frontend-senior",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 4.5,
+          "mustHaves": 5
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 5
+        },
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "fullstack-senior",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "skill",
+          "skill": "full-stack",
+          "pYes": 0.6500619625190527,
+          "ms": 103.40000009536743,
+          "promptTokens": 88
+        },
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.5246698562534197,
+          "ms": 122.69999980926514,
+          "promptTokens": 104
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.4824579639289365,
+          "ms": 122.09999990463257,
+          "promptTokens": 102
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.7788514891370022,
+          "ms": 104.39999961853027,
+          "promptTokens": 91
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.8076764607038079,
+          "ms": 104,
+          "promptTokens": 90
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.7061013142916356,
+          "ms": 103.19999980926514,
+          "promptTokens": 87
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.7403233351293115,
+          "ms": 104.2999997138977,
+          "promptTokens": 90
+        },
+        {
+          "index": 5,
+          "kind": "skill",
+          "skill": "api-design",
+          "pYes": 0.9352845619496991,
+          "ms": 97.80000019073486,
+          "promptTokens": 74
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.6774924171357541,
+          "ms": 103.7999997138977,
+          "promptTokens": 89
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.5044558916601513,
+          "ms": 104.09999990463257,
+          "promptTokens": 90
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.5760978815057537,
+          "ms": 104.10000038146973,
+          "promptTokens": 90
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.14827860014632446,
+          "ms": 103.19999980926514,
+          "promptTokens": 89
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.12066407758632297,
+          "ms": 103.80000019073486,
+          "promptTokens": 89
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 349.69999980926514,
+        "totalMs": 1384.5999999046326,
+        "tokensPerSecond": null,
+        "promptTokens": 1173,
+        "completionTokens": 13,
+        "questionsAsked": 13,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 104,
+          "max": 122.69999980926514
+        },
+        "questionPromptTokens": 90,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 1
+        },
+        "strategy": "v2",
+        "candidates": 10,
+        "decidedByModel": 10,
+        "firstDecisionMs": 349.69999980926514
+      },
+      "run": {
+        "report": {
+          "role": "Senior Full Stack Engineer",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "You'll build features end to end across our Node.js services and React frontend.",
+              "priority": "nice",
+              "skills": [
+                "node-js",
+                "react"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components",
+                "ibm-staff-swe.video-upload-pipeline",
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed), Node.js video upload pipeline (IBM), IBM Developer rebuild for SEO and vitals (IBM)."
+            },
+            {
+              "text": "6+ years of professional software engineering experience",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": 6,
+              "verdict": "strong",
+              "evidenceIds": [],
+              "note": "8 years in software since 2018, including an internship (2026 − 2018), meets the 6 asked."
+            },
+            {
+              "text": "Node.js and TypeScript on the backend",
+              "priority": "must",
+              "skills": [
+                "node-js",
+                "typescript"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "ibm-staff-swe.video-upload-pipeline",
+                "r3f-projectiles.pattern-system"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles)."
+            },
+            {
+              "text": "React on the frontend",
+              "priority": "must",
+              "skills": [
+                "react"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components",
+                "ibm-staff-swe.ibm-developer-react",
+                "analytics-extension.single-click"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed), IBM Developer rebuild for SEO and vitals (IBM), Full-stack single-click workflow (Indeed Analytics Extension)."
+            },
+            {
+              "text": "PostgreSQL schema design and query tuning",
+              "priority": "must",
+              "skills": [
+                "postgresql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "Designing REST and GraphQL APIs",
+              "priority": "must",
+              "skills": [
+                "graphql",
+                "api-design"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-swe.golftv-graphql",
+                "indeed-sr-swe.onehost-architecture",
+                "r3f-projectiles.pattern-system"
+              ],
+              "note": "Evidence: GolfTV GraphQL API on AWS (IBM), Co-architected OneHost, led 6 engineers (Indeed), Pattern system of pure functions (r3f-projectiles)."
+            },
+            {
+              "text": "Shipping on AWS with CI/CD",
+              "priority": "must",
+              "skills": [
+                "aws",
+                "ci-cd"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Comfortable owning an on-call rotation",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Microservices at scale",
+              "priority": "nice",
+              "skills": [
+                "microservices"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "analytics-extension.stateless-bridge"
+              ],
+              "note": "Evidence: Stateless bridge to microservices (Indeed Analytics Extension)."
+            },
+            {
+              "text": "Docker and Kubernetes",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Docker",
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            }
+          ],
+          "coverage": {
+            "covered": 5,
+            "mustHaves": 6
+          }
+        },
+        "stats": {
+          "firstRowMs": 348.59999990463257,
+          "totalMs": 551.5999999046326,
+          "tokensPerSecond": null,
+          "promptTokens": 458,
+          "completionTokens": 5,
+          "questionsAsked": 5,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 104.10000038146973,
+            "max": 122.2000002861023
+          },
+          "questionPromptTokens": 90,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 1
+          },
+          "strategy": "v2",
+          "candidates": 10,
+          "decidedByModel": 3,
+          "firstDecisionMs": 348.5
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "api-design"
+            ]
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "skill",
+            "skill": "full-stack",
+            "pYes": 0.6500619625190527,
+            "ms": 103.30000019073486,
+            "promptTokens": 88
+          },
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.5246698562534197,
+            "ms": 122.19999980926514,
+            "promptTokens": 104
+          },
+          {
+            "index": 0,
+            "kind": "priority",
+            "pYes": 0.4824579639289365,
+            "ms": 122.2000002861023,
+            "promptTokens": 102
+          },
+          {
+            "index": 5,
+            "kind": "skill",
+            "skill": "api-design",
+            "pYes": 0.9352845619496991,
+            "ms": 97.40000009536743,
+            "promptTokens": 74
+          },
+          {
+            "index": 7,
+            "kind": "requirement",
+            "pYes": 0.5760978815057537,
+            "ms": 104.10000038146973,
+            "promptTokens": 90
+          }
+        ],
+        "wallMs": 551.9000000953674,
+        "rowTimesMs": [
+          349,
+          349,
+          349,
+          349,
+          349,
+          447,
+          447,
+          551,
+          551,
+          551
+        ]
+      },
+      "score": {
+        "fixture": "fullstack-senior",
+        "candidates": 10,
+        "keep": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 1,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 1,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 1,
+          "total": 2
+        },
+        "rowAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 10,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "ai-platform",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.39134643582041084,
+          "ms": 122.40000009536743,
+          "promptTokens": 104
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.4929546329096387,
+          "ms": 121.7999997138977,
+          "promptTokens": 102
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.7332884692309853,
+          "ms": 103.40000009536743,
+          "promptTokens": 89
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.6044644216070117,
+          "ms": 103.60000038146973,
+          "promptTokens": 90
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.7803568618964604,
+          "ms": 104.59999990463257,
+          "promptTokens": 93
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.7695964328437184,
+          "ms": 104.90000009536743,
+          "promptTokens": 94
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.8780960639244805,
+          "ms": 99.7999997138977,
+          "promptTokens": 84
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.5825860544282726,
+          "ms": 103.5,
+          "promptTokens": 88
+        },
+        {
+          "index": 7,
+          "kind": "skill",
+          "skill": "ai-platform",
+          "pYes": 0.6995147175660097,
+          "ms": 98.5,
+          "promptTokens": 77
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.7012443797167985,
+          "ms": 104.59999990463257,
+          "promptTokens": 93
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.11499461743304672,
+          "ms": 103.39999961853027,
+          "promptTokens": 87
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.23131719791468797,
+          "ms": 103.19999980926514,
+          "promptTokens": 89
+        },
+        {
+          "index": 10,
+          "kind": "requirement",
+          "pYes": 0.13581019152039261,
+          "ms": 104.09999990463257,
+          "promptTokens": 91
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 349.19999980926514,
+        "totalMs": 1381.5,
+        "tokensPerSecond": null,
+        "promptTokens": 1181,
+        "completionTokens": 13,
+        "questionsAsked": 13,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 103.60000038146973,
+          "max": 122.40000009536743
+        },
+        "questionPromptTokens": 90,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 11,
+        "decidedByModel": 11,
+        "firstDecisionMs": 245.7999997138977
+      },
+      "run": {
+        "report": {
+          "role": "Senior Software Engineer, AI Platform",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "5+ years of software engineering",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [],
+              "note": "8 years in software since 2018, including an internship (2026 − 2018), meets the 5 asked."
+            },
+            {
+              "text": "Built production applications on large language models",
+              "priority": "must",
+              "skills": [
+                "genai"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "video-pipeline.orchestrator",
+                "video-pipeline.structured-output"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Agentic workflows: tool use, multi-step agents",
+              "priority": "must",
+              "skills": [
+                "agentic-workflows"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "video-pipeline.orchestrator",
+                "video-pipeline.quality-gates"
+              ],
+              "note": "Evidence: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator), Scored quality-gate validators (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Structured outputs, evals and guardrails for model quality",
+              "priority": "must",
+              "skills": [
+                "structured-output",
+                "output-validation"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "video-pipeline.structured-output",
+                "video-pipeline.quality-gates"
+              ],
+              "note": "Evidence: Model output bound to a Pydantic schema (Agentic AI Video Creator), Scored quality-gate validators (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Python",
+              "priority": "must",
+              "skills": [
+                "python"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "video-pipeline.tests",
+                "video-pipeline.orchestrator"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), 149 passing tests (Agentic AI Video Creator)."
+            },
+            {
+              "text": "RAG and vector databases",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "RAG",
+                "Vector databases"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Exposing AI capabilities through a gateway or internal platform",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "TypeScript",
+              "priority": "nice",
+              "skills": [
+                "typescript"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "r3f-projectiles.pattern-system",
+                "r3f-projectiles.engine"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Pattern system of pure functions (r3f-projectiles), GPU-instanced projectile engine on npm (r3f-projectiles)."
+            },
+            {
+              "text": "Model fine-tuning",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Model fine-tuning"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Model Context Protocol (MCP)",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            }
+          ],
+          "coverage": {
+            "covered": 5,
+            "mustHaves": 6
+          }
+        },
+        "stats": {
+          "firstRowMs": 122.80000019073486,
+          "totalMs": 433.5,
+          "tokensPerSecond": null,
+          "promptTokens": 365,
+          "completionTokens": 4,
+          "questionsAsked": 4,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 104.95000004768372,
+            "max": 122
+          },
+          "questionPromptTokens": 92,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 11,
+          "decidedByModel": 3,
+          "firstDecisionMs": 122.7000002861023
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.39134643582041084,
+            "ms": 122,
+            "promptTokens": 104
+          },
+          {
+            "index": 7,
+            "kind": "skill",
+            "skill": "ai-platform",
+            "pYes": 0.6995147175660097,
+            "ms": 99.40000009536743,
+            "promptTokens": 77
+          },
+          {
+            "index": 7,
+            "kind": "requirement",
+            "pYes": 0.7012443797167985,
+            "ms": 105.40000009536743,
+            "promptTokens": 93
+          },
+          {
+            "index": 10,
+            "kind": "requirement",
+            "pYes": 0.13581019152039261,
+            "ms": 104.5,
+            "promptTokens": 91
+          }
+        ],
+        "wallMs": 433.6000003814697,
+        "rowTimesMs": [
+          123,
+          123,
+          123,
+          123,
+          123,
+          123,
+          328,
+          329,
+          329,
+          433
+        ]
+      },
+      "score": {
+        "fixture": "ai-platform",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "idealCoverage": {
+          "covered": 5.5,
+          "mustHaves": 7
+        },
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "poor-match-backend",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.31962850226529343,
+          "ms": 122.69999980926514,
+          "promptTokens": 99
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.4044855455227857,
+          "ms": 121.59999990463257,
+          "promptTokens": 97
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.6827315287583707,
+          "ms": 109.5,
+          "promptTokens": 91
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.8067079210787198,
+          "ms": 103,
+          "promptTokens": 88
+        },
+        {
+          "index": 3,
+          "kind": "skill",
+          "skill": "system-design",
+          "pYes": 0.7489636842408277,
+          "ms": 97.5,
+          "promptTokens": 73
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.6838384721794606,
+          "ms": 103.7999997138977,
+          "promptTokens": 90
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.35708974784101,
+          "ms": 104,
+          "promptTokens": 90
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.6375053334852369,
+          "ms": 99.59999990463257,
+          "promptTokens": 85
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.7998515599120322,
+          "ms": 104.2999997138977,
+          "promptTokens": 92
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.12508191422312057,
+          "ms": 103,
+          "promptTokens": 87
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.13092682078041085,
+          "ms": 103.80000019073486,
+          "promptTokens": 88
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 354.80000019073486,
+        "totalMs": 1175.5,
+        "tokensPerSecond": null,
+        "promptTokens": 980,
+        "completionTokens": 11,
+        "questionsAsked": 11,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 103.80000019073486,
+          "max": 122.69999980926514
+        },
+        "questionPromptTokens": 90,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 9,
+        "decidedByModel": 9,
+        "firstDecisionMs": 245.10000038146973
+      },
+      "run": {
+        "report": {
+          "role": "Backend Engineer, Infrastructure (Go / Kubernetes)",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "5+ years writing production services in Go",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Go"
+              ],
+              "minYears": 5,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Operating Kubernetes clusters in production",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "Distributed systems and microservice design",
+              "priority": "must",
+              "skills": [
+                "microservices"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "analytics-extension.stateless-bridge"
+              ],
+              "note": "Evidence: Stateless bridge to microservices (Indeed Analytics Extension)."
+            },
+            {
+              "text": "Kafka or another event streaming platform",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Kafka"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "PostgreSQL",
+              "priority": "must",
+              "skills": [
+                "postgresql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "Willingness to join the on-call rotation",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "gRPC",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "gRPC"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Terraform",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Terraform"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            }
+          ],
+          "coverage": {
+            "covered": 0.5,
+            "mustHaves": 5
+          }
+        },
+        "stats": {
+          "firstRowMs": 121.90000009536743,
+          "totalMs": 325.19999980926514,
+          "tokensPerSecond": null,
+          "promptTokens": 264,
+          "completionTokens": 3,
+          "questionsAsked": 3,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 104.5,
+            "max": 121.19999980926514
+          },
+          "questionPromptTokens": 92,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 9,
+          "decidedByModel": 3,
+          "firstDecisionMs": 121.59999990463257
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.31962850226529343,
+            "ms": 121.19999980926514,
+            "promptTokens": 99
+          },
+          {
+            "index": 3,
+            "kind": "skill",
+            "skill": "system-design",
+            "pYes": 0.7489636842408277,
+            "ms": 98,
+            "promptTokens": 73
+          },
+          {
+            "index": 6,
+            "kind": "requirement",
+            "pYes": 0.7998515599120322,
+            "ms": 104.5,
+            "promptTokens": 92
+          }
+        ],
+        "wallMs": 325.40000009536743,
+        "rowTimesMs": [
+          122,
+          122,
+          220,
+          220,
+          220,
+          325,
+          325,
+          325
+        ]
+      },
+      "score": {
+        "fixture": "poor-match-backend",
+        "candidates": 9,
+        "keep": {
+          "correct": 9,
+          "total": 9
+        },
+        "keptLabelled": {
+          "correct": 8,
+          "total": 8
+        },
+        "keptPrecision": {
+          "correct": 8,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 8
+        },
+        "verdictAgreement": {
+          "correct": 7,
+          "total": 8
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 8,
+          "total": 8
+        },
+        "coverage": {
+          "covered": 0.5,
+          "mustHaves": 5
+        },
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 5
+        },
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "non-engineering-marketing",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.6024586174369352,
+          "ms": 122.80000019073486,
+          "promptTokens": 97
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.7953814908357196,
+          "ms": 104.40000009536743,
+          "promptTokens": 95
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.7823498422255197,
+          "ms": 104.40000009536743,
+          "promptTokens": 92
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.7794527152473684,
+          "ms": 103.59999990463257,
+          "promptTokens": 88
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.2803164144367182,
+          "ms": 99.7999997138977,
+          "promptTokens": 85
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.6631519767484756,
+          "ms": 103.30000019073486,
+          "promptTokens": 88
+        },
+        {
+          "index": 5,
+          "kind": "skill",
+          "skill": "automated-testing",
+          "pYes": 0.37591286930411555,
+          "ms": 97.30000019073486,
+          "promptTokens": 71
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.583899151270251,
+          "ms": 104.5,
+          "promptTokens": 88
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.6437434049097603,
+          "ms": 103.7000002861023,
+          "promptTokens": 86
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.33715978525232393,
+          "ms": 105.5,
+          "promptTokens": 93
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 332.59999990463257,
+        "totalMs": 1051.5,
+        "tokensPerSecond": null,
+        "promptTokens": 883,
+        "completionTokens": 10,
+        "questionsAsked": 10,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 104.05000019073486,
+          "max": 122.80000019073486
+        },
+        "questionPromptTokens": 88,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 8,
+        "decidedByModel": 8,
+        "firstDecisionMs": 228.09999990463257
+      },
+      "run": {
+        "report": {
+          "role": "Senior Content Marketing Manager",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "5+ years in B2B content marketing",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "SEO strategy and keyword research",
+              "priority": "must",
+              "skills": [
+                "seo"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: IBM Developer rebuild for SEO and vitals (IBM)."
+            },
+            {
+              "text": "HubSpot",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Google Analytics and campaign reporting",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "A/B testing landing pages",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Exceptional storytelling",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Stakeholder management across Sales and Product",
+              "priority": "nice",
+              "skills": [
+                "cross-functional-collaboration"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "indeed-sr-swe.frontend-slos"
+              ],
+              "note": "Evidence: Frontend SLOs with SRE and Product (Indeed)."
+            }
+          ],
+          "coverage": null
+        },
+        "stats": {
+          "firstRowMs": 228,
+          "totalMs": 737.4000000953674,
+          "tokensPerSecond": null,
+          "promptTokens": 607,
+          "completionTokens": 7,
+          "questionsAsked": 7,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 103.7000002861023,
+            "max": 122.7000002861023
+          },
+          "questionPromptTokens": 88,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 8,
+          "decidedByModel": 6,
+          "firstDecisionMs": 123.30000019073486
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.6024586174369352,
+            "ms": 122.7000002861023,
+            "promptTokens": 97
+          },
+          {
+            "index": 1,
+            "kind": "requirement",
+            "pYes": 0.7823498422255197,
+            "ms": 104.59999990463257,
+            "promptTokens": 92
+          },
+          {
+            "index": 3,
+            "kind": "requirement",
+            "pYes": 0.2803164144367182,
+            "ms": 100.2999997138977,
+            "promptTokens": 85
+          },
+          {
+            "index": 4,
+            "kind": "requirement",
+            "pYes": 0.6631519767484756,
+            "ms": 103.7000002861023,
+            "promptTokens": 88
+          },
+          {
+            "index": 5,
+            "kind": "skill",
+            "skill": "automated-testing",
+            "pYes": 0.37591286930411555,
+            "ms": 97.40000009536743,
+            "promptTokens": 71
+          },
+          {
+            "index": 5,
+            "kind": "requirement",
+            "pYes": 0.583899151270251,
+            "ms": 103.7999997138977,
+            "promptTokens": 88
+          },
+          {
+            "index": 6,
+            "kind": "requirement",
+            "pYes": 0.6437434049097603,
+            "ms": 103.2999997138977,
+            "promptTokens": 86
+          }
+        ],
+        "wallMs": 737.4000000953674,
+        "rowTimesMs": [
+          228,
+          228,
+          329,
+          432,
+          634,
+          737,
+          737
+        ]
+      },
+      "score": {
+        "fixture": "non-engineering-marketing",
+        "candidates": 8,
+        "keep": {
+          "correct": 8,
+          "total": 8
+        },
+        "keptLabelled": {
+          "correct": 7,
+          "total": 7
+        },
+        "keptPrecision": {
+          "correct": 7,
+          "total": 7
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 0
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 7
+        },
+        "verdictAgreement": {
+          "correct": 7,
+          "total": 7
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 7,
+          "total": 7
+        },
+        "coverage": null,
+        "idealCoverage": null,
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "prose-only-startup",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.21712042192215286,
+          "ms": 121.90000009536743,
+          "promptTokens": 102
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.2681200602865924,
+          "ms": 121.5,
+          "promptTokens": 100
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.5863842028965432,
+          "ms": 123.19999980926514,
+          "promptTokens": 107
+        },
+        {
+          "index": 1,
+          "kind": "priority",
+          "pYes": 0.6060893305940358,
+          "ms": 122.60000038146973,
+          "promptTokens": 105
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.4498340639764365,
+          "ms": 121.39999961853027,
+          "promptTokens": 100
+        },
+        {
+          "index": 2,
+          "kind": "priority",
+          "pYes": 0.554477910264295,
+          "ms": 121.10000038146973,
+          "promptTokens": 98
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.23066734301357858,
+          "ms": 122.5,
+          "promptTokens": 104
+        },
+        {
+          "index": 3,
+          "kind": "priority",
+          "pYes": 0.3997605683702062,
+          "ms": 122.09999990463257,
+          "promptTokens": 102
+        },
+        {
+          "index": 4,
+          "kind": "skill",
+          "skill": "full-stack",
+          "pYes": 0.03888464500504438,
+          "ms": 104.89999961853027,
+          "promptTokens": 94
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.5159539370954195,
+          "ms": 123.7000002861023,
+          "promptTokens": 110
+        },
+        {
+          "index": 4,
+          "kind": "priority",
+          "pYes": 0.576538450655153,
+          "ms": 123.5,
+          "promptTokens": 108
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.4052287102235109,
+          "ms": 121.40000009536743,
+          "promptTokens": 98
+        },
+        {
+          "index": 5,
+          "kind": "priority",
+          "pYes": 0.5827727972262046,
+          "ms": 104.69999980926514,
+          "promptTokens": 96
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.7770477308693073,
+          "ms": 121.40000009536743,
+          "promptTokens": 99
+        },
+        {
+          "index": 7,
+          "kind": "skill",
+          "skill": "tech-leadership",
+          "pYes": 0.3101010956106508,
+          "ms": 102.90000009536743,
+          "promptTokens": 86
+        },
+        {
+          "index": 7,
+          "kind": "skill",
+          "skill": "mentoring",
+          "pYes": 0.25210776877361835,
+          "ms": 103,
+          "promptTokens": 86
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.40298168679074486,
+          "ms": 122.69999980926514,
+          "promptTokens": 103
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.44686524411049794,
+          "ms": 122.2000002861023,
+          "promptTokens": 103
+        },
+        {
+          "index": 8,
+          "kind": "priority",
+          "pYes": 0.654927755890214,
+          "ms": 121.80000019073486,
+          "promptTokens": 101
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.2742538345488922,
+          "ms": 121.7999997138977,
+          "promptTokens": 101
+        },
+        {
+          "index": 9,
+          "kind": "priority",
+          "pYes": 0.5047921409743047,
+          "ms": 121.40000009536743,
+          "promptTokens": 99
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 1330,
+        "totalMs": 2494.300000190735,
+        "tokensPerSecond": null,
+        "promptTokens": 2102,
+        "completionTokens": 21,
+        "questionsAsked": 21,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 121.7999997138977,
+          "max": 123.7000002861023
+        },
+        "questionPromptTokens": 101,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 10,
+        "decidedByModel": 10,
+        "firstDecisionMs": 244.30000019073486
+      },
+      "run": {
+        "report": {
+          "role": "Founding Engineer at Loop Health",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "You have at least four years of experience shipping web applications in production, and you're comfortable across the stack.",
+              "priority": "nice",
+              "skills": [
+                "web-applications"
+              ],
+              "otherSkills": [],
+              "minYears": 4,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-swe.agent-portal"
+              ],
+              "note": "Evidence: Agent portal, 30% faster API response (IBM). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 4 asked."
+            },
+            {
+              "text": "You write TypeScript every day and know React well.",
+              "priority": "nice",
+              "skills": [
+                "typescript",
+                "react"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "roblox-css.parsers",
+                "indeed-swe-ii.wcag-components",
+                "analytics-extension.troubleshooting-time"
+              ],
+              "note": "Evidence: Hand-written CSS value parsers (roblox-css), WCAG across 20+ React components (Indeed), GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension)."
+            }
+          ],
+          "coverage": null
+        },
+        "stats": {
+          "firstRowMs": 843.5,
+          "totalMs": 1763.0999999046326,
+          "tokensPerSecond": null,
+          "promptTokens": 1497,
+          "completionTokens": 15,
+          "questionsAsked": 15,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 121.69999980926514,
+            "max": 126.39999961853027
+          },
+          "questionPromptTokens": 101,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 10,
+          "decidedByModel": 10,
+          "firstDecisionMs": 122.2999997138977
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.21712042192215286,
+            "ms": 121.59999990463257,
+            "promptTokens": 102
+          },
+          {
+            "index": 1,
+            "kind": "requirement",
+            "pYes": 0.5863842028965432,
+            "ms": 122.5,
+            "promptTokens": 107
+          },
+          {
+            "index": 2,
+            "kind": "requirement",
+            "pYes": 0.4498340639764365,
+            "ms": 121.7999997138977,
+            "promptTokens": 100
+          },
+          {
+            "index": 3,
+            "kind": "requirement",
+            "pYes": 0.23066734301357858,
+            "ms": 126.39999961853027,
+            "promptTokens": 104
+          },
+          {
+            "index": 4,
+            "kind": "skill",
+            "skill": "full-stack",
+            "pYes": 0.03888464500504438,
+            "ms": 104.19999980926514,
+            "promptTokens": 94
+          },
+          {
+            "index": 4,
+            "kind": "requirement",
+            "pYes": 0.5159539370954195,
+            "ms": 123.09999990463257,
+            "promptTokens": 110
+          },
+          {
+            "index": 4,
+            "kind": "priority",
+            "pYes": 0.576538450655153,
+            "ms": 122.59999990463257,
+            "promptTokens": 108
+          },
+          {
+            "index": 5,
+            "kind": "requirement",
+            "pYes": 0.4052287102235109,
+            "ms": 120.69999980926514,
+            "promptTokens": 98
+          },
+          {
+            "index": 5,
+            "kind": "priority",
+            "pYes": 0.5827727972262046,
+            "ms": 104.80000019073486,
+            "promptTokens": 96
+          },
+          {
+            "index": 6,
+            "kind": "requirement",
+            "pYes": 0.7770477308693073,
+            "ms": 121.60000038146973,
+            "promptTokens": 99
+          },
+          {
+            "index": 7,
+            "kind": "skill",
+            "skill": "tech-leadership",
+            "pYes": 0.3101010956106508,
+            "ms": 102.80000019073486,
+            "promptTokens": 86
+          },
+          {
+            "index": 7,
+            "kind": "skill",
+            "skill": "mentoring",
+            "pYes": 0.25210776877361835,
+            "ms": 102.89999961853027,
+            "promptTokens": 86
+          },
+          {
+            "index": 7,
+            "kind": "requirement",
+            "pYes": 0.40298168679074486,
+            "ms": 121.90000009536743,
+            "promptTokens": 103
+          },
+          {
+            "index": 8,
+            "kind": "requirement",
+            "pYes": 0.44686524411049794,
+            "ms": 122.30000019073486,
+            "promptTokens": 103
+          },
+          {
+            "index": 9,
+            "kind": "requirement",
+            "pYes": 0.2742538345488922,
+            "ms": 121.69999980926514,
+            "promptTokens": 101
+          }
+        ],
+        "wallMs": 1763.1999998092651,
+        "rowTimesMs": [
+          844,
+          1069
+        ]
+      },
+      "score": {
+        "fixture": "prose-only-startup",
+        "candidates": 10,
+        "keep": {
+          "correct": 7,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 2,
+          "total": 5
+        },
+        "keptPrecision": {
+          "correct": 2,
+          "total": 2
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 2
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 0,
+          "total": 5
+        },
+        "verdictAgreement": {
+          "correct": 2,
+          "total": 5
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 2,
+          "total": 5
+        },
+        "coverage": null,
+        "idealCoverage": {
+          "covered": 2,
+          "mustHaves": 2
+        },
+        "diffs": [
+          "PRIORITY nice ≠ must: You have at least four years of experience shipping web applications in producti",
+          "PRIORITY nice ≠ must: You write TypeScript every day and know React well.",
+          "DROPPED [unknown] Experience with HIPAA or healthcare data is a plus.",
+          "DROPPED [unknown] Ideally you have also run a small team or mentored junior engineers.",
+          "DROPPED [unknown] You communicate clearly in writing, because we're remote across three time zones."
+        ]
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "responsibilities-tech",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.5461408568403912,
+          "ms": 104.59999990463257,
+          "promptTokens": 95
+        },
+        {
+          "index": 1,
+          "kind": "requirement",
+          "pYes": 0.5981983327420288,
+          "ms": 121.59999990463257,
+          "promptTokens": 99
+        },
+        {
+          "index": 2,
+          "kind": "skill",
+          "skill": "codebase-migrations",
+          "pYes": 0.2824591632907427,
+          "ms": 99.7000002861023,
+          "promptTokens": 81
+        },
+        {
+          "index": 2,
+          "kind": "requirement",
+          "pYes": 0.5403144209977344,
+          "ms": 120.7999997138977,
+          "promptTokens": 97
+        },
+        {
+          "index": 3,
+          "kind": "skill",
+          "skill": "cross-functional-collaboration",
+          "pYes": 0.43346627287524725,
+          "ms": 98.89999961853027,
+          "promptTokens": 78
+        },
+        {
+          "index": 3,
+          "kind": "skill",
+          "skill": "build-systems",
+          "pYes": 0.015531020213256683,
+          "ms": 98.10000038146973,
+          "promptTokens": 77
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.5764468994589096,
+          "ms": 104.7999997138977,
+          "promptTokens": 94
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.43819412883670467,
+          "ms": 103.60000038146973,
+          "promptTokens": 89
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.7541295095653189,
+          "ms": 103.69999980926514,
+          "promptTokens": 90
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.9129255093022726,
+          "ms": 103.2000002861023,
+          "promptTokens": 88
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.9278436600690594,
+          "ms": 121,
+          "promptTokens": 97
+        },
+        {
+          "index": 8,
+          "kind": "skill",
+          "skill": "tech-leadership",
+          "pYes": 0.24762782356346646,
+          "ms": 98,
+          "promptTokens": 75
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.7302990085074627,
+          "ms": 104.19999980926514,
+          "promptTokens": 92
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.16568878911791216,
+          "ms": 104.39999961853027,
+          "promptTokens": 93
+        },
+        {
+          "index": 10,
+          "kind": "requirement",
+          "pYes": 0.11142490176035447,
+          "ms": 103,
+          "promptTokens": 87
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 105.69999980926514,
+        "totalMs": 1592.8000001907349,
+        "tokensPerSecond": null,
+        "promptTokens": 1332,
+        "completionTokens": 15,
+        "questionsAsked": 15,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 103.69999980926514,
+          "max": 121.59999990463257
+        },
+        "questionPromptTokens": 90,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 11,
+        "decidedByModel": 11,
+        "firstDecisionMs": 105.69999980926514
+      },
+      "run": {
+        "report": {
+          "role": "Platform Engineer, Developer Experience",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Build and maintain our internal CI/CD pipelines on GitHub Actions",
+              "priority": "nice",
+              "skills": [
+                "ci-cd"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "Own the Webpack and module federation setup for 30+ micro-frontends",
+              "priority": "nice",
+              "skills": [
+                "webpack",
+                "module-federation",
+                "micro-frontends"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead",
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-staff-swe.build-time"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed), Co-architected OneHost, led 6 engineers (Indeed), Halved Webpack build time (IBM)."
+            },
+            {
+              "text": "Migrate legacy services from JavaScript to TypeScript, one package at a time",
+              "priority": "nice",
+              "skills": [
+                "javascript",
+                "typescript"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "indeed-sr-swe.luxon-migration",
+                "r3f-projectiles.pattern-system"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Luxon timezone migration (Indeed), Pattern system of pure functions (r3f-projectiles)."
+            },
+            {
+              "text": "Partner with product teams to improve build times and developer productivity",
+              "priority": "nice",
+              "skills": [
+                "developer-productivity"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.ai-cycle-time",
+                "ibm-staff-swe.build-time",
+                "ibm-staff-swe.bundle-size"
+              ],
+              "note": "Evidence: 10% shorter cycle time with AI tooling (Indeed), Halved Webpack build time (IBM), Bundle cut from 6 MB to 300 KB (IBM)."
+            },
+            {
+              "text": "4+ years of software engineering experience",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": 4,
+              "verdict": "strong",
+              "evidenceIds": [],
+              "note": "8 years in software since 2018, including an internship (2026 − 2018), meets the 4 asked."
+            },
+            {
+              "text": "Strong TypeScript and Node.js",
+              "priority": "must",
+              "skills": [
+                "typescript",
+                "node-js"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "ibm-staff-swe.video-upload-pipeline",
+                "r3f-projectiles.pattern-system"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles)."
+            },
+            {
+              "text": "Experience with build tooling (Webpack, Vite, or Rollup)",
+              "priority": "must",
+              "skills": [
+                "build-systems",
+                "webpack"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-staff-swe.build-time",
+                "ibm-staff-swe.bundle-size",
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Halved Webpack build time (IBM), Bundle cut from 6 MB to 300 KB (IBM), Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "You've led a large-scale codebase migration",
+              "priority": "must",
+              "skills": [
+                "codebase-migrations"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead",
+                "indeed-sr-swe.luxon-migration",
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed), Luxon timezone migration (Indeed), IBM Developer rebuild for SEO and vitals (IBM)."
+            },
+            {
+              "text": "Bazel or Nx monorepo experience",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Kubernetes",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            }
+          ],
+          "coverage": {
+            "covered": 4,
+            "mustHaves": 4
+          }
+        },
+        "stats": {
+          "firstRowMs": 104.90000009536743,
+          "totalMs": 950.5999999046326,
+          "tokensPerSecond": null,
+          "promptTokens": 789,
+          "completionTokens": 9,
+          "questionsAsked": 9,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 104.30000019073486,
+            "max": 121.09999990463257
+          },
+          "questionPromptTokens": 93,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 11,
+          "decidedByModel": 6,
+          "firstDecisionMs": 104.80000019073486
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.5461408568403912,
+            "ms": 104.30000019073486,
+            "promptTokens": 95
+          },
+          {
+            "index": 1,
+            "kind": "requirement",
+            "pYes": 0.5981983327420288,
+            "ms": 121.09999990463257,
+            "promptTokens": 99
+          },
+          {
+            "index": 2,
+            "kind": "skill",
+            "skill": "codebase-migrations",
+            "pYes": 0.2824591632907427,
+            "ms": 98.7000002861023,
+            "promptTokens": 81
+          },
+          {
+            "index": 2,
+            "kind": "requirement",
+            "pYes": 0.5403144209977344,
+            "ms": 120.69999980926514,
+            "promptTokens": 97
+          },
+          {
+            "index": 3,
+            "kind": "skill",
+            "skill": "cross-functional-collaboration",
+            "pYes": 0.43346627287524725,
+            "ms": 98.7000002861023,
+            "promptTokens": 78
+          },
+          {
+            "index": 3,
+            "kind": "skill",
+            "skill": "build-systems",
+            "pYes": 0.015531020213256683,
+            "ms": 98.19999980926514,
+            "promptTokens": 77
+          },
+          {
+            "index": 3,
+            "kind": "requirement",
+            "pYes": 0.5764468994589096,
+            "ms": 104.7000002861023,
+            "promptTokens": 94
+          },
+          {
+            "index": 8,
+            "kind": "skill",
+            "skill": "tech-leadership",
+            "pYes": 0.24762782356346646,
+            "ms": 97.80000019073486,
+            "promptTokens": 75
+          },
+          {
+            "index": 9,
+            "kind": "requirement",
+            "pYes": 0.16568878911791216,
+            "ms": 104.5,
+            "promptTokens": 93
+          }
+        ],
+        "wallMs": 950.6999998092651,
+        "rowTimesMs": [
+          105,
+          226,
+          446,
+          748,
+          748,
+          748,
+          748,
+          846,
+          950,
+          950
+        ]
+      },
+      "score": {
+        "fixture": "responsibilities-tech",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 4,
+          "total": 4
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 10,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 4,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 4,
+          "mustHaves": 4
+        },
+        "diffs": []
+      },
+      "replayMatches": true
+    },
+    {
+      "fixture": "boilerplate-payments",
+      "allAnswers": [
+        {
+          "index": 0,
+          "kind": "requirement",
+          "pYes": 0.12457326125421504,
+          "ms": 123.90000009536743,
+          "promptTokens": 100
+        },
+        {
+          "index": 0,
+          "kind": "priority",
+          "pYes": 0.315862197782986,
+          "ms": 121,
+          "promptTokens": 98
+        },
+        {
+          "index": 3,
+          "kind": "skill",
+          "skill": "api-design",
+          "pYes": 0.7404796036644739,
+          "ms": 98.5,
+          "promptTokens": 78
+        },
+        {
+          "index": 3,
+          "kind": "requirement",
+          "pYes": 0.5264214762371565,
+          "ms": 104.69999980926514,
+          "promptTokens": 93
+        },
+        {
+          "index": 4,
+          "kind": "requirement",
+          "pYes": 0.6214503286881407,
+          "ms": 105.19999980926514,
+          "promptTokens": 95
+        },
+        {
+          "index": 5,
+          "kind": "skill",
+          "skill": "tech-leadership",
+          "pYes": 0.5702336243030104,
+          "ms": 97.7999997138977,
+          "promptTokens": 75
+        },
+        {
+          "index": 5,
+          "kind": "skill",
+          "skill": "mentoring",
+          "pYes": 0.49404001051006935,
+          "ms": 97.80000019073486,
+          "promptTokens": 75
+        },
+        {
+          "index": 5,
+          "kind": "requirement",
+          "pYes": 0.5519186738498586,
+          "ms": 104.69999980926514,
+          "promptTokens": 92
+        },
+        {
+          "index": 6,
+          "kind": "requirement",
+          "pYes": 0.8608199097812377,
+          "ms": 104.40000009536743,
+          "promptTokens": 92
+        },
+        {
+          "index": 7,
+          "kind": "requirement",
+          "pYes": 0.7586422928052471,
+          "ms": 104.39999961853027,
+          "promptTokens": 91
+        },
+        {
+          "index": 8,
+          "kind": "requirement",
+          "pYes": 0.8819463825287754,
+          "ms": 103.7999997138977,
+          "promptTokens": 89
+        },
+        {
+          "index": 9,
+          "kind": "requirement",
+          "pYes": 0.8544039361067239,
+          "ms": 103.59999990463257,
+          "promptTokens": 89
+        },
+        {
+          "index": 10,
+          "kind": "requirement",
+          "pYes": 0.9060879780161399,
+          "ms": 102.90000009536743,
+          "promptTokens": 86
+        },
+        {
+          "index": 11,
+          "kind": "requirement",
+          "pYes": 0.21959951558432636,
+          "ms": 104,
+          "promptTokens": 91
+        },
+        {
+          "index": 12,
+          "kind": "requirement",
+          "pYes": 0.17903599028827893,
+          "ms": 103.90000009536743,
+          "promptTokens": 90
+        }
+      ],
+      "allStats": {
+        "firstRowMs": 562.1000003814697,
+        "totalMs": 1590.8000001907349,
+        "tokensPerSecond": null,
+        "promptTokens": 1334,
+        "completionTokens": 15,
+        "questionsAsked": 15,
+        "unanswered": 0,
+        "questionMs": {
+          "median": 104,
+          "max": 123.90000009536743
+        },
+        "questionPromptTokens": 91,
+        "overrides": {
+          "keep": 0,
+          "drop": 0,
+          "priority": 0,
+          "skills": 0
+        },
+        "strategy": "v2",
+        "candidates": 11,
+        "decidedByModel": 11,
+        "firstDecisionMs": 253.10000038146973
+      },
+      "run": {
+        "report": {
+          "role": "Senior Software Engineer - Payments",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Improve reliability and observability of our Java and Kotlin services",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Java",
+                "Kotlin"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Bachelor's degree in Computer Science or equivalent experience",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "5–8 years of backend engineering experience",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [],
+              "note": "8 years in software since 2018, including an internship (2026 − 2018), meets the 5 asked."
+            },
+            {
+              "text": "Proficiency in Java or Kotlin",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Java",
+                "Kotlin"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Experience with SQL databases and Kafka",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "SQL",
+                "Kafka"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "Excellent communication skills",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Experience in fintech or payments",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Familiarity with GraphQL",
+              "priority": "nice",
+              "skills": [
+                "graphql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM)."
+            }
+          ],
+          "coverage": {
+            "covered": 1,
+            "mustHaves": 3
+          }
+        },
+        "stats": {
+          "firstRowMs": 325.09999990463257,
+          "totalMs": 833.8000001907349,
+          "tokensPerSecond": null,
+          "promptTokens": 692,
+          "completionTokens": 8,
+          "questionsAsked": 8,
+          "unanswered": 0,
+          "questionMs": {
+            "median": 103.54999995231628,
+            "max": 120.89999961853027
+          },
+          "questionPromptTokens": 88.5,
+          "overrides": {
+            "keep": 0,
+            "drop": 0,
+            "priority": 0,
+            "skills": 0
+          },
+          "strategy": "v2",
+          "candidates": 11,
+          "decidedByModel": 7,
+          "firstDecisionMs": 121.59999990463257
+        },
+        "decisions": [
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": [
+          {
+            "index": 0,
+            "kind": "requirement",
+            "pYes": 0.12457326125421504,
+            "ms": 120.89999961853027,
+            "promptTokens": 100
+          },
+          {
+            "index": 3,
+            "kind": "skill",
+            "skill": "api-design",
+            "pYes": 0.7404796036644739,
+            "ms": 98.19999980926514,
+            "promptTokens": 78
+          },
+          {
+            "index": 4,
+            "kind": "requirement",
+            "pYes": 0.6214503286881407,
+            "ms": 104.90000009536743,
+            "promptTokens": 95
+          },
+          {
+            "index": 5,
+            "kind": "skill",
+            "skill": "tech-leadership",
+            "pYes": 0.5702336243030104,
+            "ms": 97.59999990463257,
+            "promptTokens": 75
+          },
+          {
+            "index": 5,
+            "kind": "skill",
+            "skill": "mentoring",
+            "pYes": 0.49404001051006935,
+            "ms": 98.19999980926514,
+            "promptTokens": 75
+          },
+          {
+            "index": 6,
+            "kind": "requirement",
+            "pYes": 0.8608199097812377,
+            "ms": 104.2000002861023,
+            "promptTokens": 92
+          },
+          {
+            "index": 10,
+            "kind": "requirement",
+            "pYes": 0.9060879780161399,
+            "ms": 102.89999961853027,
+            "promptTokens": 86
+          },
+          {
+            "index": 11,
+            "kind": "requirement",
+            "pYes": 0.21959951558432636,
+            "ms": 104.5,
+            "promptTokens": 91
+          }
+        ],
+        "wallMs": 833.9000000953674,
+        "rowTimesMs": [
+          325,
+          625,
+          626,
+          626,
+          626,
+          729,
+          834,
+          834
+        ]
+      },
+      "score": {
+        "fixture": "boilerplate-payments",
+        "candidates": 11,
+        "keep": {
+          "correct": 9,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 8,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 8,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 1,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 8,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 8,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 8,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 1,
+          "mustHaves": 3
+        },
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 3
+        },
+        "diffs": [
+          "DROPPED [responsibilities] Design and build payment APIs used by thousands of merchants",
+          "DROPPED [responsibilities] Mentor engineers and lead technical design reviews"
+        ]
+      },
+      "replayMatches": true
+    }
+  ],
+  "totals": {
+    "candidates": 81,
+    "keep": {
+      "correct": 76,
+      "total": 81
+    },
+    "keptLabelled": {
+      "correct": 65,
+      "total": 70
+    },
+    "keptPrecision": {
+      "correct": 65,
+      "total": 65
+    },
+    "priorityWhereCodeNull": {
+      "correct": 6,
+      "total": 8
+    },
+    "addSkillsPrecision": {
+      "correct": 1,
+      "total": 1
+    },
+    "addSkillsRecall": {
+      "correct": 1,
+      "total": 14
+    },
+    "rowAgreement": {
+      "correct": 56,
+      "total": 70
+    },
+    "verdictAgreement": {
+      "correct": 62,
+      "total": 70
+    },
+    "spuriousRows": 0,
+    "labelsMissed": 0,
+    "recallInclMissed": {
+      "correct": 65,
+      "total": 70
+    },
+    "coverageExact": {
+      "correct": 4,
+      "total": 8
+    }
+  },
+  "timing": {
+    "firstRowMs": {
+      "median": 175.5,
+      "max": 843.5
+    },
+    "firstDecisionMs": {
+      "median": 122.5,
+      "max": 348.5
+    },
+    "totalMs": {
+      "median": 644.5,
+      "max": 1763.0999999046326
+    },
+    "prefillTokPerS": {
+      "median": null,
+      "max": null
+    },
+    "decodeTokPerS": {
+      "median": null,
+      "max": null
+    },
+    "grammarMsPerToken": {
+      "median": null,
+      "max": null
+    },
+    "completionTokensPerCandidate": {
+      "median": 0.6136363636363636,
+      "max": 1.5
+    },
+    "decidedByModel": "42 of 81",
+    "questionsPerCase": {
+      "median": 6,
+      "max": 15
+    },
+    "questionMs": {
+      "median": 104.5,
+      "max": 126.39999961853027
+    },
+    "questionPromptTokens": {
+      "median": 92,
+      "max": 110
+    },
+    "overrides": {
+      "keep": 0,
+      "drop": 0,
+      "priority": 0,
+      "skills": 1
+    },
+    "replayMatches": "8 of 8"
+  }
+}

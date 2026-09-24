@@ -1,0 +1,28 @@
+/* =====================================================================
+   .process-step — one numbered step in the Process section.
+   (The dark checks list after the steps is `.pipeline-checks`.)
+
+   ORDER MATTERS: every modifier follows the rule it overrides.
+   ===================================================================== */
+
+/* --- Process step --------------------------------------------------- */
+.process-step {
+  @apply grid grid-cols-[30px_1fr] items-start gap-x-4;
+}
+
+.process-step__number {
+  @apply flex h-[30px] w-[30px] items-center justify-center rounded-pill border border-ink bg-surface font-mono text-xs font-bold leading-none text-ink;
+}
+
+/* The one highlighted step (decorative; the circle is aria-hidden). */
+.process-step__number--filled {
+  @apply bg-lime text-lime-ink;
+}
+
+.process-step__title {
+  @apply font-display text-lg leading-tight text-ink;
+}
+
+.process-step__text {
+  @apply text-[15px] leading-relaxed text-body-soft;
+}

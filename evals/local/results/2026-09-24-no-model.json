@@ -1,0 +1,487 @@
+{
+  "model": "no-model",
+  "strategy": "none",
+  "date": "2026-09-24",
+  "cases_set": "fixtures",
+  "downloadBytes": 0,
+  "cases": [
+    {
+      "fixture": "frontend-senior",
+      "score": {
+        "fixture": "frontend-senior",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 4.5,
+          "mustHaves": 5
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 5
+        },
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "fullstack-senior",
+      "score": {
+        "fixture": "fullstack-senior",
+        "candidates": 10,
+        "keep": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 1,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 2
+        },
+        "rowAgreement": {
+          "correct": 8,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 10,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "ai-platform",
+      "score": {
+        "fixture": "ai-platform",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 9,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "idealCoverage": {
+          "covered": 5.5,
+          "mustHaves": 7
+        },
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "poor-match-backend",
+      "score": {
+        "fixture": "poor-match-backend",
+        "candidates": 9,
+        "keep": {
+          "correct": 9,
+          "total": 9
+        },
+        "keptLabelled": {
+          "correct": 8,
+          "total": 8
+        },
+        "keptPrecision": {
+          "correct": 8,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 8
+        },
+        "verdictAgreement": {
+          "correct": 7,
+          "total": 8
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 8,
+          "total": 8
+        },
+        "coverage": {
+          "covered": 0.5,
+          "mustHaves": 5
+        },
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 5
+        },
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "non-engineering-marketing",
+      "score": {
+        "fixture": "non-engineering-marketing",
+        "candidates": 8,
+        "keep": {
+          "correct": 8,
+          "total": 8
+        },
+        "keptLabelled": {
+          "correct": 7,
+          "total": 7
+        },
+        "keptPrecision": {
+          "correct": 7,
+          "total": 7
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 0
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 7
+        },
+        "verdictAgreement": {
+          "correct": 7,
+          "total": 7
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 7,
+          "total": 7
+        },
+        "coverage": null,
+        "idealCoverage": null,
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "prose-only-startup",
+      "score": {
+        "fixture": "prose-only-startup",
+        "candidates": 10,
+        "keep": {
+          "correct": 7,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 2,
+          "total": 5
+        },
+        "keptPrecision": {
+          "correct": 2,
+          "total": 2
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 2
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 0,
+          "total": 5
+        },
+        "verdictAgreement": {
+          "correct": 2,
+          "total": 5
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 2,
+          "total": 5
+        },
+        "coverage": null,
+        "idealCoverage": {
+          "covered": 2,
+          "mustHaves": 2
+        },
+        "diffs": [
+          "PRIORITY nice ≠ must: You have at least four years of experience shipping web applications in producti",
+          "PRIORITY nice ≠ must: You write TypeScript every day and know React well.",
+          "DROPPED [unknown] Experience with HIPAA or healthcare data is a plus.",
+          "DROPPED [unknown] Ideally you have also run a small team or mentored junior engineers.",
+          "DROPPED [unknown] You communicate clearly in writing, because we're remote across three time zones."
+        ]
+      }
+    },
+    {
+      "fixture": "responsibilities-tech",
+      "score": {
+        "fixture": "responsibilities-tech",
+        "candidates": 11,
+        "keep": {
+          "correct": 11,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 10,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 10,
+          "total": 10
+        },
+        "priorityWhereCodeNull": {
+          "correct": 4,
+          "total": 4
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 7,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 10,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 10,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 4,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 4,
+          "mustHaves": 4
+        },
+        "diffs": []
+      }
+    },
+    {
+      "fixture": "boilerplate-payments",
+      "score": {
+        "fixture": "boilerplate-payments",
+        "candidates": 11,
+        "keep": {
+          "correct": 9,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 8,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 8,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 1,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 8,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 8,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 8,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 1,
+          "mustHaves": 3
+        },
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 3
+        },
+        "diffs": [
+          "DROPPED [responsibilities] Design and build payment APIs used by thousands of merchants",
+          "DROPPED [responsibilities] Mentor engineers and lead technical design reviews"
+        ]
+      }
+    }
+  ],
+  "totals": {
+    "candidates": 81,
+    "keep": {
+      "correct": 76,
+      "total": 81
+    },
+    "keptLabelled": {
+      "correct": 65,
+      "total": 70
+    },
+    "keptPrecision": {
+      "correct": 65,
+      "total": 65
+    },
+    "priorityWhereCodeNull": {
+      "correct": 6,
+      "total": 8
+    },
+    "addSkillsPrecision": {
+      "correct": 0,
+      "total": 0
+    },
+    "addSkillsRecall": {
+      "correct": 0,
+      "total": 14
+    },
+    "rowAgreement": {
+      "correct": 55,
+      "total": 70
+    },
+    "verdictAgreement": {
+      "correct": 62,
+      "total": 70
+    },
+    "spuriousRows": 0,
+    "labelsMissed": 0,
+    "recallInclMissed": {
+      "correct": 65,
+      "total": 70
+    },
+    "coverageExact": {
+      "correct": 4,
+      "total": 8
+    }
+  },
+  "timing": null
+}

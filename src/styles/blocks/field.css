@@ -1,0 +1,50 @@
+/* =====================================================================
+   .field — form label / hint / control / error. There is no shared
+   wrapper style, so `.field` itself has no rule; use the elements.
+
+   Invalid state is `.is-invalid`, NOT [aria-invalid]: the ask panel sets
+   aria-invalid on its textarea with no visual treatment, and keying on
+   the attribute would restyle it.
+
+   The old error recipe was `border-ink bg-panel-subtle`, but in the
+   utility sort `bg-paper` lands after `bg-panel-subtle` and wins, so an
+   invalid field has always kept the paper fill. Only the border changes.
+
+   ORDER MATTERS: `.is-invalid` sits between the base rule and the hover
+   rule, so hovering an invalid field still shows border-ink/40, as the
+   `hover:` utility beat `border-ink` before.
+   ===================================================================== */
+
+.field__label {
+  @apply font-ui text-sm font-semibold text-ink;
+}
+
+.field__hint {
+  @apply mt-1 font-ui text-sm text-muted;
+}
+
+.field__control {
+  @apply w-full rounded-sm border border-control bg-paper px-3.5 text-base text-ink shadow-hairline transition-colors placeholder:text-muted;
+}
+
+/* Single-line inputs (and the contact message box). */
+.field__control--md {
+  @apply min-h-[44px] py-2.5;
+}
+
+/* Multi-line textareas in the fit tools. */
+.field__control--lg {
+  @apply block py-3 font-ui leading-relaxed resize-y;
+}
+
+.field__control.is-invalid {
+  @apply border-ink;
+}
+
+.field__control {
+  @apply hover:border-ink/40;
+}
+
+.field__error {
+  @apply flex items-center gap-1.5 font-ui text-sm font-semibold text-ink;
+}

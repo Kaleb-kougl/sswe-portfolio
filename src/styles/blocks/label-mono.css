@@ -1,0 +1,12 @@
+/* =====================================================================
+   .label-mono — the muted Space Mono uppercase caption. (The terracotta
+   kicker above a section heading is `.eyebrow` in globals.css, not this.)
+   ===================================================================== */
+
+.label-mono {
+  @apply font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted;
+}
+
+.label-mono--tight {
+  @apply leading-none;
+}

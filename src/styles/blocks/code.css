@@ -1,0 +1,26 @@
+/* =====================================================================
+   .code — monospace code on a white, hairline-bordered chip.
+     --inline  a file name inside a sentence
+     --block   a command/config to paste: own line, select-all, wraps
+               anywhere so a long URL never widens a phone layout
+     --field   the copyable server URL, styled like a form control
+
+   ORDER MATTERS: --field overrides the base border colour and font size,
+   so it must follow `.code`.
+   ===================================================================== */
+
+.code {
+  @apply rounded-sm border border-hairline bg-surface font-mono text-[13px] font-normal text-ink;
+}
+
+.code--inline {
+  @apply px-1 py-px;
+}
+
+.code--block {
+  @apply block px-3 py-2 leading-relaxed select-all [overflow-wrap:anywhere];
+}
+
+.code--field {
+  @apply border-control px-3 py-2.5 text-sm shadow-hairline select-all [overflow-wrap:anywhere];
+}

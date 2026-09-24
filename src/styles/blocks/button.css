@@ -1,0 +1,102 @@
+/* =====================================================================
+   .button — every filled, outlined, ghost and legacy button.
+
+   Composition: `.button` + ONE shape (--pill | --rounded) + ONE tone
+   (--primary | --secondary | --outline) + at most ONE size
+   (--lg | --md | --chip | --hero | --sm | --ghost), optionally --fade and --disableable.
+   Legacy error/404/3D-fallback screens use --brutal (+ --pressable).
+   Anything a single call site does differently stays a utility there.
+
+   ORDER MATTERS: rules in one layer cascade by source order, so the
+   `:disabled` rule is last (it must beat --fade's hover opacity, as
+   `disabled:` beat `hover:` in the utility sort).
+   ===================================================================== */
+
+.button {
+  @apply inline-flex items-center;
+}
+
+/* --- Shape ---------------------------------------------------------- */
+.button--pill {
+  @apply rounded-pill;
+}
+
+.button--rounded {
+  @apply rounded-sm;
+}
+
+/* --- Tone ----------------------------------------------------------- */
+/* The one orange CTA fill, always ink text. */
+.button--primary {
+  @apply bg-cta text-cta-ink shadow-cta;
+}
+
+/* White pill + control border + hairline shadow — the quiet secondary. */
+.button--secondary {
+  @apply border border-control bg-surface text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel;
+}
+
+/* Same surface as --secondary, no shadow and no hover of its own. */
+.button--outline {
+  @apply border border-control bg-surface text-ink;
+}
+
+/* --- Behaviour ------------------------------------------------------ */
+.button--fade {
+  @apply transition-opacity hover:opacity-95;
+}
+
+/* --- Size ----------------------------------------------------------- */
+/* Form submit. */
+.button--lg {
+  @apply min-h-[44px] justify-center px-6 py-3 font-ui text-base font-bold;
+}
+
+/* Form secondary / report actions. */
+.button--md {
+  @apply min-h-[44px] px-5 py-2.5 font-ui text-sm font-semibold;
+}
+
+/* Suggested-question chips. */
+.button--chip {
+  @apply min-h-[40px] px-3.5 py-2 text-left font-ui text-[13px] font-semibold leading-snug;
+}
+
+/* Hero + nav CTAs (padding differs per site). */
+.button--hero {
+  @apply min-h-[44px] text-[15px] font-semibold;
+}
+
+/* Projectile-demo controls. */
+.button--sm {
+  @apply min-h-11 text-sm font-bold;
+}
+
+/* Text-only button that underlines on hover. */
+.button--ghost {
+  @apply min-h-[44px] font-ui text-sm font-semibold underline-offset-2 hover:underline;
+}
+
+/* --- Legacy neo-brutalist (error / not-found / 3D fallback) ----------
+   The retired colour utilities those screens still name (bg-action,
+   border-border, text-action-ink, bg-header-bg, bg-bg-panel,
+   text-text-primary, bg-interactive, focus-visible:outline-interactive …)
+   have no token and emit no CSS, so they are omitted here. The offset
+   shadow colour is `--color-ink` (#161310), the same computed colour as
+   the raw hex the call sites use. */
+.button--brutal {
+  @apply min-h-[44px] justify-center border-[3px] px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.08em] shadow-[5px_5px_0_var(--color-ink)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2;
+}
+
+/* Snaps back on press. Must follow --brutal so :active beats :hover. */
+.button--pressable {
+  @apply active:translate-x-0 active:translate-y-0;
+}
+
+/* --- State (last: see header) --------------------------------------
+   Opt-in, not on the base: only buttons that can actually be disabled
+   (contact submit, Private-mode actions) ever carried `disabled:` styles,
+   and giving the rest a dimmed state they never had is a style change. */
+.button--disableable {
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+}

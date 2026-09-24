@@ -1,0 +1,74 @@
+/* =====================================================================
+   SHARED COMPONENT BLOCKS
+
+   HOW TO WIRE IT (not wired yet)
+     In src/app/globals.css, directly after `@import "tailwindcss";`:
+
+       @import "../styles/blocks/index.css" layer(components);
+
+     `@layer components { @import … }` is invalid CSS (@import must be
+     top-level); the `layer()` form is how to put an import in a layer.
+     Tailwind v4's PostCSS plugin inlines @import itself, so these files
+     join the SAME compilation as globals.css: `@apply` and the custom
+     @theme tokens (bg-cta, rounded-pill, shadow-raised, …) resolve with
+     NO `@reference`. `@reference "../../app/globals.css";` is only needed
+     for a stylesheet Tailwind compiles on its own — a CSS Module, or a
+     file imported from a component instead of from globals.css. Adding it
+     here would be harmless (it emits nothing) but is not needed.
+
+     Tailwind's automatic source scan ignores .css files, so class names
+     written in these files do not generate utilities.
+
+   CONVENTIONS
+     - BEM: `.block`, `.block__element`, `.block--modifier`,
+       `.block__element--modifier`.
+     - ONE block per element (plus that block's modifiers). Never put two
+       blocks on one element: two blocks in one layer would cascade by file
+       order, which nobody reading the JSX can see.
+     - State: the native attribute/pseudo-class when one exists
+       (:disabled, [aria-current], [aria-expanded], [aria-pressed],
+       [aria-invalid]); `.is-*` otherwise, or when the attribute is also
+       set somewhere that must NOT get the style (see field.css).
+     - Tokens only: colours, radii, shadows and fonts come from the @theme
+       tokens in globals.css. No raw hex.
+     - Everything here lives in @layer components, which sits BELOW
+       @layer utilities. Any utility left on an element still wins over its
+       block, exactly as it beat its sibling utilities before. Unlayered
+       rules in globals.css (h1–h3, .eyebrow, :focus-visible, a:not([class]))
+       still beat both, as before.
+     - Inside one file, a modifier that sets a property its block also
+       sets MUST come after the block (same specificity, source order
+       decides). Variants (hover:, disabled:, sm:, md:, min-[900px]:) are
+       written through @apply so Tailwind emits the identical media/state
+       wrappers (hover is wrapped in @media (hover: hover)).
+     - Every block is @apply of the exact utilities it replaces — same
+       values, never normalised (min-h-11 and min-h-[44px] stay distinct).
+   ===================================================================== */
+
+@import "./button.css";
+@import "./link.css";
+@import "./card.css";
+@import "./badge.css";
+@import "./field.css";
+@import "./label-mono.css";
+@import "./section.css";
+
+/* Component blocks — one file per component, after the shared primitives. */
+@import "./site-nav.css";
+@import "./hero.css";
+@import "./process.css";
+@import "./pipeline-checks.css";
+@import "./code.css";
+@import "./contact.css";
+@import "./work-card.css";
+@import "./work-illustration.css";
+@import "./error-page.css";
+@import "./viewport-fallback.css";
+@import "./demo-dialog.css";
+@import "./projectile-demo.css";
+@import "./fit-report.css";
+@import "./fit-checker.css";
+@import "./fit-results.css";
+@import "./private-mode.css";
+@import "./ask-panel.css";
+@import "./ask-thread.css";

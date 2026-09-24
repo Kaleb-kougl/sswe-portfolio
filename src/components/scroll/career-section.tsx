@@ -190,8 +190,10 @@ export function CareerSection() {
         </h3>
 
         <div className="mt-7 grid gap-8 md:grid-cols-2 md:gap-10">
-          {TESTIMONIALS.map((testimonial) => (
-            <figure key={testimonial.name} className="flex flex-col">
+          {TESTIMONIALS.map((testimonial, i) => (
+            // The newest quote takes the whole row so the other two pair up
+            // instead of leaving one stranded in a half-empty row.
+            <figure key={testimonial.name} className={`flex flex-col${i === 0 ? ' md:col-span-2' : ''}`}>
               <blockquote className="max-w-[46ch] text-[15px] leading-relaxed text-body">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>

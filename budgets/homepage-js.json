@@ -1,0 +1,7 @@
+{
+  "$comment": "First-load JS of `/`, from scripts/check-homepage-js.mjs. Regenerate with `node scripts/check-homepage-js.mjs --update` after `npm run build`, and say why in the PR.",
+  "gzipBytes": 165050,
+  "rawBytes": 564225,
+  "scripts": 13,
+  "toleranceBytes": 1024
+}

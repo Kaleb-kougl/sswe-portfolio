@@ -1,0 +1,93 @@
+/* =====================================================================
+   .ask-thread — the "Ask about my work" thread (fit/ask-results.tsx):
+   the visitor's question bubble, and the text, finding and evidence
+   pieces inside a reply card. The reply card itself is `.card`, buttons
+   are `.button`, links `.link`, pills `.badge`, captions `.label-mono`.
+   Margins, measure and flex layout stay as utilities at the call site,
+   as does overflow-wrap where only some uses of an element set it.
+   Evidence cards are `.card` + `__claim` / `__meta` children.
+
+   ORDER MATTERS: each modifier comes after its element (same
+   specificity, source order decides), e.g. --lg's text-[17px] must beat
+   __lead's text-[15px].
+   ===================================================================== */
+
+/* --- Question bubble ------------------------------------------------ */
+.ask-thread__bubble {
+  @apply max-w-[85%] rounded-lg rounded-br-xs bg-panel px-4 py-2.5 font-ui text-[15px] leading-snug text-ink [overflow-wrap:anywhere];
+}
+
+/* --- Reply text ----------------------------------------------------- */
+/* Semibold ink sentence: finding leads, coverage, figures, notes. */
+.ask-thread__lead {
+  @apply font-ui text-[15px] font-semibold text-ink;
+}
+
+.ask-thread__lead--snug {
+  @apply leading-snug;
+}
+
+/* Profile / unknown-skill opening line. */
+.ask-thread__lead--lg {
+  @apply text-[17px] leading-snug;
+}
+
+/* Body paragraph (help lead, project summary). */
+.ask-thread__text {
+  @apply font-ui text-[15px] leading-relaxed text-body;
+}
+
+/* Small muted aside (report note, project context line). */
+.ask-thread__aside {
+  @apply font-ui text-[13px] text-muted;
+}
+
+/* Tinted "leading note" above an evidence reply. */
+.ask-thread__note {
+  @apply rounded-md bg-panel px-3 py-2.5 font-ui text-sm leading-relaxed text-body;
+}
+
+/* --- Findings ------------------------------------------------------- */
+.ask-thread__finding {
+  @apply mt-5 first:mt-0;
+}
+
+.ask-thread__finding-title {
+  @apply flex items-center gap-2 text-[19px] leading-tight;
+}
+
+/* The ● / ○ circle before a finding's skill. */
+.ask-thread__glyph {
+  @apply inline-flex size-5 items-center justify-center rounded-pill text-[11px];
+}
+
+.ask-thread__glyph--found {
+  @apply bg-badge-lime text-badge-lime-ink;
+}
+
+.ask-thread__glyph--none {
+  @apply shrink-0 border border-control bg-surface;
+}
+
+/* Dashed box of related (not matching) evidence. */
+.ask-thread__related {
+  @apply rounded-md border border-dashed border-control p-3;
+}
+
+/* --- Evidence card contents ---------------------------------------- */
+.ask-thread__claim {
+  @apply font-ui text-[15px] leading-snug text-ink [overflow-wrap:anywhere];
+}
+
+.ask-thread__meta {
+  @apply font-ui text-[12.5px] leading-relaxed text-muted;
+}
+
+/* "Show N more" triangle. */
+.ask-thread__chevron {
+  @apply inline-block text-[10px] transition-transform;
+}
+
+.ask-thread__chevron--open {
+  @apply rotate-90;
+}

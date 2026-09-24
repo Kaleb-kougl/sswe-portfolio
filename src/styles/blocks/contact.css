@@ -1,0 +1,38 @@
+/* =====================================================================
+   Contact form (src/components/scroll/contact-section.tsx).
+
+   .contact-reason — the four "What's this about?" toggle pills. State is
+   the native [aria-pressed], which React always renders as "true" or
+   "false". The unselected hover lives on [aria-pressed="false"] only,
+   exactly as the old conditional class string applied it only to the
+   unselected branch.
+
+   .contact-progress — the 4-step completion meter: its count, its track
+   and its fill.
+   ===================================================================== */
+
+.contact-reason {
+  @apply min-h-[44px] rounded-pill border px-4 py-2.5 font-ui text-sm font-semibold transition-colors;
+}
+
+/* Selected is a full ink fill, not a border change — the border alone is
+   far under the 3:1 non-text minimum. */
+.contact-reason[aria-pressed="true"] {
+  @apply border-ink bg-ink text-paper shadow-card;
+}
+
+.contact-reason[aria-pressed="false"] {
+  @apply border-control bg-surface text-body shadow-hairline hover:border-ink hover:text-ink;
+}
+
+.contact-progress {
+  @apply h-2 w-full overflow-hidden rounded-pill bg-panel-subtle;
+}
+
+.contact-progress__bar {
+  @apply h-full rounded-pill bg-ink transition-[width] duration-300;
+}
+
+.contact-progress__count {
+  @apply font-mono text-[11px] font-bold tracking-[0.08em] text-ink;
+}

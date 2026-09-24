@@ -6,6 +6,7 @@ import { ContactSection } from '@/components/scroll/contact-section';
 import { HeroSection } from '@/components/scroll/hero-section';
 import { ProcessSection } from '@/components/scroll/process-section';
 import { SiteNav } from '@/components/scroll/site-nav';
+import { UseWithYourAi } from '@/components/scroll/use-with-your-ai';
 import { WorkSection } from '@/components/scroll/work-section';
 import { CONTACT_INFO, EDUCATION, SKILLS, SUMMARY } from '@/data/resumeData';
 import { SITE_URL } from '@/data/site';
@@ -79,7 +80,11 @@ export default function Home() {
         <WorkSection />
         <CareerSection />
         <ProcessSection />
-        <ContactSection />
+        {/* A Server Component passed through the Client one, so it ships as
+            HTML and adds nothing to the homepage JS. */}
+        <ContactSection>
+          <UseWithYourAi />
+        </ContactSection>
       </main>
 
       <SpeedInsights />

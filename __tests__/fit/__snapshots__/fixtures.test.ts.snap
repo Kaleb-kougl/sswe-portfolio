@@ -1,0 +1,173 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`fixture verdicts that must not drift > verdict tallies match the reviewed reports 1`] = `
+{
+  "ai-platform": {
+    "model": {
+      "coverage": {
+        "covered": 5.5,
+        "mustHaves": 7,
+      },
+      "gap": 2,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 6,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 6,
+      },
+      "gap": 2,
+      "not_assessed": 2,
+      "partial": 0,
+      "strong": 6,
+    },
+  },
+  "boilerplate-payments": {
+    "model": {
+      "coverage": {
+        "covered": 2.5,
+        "mustHaves": 4,
+      },
+      "gap": 2,
+      "not_assessed": 2,
+      "partial": 2,
+      "strong": 4,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 2.5,
+        "mustHaves": 4,
+      },
+      "gap": 1,
+      "not_assessed": 2,
+      "partial": 2,
+      "strong": 4,
+    },
+  },
+  "frontend-senior": {
+    "model": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 5,
+      },
+      "gap": 0,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 8,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 5,
+        "mustHaves": 5,
+      },
+      "gap": 0,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 8,
+    },
+  },
+  "fullstack-senior": {
+    "model": {
+      "coverage": {
+        "covered": 5.5,
+        "mustHaves": 6,
+      },
+      "gap": 1,
+      "not_assessed": 1,
+      "partial": 2,
+      "strong": 6,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 5.5,
+        "mustHaves": 6,
+      },
+      "gap": 1,
+      "not_assessed": 1,
+      "partial": 2,
+      "strong": 6,
+    },
+  },
+  "non-engineering-marketing": {
+    "model": {
+      "coverage": null,
+      "gap": 1,
+      "not_assessed": 4,
+      "partial": 2,
+      "strong": 0,
+    },
+    "scan": {
+      "coverage": null,
+      "gap": 1,
+      "not_assessed": 4,
+      "partial": 2,
+      "strong": 0,
+    },
+  },
+  "poor-match-backend": {
+    "model": {
+      "coverage": {
+        "covered": 1.5,
+        "mustHaves": 5,
+      },
+      "gap": 5,
+      "not_assessed": 1,
+      "partial": 1,
+      "strong": 1,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 1,
+        "mustHaves": 5,
+      },
+      "gap": 5,
+      "not_assessed": 1,
+      "partial": 2,
+      "strong": 0,
+    },
+  },
+  "prose-only-startup": {
+    "model": {
+      "coverage": {
+        "covered": 2,
+        "mustHaves": 2,
+      },
+      "gap": 0,
+      "not_assessed": 2,
+      "partial": 0,
+      "strong": 3,
+    },
+    "scan": {
+      "coverage": null,
+      "gap": 0,
+      "not_assessed": 0,
+      "partial": 0,
+      "strong": 3,
+    },
+  },
+  "responsibilities-tech": {
+    "model": {
+      "coverage": {
+        "covered": 4,
+        "mustHaves": 4,
+      },
+      "gap": 2,
+      "not_assessed": 0,
+      "partial": 0,
+      "strong": 8,
+    },
+    "scan": {
+      "coverage": {
+        "covered": 3.5,
+        "mustHaves": 4,
+      },
+      "gap": 2,
+      "not_assessed": 0,
+      "partial": 1,
+      "strong": 7,
+    },
+  },
+}
+`;

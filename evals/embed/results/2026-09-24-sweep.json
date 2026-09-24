@@ -1,0 +1,4796 @@
+[
+  {
+    "model": {
+      "id": "Xenova/all-MiniLM-L6-v2",
+      "revision": "751bff37182d3f1213fa05d7196b954e230abad9",
+      "pooling": "mean",
+      "onnxBytes": 22972869,
+      "license": "apache-2.0"
+    },
+    "loadMs": 469.356917,
+    "embedMsPerPhrase": 0.3270216879049676,
+    "mode": "context",
+    "msPerFixtureJd": 16.35438024999999,
+    "chosen": {
+      "tau": 0.5,
+      "margin": 0.02,
+      "tauContext": 0.5,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 0.9230769230769231,
+      "recall": 0.4897959183673469,
+      "tp": 24,
+      "fp": 2,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": [
+        "+build-systems ← \"tooling for other developers\" (0.653) in \"Improving engineering velocity and tooling for other developers\"",
+        "+web-performance ← \"backend work\" (0.538) in \"Frontend and backend work across the whole stack\""
+      ]
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.42857142857142855,
+      "tp": 6,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "fullstack-senior: +api-design ← \"APIs\" (0.657, via \"api design\") in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: +ai-platform ← \"through a gateway\" (0.735, via \"ai gateway\") in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "prose-only-startup: +mentoring ← \"mentored\" (0.727, via \"mentorship\") in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "boilerplate-payments: +api-design ← \"APIs\" (0.677, via \"api design\") in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: +mentoring ← \"Mentor\" (0.784, via \"Mentoring\") in \"Mentor engineers and lead technical design reviews\"",
+        "boilerplate-payments: +tech-leadership ← \"lead technical\" (0.694, via \"technical lead\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 59,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "10/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "10/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.53,
+        "margin": 0.12,
+        "tauContext": 0.3,
+        "maxPerSegment": 3
+      },
+      "tp": 8,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.4897959183673469,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.51,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.52,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.4489795918367347,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.53,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.40816326530612246,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.54,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.40816326530612246,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.55,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.40816326530612246,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.56,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3877551020408163,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.57,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.58,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.30612244897959184,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.59,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.2857142857142857,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.6,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.2857142857142857,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.61,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.62,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.63,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.64,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.1836734693877551,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.65,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.66,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.67,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.68,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.69,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.7,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.71,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.72,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.73,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.74,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.75,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.76,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.77,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0.26229508196721313,
+      "recall": 0.3902439024390244,
+      "tp": 16,
+      "fp": 45,
+      "fpOnRequirements": 16,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.26229508196721313,
+          "recall": 0.3902439024390244,
+          "tp": 16,
+          "fp": 45
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.2978723404255319,
+          "recall": 0.34146341463414637,
+          "tp": 14,
+          "fp": 33
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.3939393939393939,
+          "recall": 0.3170731707317073,
+          "tp": 13,
+          "fp": 20
+        },
+        {
+          "tau": 0.65,
+          "precision": 0.4,
+          "recall": 0.1951219512195122,
+          "tp": 8,
+          "fp": 12
+        },
+        {
+          "tau": 0.7,
+          "precision": 0.2857142857142857,
+          "recall": 0.04878048780487805,
+          "tp": 2,
+          "fp": 5
+        },
+        {
+          "tau": 0.75,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 2
+        },
+        {
+          "tau": 0.8,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.85,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "Xenova/paraphrase-MiniLM-L3-v2",
+      "revision": "4b544e74dfc3256b2b56849ea5d7064fee1ac846",
+      "pooling": "mean",
+      "onnxBytes": 17450000,
+      "license": "apache-2.0"
+    },
+    "loadMs": 172.20450000000028,
+    "embedMsPerPhrase": 0.20601264470842304,
+    "mode": "context",
+    "msPerFixtureJd": 10.179296875000034,
+    "chosen": {
+      "tau": 0.55,
+      "margin": 0.15,
+      "tauContext": 0.5,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 0.9230769230769231,
+      "recall": 0.24489795918367346,
+      "tp": 12,
+      "fp": 1,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": [
+        "+developer-productivity ← \"developers\" (0.635) in \"You've mentored junior developers\""
+      ]
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.2857142857142857,
+      "tp": 4,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "fullstack-senior: +api-design ← \"APIs\" (0.553, via \"api design\") in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: +ai-platform ← \"through a gateway\" (0.646, via \"ai gateway\") in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "boilerplate-payments: +api-design ← \"APIs\" (0.578, via \"api design\") in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: +tech-leadership ← \"lead technical\" (0.709, via \"technical lead\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "prose-only-startup: -mentoring in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\"",
+        "boilerplate-payments: -mentoring in \"Mentor engineers and lead technical design reviews\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 58,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "10/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "9/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.54,
+        "margin": 0,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 6,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.51,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.52,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.53,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.54,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.55,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.56,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.57,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.16326530612244897,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.58,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.59,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.6,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.61,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.62,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.63,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.64,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.65,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.66,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.67,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.68,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.69,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.7,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.71,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.72,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.73,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.74,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.75,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.76,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.77,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0.3333333333333333,
+      "recall": 0.14634146341463414,
+      "tp": 6,
+      "fp": 12,
+      "fpOnRequirements": 2,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.2857142857142857,
+          "recall": 0.14634146341463414,
+          "tp": 6,
+          "fp": 15
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.3333333333333333,
+          "recall": 0.14634146341463414,
+          "tp": 6,
+          "fp": 12
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.36363636363636365,
+          "recall": 0.0975609756097561,
+          "tp": 4,
+          "fp": 7
+        },
+        {
+          "tau": 0.65,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 4
+        },
+        {
+          "tau": 0.7,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 3
+        },
+        {
+          "tau": 0.75,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.8,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.85,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "Xenova/paraphrase-MiniLM-L6-v2",
+      "revision": "2bb9dc00941ae0b65da96d5dd95d4a4564161858",
+      "pooling": "mean",
+      "onnxBytes": 22970000,
+      "license": "apache-2.0"
+    },
+    "loadMs": 164.37695800000074,
+    "embedMsPerPhrase": 0.2793983531317499,
+    "mode": "context",
+    "msPerFixtureJd": 13.791802125000004,
+    "chosen": {
+      "tau": 0.71,
+      "margin": 0.15,
+      "tauContext": 0.5,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 1,
+      "recall": 0.061224489795918366,
+      "tp": 3,
+      "fp": 0,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": []
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.14285714285714285,
+      "tp": 2,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "ai-platform: +ai-platform ← \"through a gateway\" (0.781, via \"ai gateway\") in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "boilerplate-payments: +mentoring ← \"Mentor\" (0.711, via \"mentorship\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "fullstack-senior: -api-design in \"Designing REST and GraphQL APIs\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "prose-only-startup: -mentoring in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\"",
+        "boilerplate-payments: -api-design in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: -tech-leadership in \"Mentor engineers and lead technical design reviews\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 56,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "8/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "10/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "8/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.7,
+        "margin": 0,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 2,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.51,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.52,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.53,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.54,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 4,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.55,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.56,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.57,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.58,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.59,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.6,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.61,
+        "precision": 0.5714285714285714,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 3,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.62,
+        "precision": 0.5,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 3,
+        "devRecall": 0.1836734693877551,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.63,
+        "precision": 0.5,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 3,
+        "devRecall": 0.1836734693877551,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.64,
+        "precision": 0.5,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 3,
+        "devRecall": 0.1836734693877551,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.65,
+        "precision": 0.6,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 2,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.66,
+        "precision": 0.6,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 2,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.67,
+        "precision": 0.6,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 2,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.68,
+        "precision": 0.75,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 1,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.69,
+        "precision": 0.6666666666666666,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 1,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.7,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.71,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.72,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.73,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.74,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.75,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.76,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.77,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0,
+      "recall": 0,
+      "tp": 0,
+      "fp": 6,
+      "fpOnRequirements": 0,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.2545454545454545,
+          "recall": 0.34146341463414637,
+          "tp": 14,
+          "fp": 41
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.2549019607843137,
+          "recall": 0.3170731707317073,
+          "tp": 13,
+          "fp": 38
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.1891891891891892,
+          "recall": 0.17073170731707318,
+          "tp": 7,
+          "fp": 30
+        },
+        {
+          "tau": 0.65,
+          "precision": 0.17647058823529413,
+          "recall": 0.07317073170731707,
+          "tp": 3,
+          "fp": 14
+        },
+        {
+          "tau": 0.7,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 6
+        },
+        {
+          "tau": 0.75,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 2
+        },
+        {
+          "tau": 0.8,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.85,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "Snowflake/snowflake-arctic-embed-xs",
+      "revision": "d8c86521100d3556476a063fc2342036d45c106f",
+      "pooling": "cls",
+      "onnxBytes": 22970000,
+      "license": "apache-2.0"
+    },
+    "loadMs": 195.20241700000042,
+    "embedMsPerPhrase": 0.9784388498920078,
+    "mode": "isolated",
+    "msPerFixtureJd": 46.81438025000011,
+    "chosen": {
+      "tau": 0.95,
+      "margin": 0.15,
+      "tauContext": 0.6,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 1,
+      "recall": 0,
+      "tp": 0,
+      "fp": 0,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": []
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0,
+      "tp": 0,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "fullstack-senior: -api-design in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: -ai-platform in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "prose-only-startup: -mentoring in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\"",
+        "boilerplate-payments: -api-design in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: -mentoring in \"Mentor engineers and lead technical design reviews\"",
+        "boilerplate-payments: -tech-leadership in \"Mentor engineers and lead technical design reviews\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 55,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "8/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "8/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.4,
+        "margin": 0.06,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 3,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.51,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.52,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.53,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.54,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.55,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.56,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.57,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.58,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.59,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.6,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.61,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.62,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.63,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.64,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.65,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.66,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.67,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.68,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.69,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.7,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.71,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.72,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.73,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.74,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.75,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.76,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.77,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 1,
+      "recall": 0,
+      "tp": 0,
+      "fp": 0,
+      "fpOnRequirements": 0,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.55,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.6,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.65,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.7,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.75,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.8,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.85,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "mixedbread-ai/mxbai-embed-xsmall-v1",
+      "revision": "e6ac24e5d6efb8782b59de1647b3ececb4ece94e",
+      "pooling": "mean",
+      "onnxBytes": 24400000,
+      "license": "apache-2.0"
+    },
+    "loadMs": 346.38337499999943,
+    "embedMsPerPhrase": 0.28689668898488074,
+    "mode": "context",
+    "msPerFixtureJd": 13.923078125000075,
+    "chosen": {
+      "tau": 0.52,
+      "margin": 0.09,
+      "tauContext": 0.45,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 0.92,
+      "recall": 0.46938775510204084,
+      "tp": 23,
+      "fp": 2,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": [
+        "+api-design ← \"interfaces\" (0.680) in \"Inclusive, accessible interfaces\"",
+        "+build-systems ← \"tooling for other developers\" (0.665) in \"Improving engineering velocity and tooling for other developers\""
+      ]
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.42857142857142855,
+      "tp": 6,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "fullstack-senior: +api-design ← \"APIs\" (0.648, via \"api design\") in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: +ai-platform ← \"through a gateway\" (0.719, via \"ai gateway\") in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "prose-only-startup: +mentoring ← \"mentored\" (0.702, via \"mentorship\") in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "boilerplate-payments: +api-design ← \"APIs\" (0.685, via \"api design\") in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: +mentoring ← \"Mentor\" (0.790, via \"Mentoring\") in \"Mentor engineers and lead technical design reviews\"",
+        "boilerplate-payments: +tech-leadership ← \"lead technical\" (0.720, via \"technical lead\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 59,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "10/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "10/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.53,
+        "margin": 0.12,
+        "tauContext": 0.3,
+        "maxPerSegment": 3
+      },
+      "tp": 8,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.51,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.52,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.53,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.54,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.55,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.56,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3877551020408163,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.57,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3877551020408163,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.58,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.59,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.6,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.32653061224489793,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.61,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.62,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.24489795918367346,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.63,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.64,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.65,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.66,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.67,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.68,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.69,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.7,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.71,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.72,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.73,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.74,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.75,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.76,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.77,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0.3,
+      "recall": 0.5121951219512195,
+      "tp": 21,
+      "fp": 49,
+      "fpOnRequirements": 14,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.2894736842105263,
+          "recall": 0.5365853658536586,
+          "tp": 22,
+          "fp": 54
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.31666666666666665,
+          "recall": 0.4634146341463415,
+          "tp": 19,
+          "fp": 41
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.3684210526315789,
+          "recall": 0.34146341463414637,
+          "tp": 14,
+          "fp": 24
+        },
+        {
+          "tau": 0.65,
+          "precision": 0.38095238095238093,
+          "recall": 0.1951219512195122,
+          "tp": 8,
+          "fp": 13
+        },
+        {
+          "tau": 0.7,
+          "precision": 0.25,
+          "recall": 0.04878048780487805,
+          "tp": 2,
+          "fp": 6
+        },
+        {
+          "tau": 0.75,
+          "precision": 0,
+          "recall": 0,
+          "tp": 0,
+          "fp": 4
+        },
+        {
+          "tau": 0.8,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.85,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "MongoDB/mdbr-leaf-mt",
+      "revision": "1ed41b22ce166d66c24f88ebfc340e1f03adb20f",
+      "pooling": "mean",
+      "onnxBytes": 23000000,
+      "license": "apache-2.0"
+    },
+    "loadMs": 250.1235000000015,
+    "embedMsPerPhrase": 0.27559215334773285,
+    "mode": "context",
+    "msPerFixtureJd": 13.70485937500007,
+    "chosen": {
+      "tau": 0.78,
+      "margin": 0.09,
+      "tauContext": 0.6,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 1,
+      "recall": 0.20408163265306123,
+      "tp": 10,
+      "fp": 0,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": []
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.21428571428571427,
+      "tp": 3,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "prose-only-startup: +mentoring ← \"mentored junior\" (0.809, via \"mentorship\") in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "boilerplate-payments: +tech-leadership ← \"lead technical\" (0.850, via \"Technical leadership\") in \"Mentor engineers and lead technical design reviews\"",
+        "boilerplate-payments: +mentoring ← \"Mentor\" (0.822, via \"mentorship\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "fullstack-senior: -api-design in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: -ai-platform in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -full-stack in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\"",
+        "boilerplate-payments: -api-design in \"Design and build payment APIs used by thousands of merchants\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 56,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "8/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "9/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.67,
+        "margin": 0.1,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 5,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 0.5833333333333334,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 5,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.51,
+        "precision": 0.5833333333333334,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 5,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.52,
+        "precision": 0.5833333333333334,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 5,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.53,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.54,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.55,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.56,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.57,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.58,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.59,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.6,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.61,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.62,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.63,
+        "precision": 0.6363636363636364,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 4,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.64,
+        "precision": 0.7777777777777778,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 2,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.65,
+        "precision": 0.7777777777777778,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 2,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.66,
+        "precision": 0.7777777777777778,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 2,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.67,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.68,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.69,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.32653061224489793,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.7,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.32653061224489793,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.71,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.2857142857142857,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.72,
+        "precision": 0.8333333333333334,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 1,
+        "devRecall": 0.2857142857142857,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.73,
+        "precision": 0.8333333333333334,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 1,
+        "devRecall": 0.2857142857142857,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.74,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.75,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.76,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.77,
+        "precision": 0.8,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 1,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.78,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.79,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.16326530612244897,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.8,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.81,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.14285714285714285,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.82,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.83,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0.3870967741935484,
+      "recall": 0.2926829268292683,
+      "tp": 12,
+      "fp": 19,
+      "fpOnRequirements": 4,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.15447154471544716,
+          "recall": 0.4634146341463415,
+          "tp": 19,
+          "fp": 104
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.16101694915254236,
+          "recall": 0.4634146341463415,
+          "tp": 19,
+          "fp": 99
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.17592592592592593,
+          "recall": 0.4634146341463415,
+          "tp": 19,
+          "fp": 89
+        },
+        {
+          "tau": 0.65,
+          "precision": 0.19791666666666666,
+          "recall": 0.4634146341463415,
+          "tp": 19,
+          "fp": 77
+        },
+        {
+          "tau": 0.7,
+          "precision": 0.23076923076923078,
+          "recall": 0.43902439024390244,
+          "tp": 18,
+          "fp": 60
+        },
+        {
+          "tau": 0.75,
+          "precision": 0.2857142857142857,
+          "recall": 0.34146341463414637,
+          "tp": 14,
+          "fp": 35
+        },
+        {
+          "tau": 0.8,
+          "precision": 0.4166666666666667,
+          "recall": 0.24390243902439024,
+          "tp": 10,
+          "fp": 14
+        },
+        {
+          "tau": 0.85,
+          "precision": 0.2,
+          "recall": 0.024390243902439025,
+          "tp": 1,
+          "fp": 4
+        },
+        {
+          "tau": 0.9,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "Xenova/bge-small-en-v1.5",
+      "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+      "pooling": "cls",
+      "onnxBytes": 34000000,
+      "license": "mit"
+    },
+    "loadMs": 371.87566700000025,
+    "embedMsPerPhrase": 1.7257474805615547,
+    "mode": "isolated",
+    "msPerFixtureJd": 82.34052087500004,
+    "chosen": null,
+    "dev": {
+      "precision": 1,
+      "recall": 0,
+      "tp": 0,
+      "fp": 0,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": []
+    },
+    "fixtures": null,
+    "rows": null,
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.84,
+        "margin": 0.01,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 7,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.51,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.52,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.53,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.54,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.55,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.56,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.57,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.58,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.59,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.6,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.61,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.62,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.63,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.64,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.65,
+        "precision": 0.28125,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 23,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.66,
+        "precision": 0.2903225806451613,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 22,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.67,
+        "precision": 0.2903225806451613,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 22,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.68,
+        "precision": 0.3,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 21,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.69,
+        "precision": 0.3103448275862069,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 20,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.7,
+        "precision": 0.32142857142857145,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 19,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.71,
+        "precision": 0.3333333333333333,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 18,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 7
+      },
+      {
+        "tau": 0.72,
+        "precision": 0.34615384615384615,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 17,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 6
+      },
+      {
+        "tau": 0.73,
+        "precision": 0.34615384615384615,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 17,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 5
+      },
+      {
+        "tau": 0.74,
+        "precision": 0.36,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 16,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 5
+      },
+      {
+        "tau": 0.75,
+        "precision": 0.4090909090909091,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 13,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 4
+      },
+      {
+        "tau": 0.76,
+        "precision": 0.4090909090909091,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 13,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 4
+      },
+      {
+        "tau": 0.77,
+        "precision": 0.4090909090909091,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 13,
+        "devRecall": 0.5102040816326531,
+        "devNegHits": 4
+      },
+      {
+        "tau": 0.78,
+        "precision": 0.45,
+        "recall": 0.6428571428571429,
+        "tp": 9,
+        "fp": 11,
+        "devRecall": 0.4897959183673469,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.79,
+        "precision": 0.4666666666666667,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 8,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.8,
+        "precision": 0.6666666666666666,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 3,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.81,
+        "precision": 0.6666666666666666,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 3,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.82,
+        "precision": 0.75,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 2,
+        "devRecall": 0.3469387755102041,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.83,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.22448979591836735,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.10204081632653061,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.08163265306122448,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.061224489795918366,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.04081632653061224,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 1
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  },
+  {
+    "model": {
+      "id": "Xenova/gte-small",
+      "revision": "5927d1727bb12db490052a1b33265ad78058de08",
+      "pooling": "mean",
+      "onnxBytes": 34000000,
+      "license": "mit"
+    },
+    "loadMs": 338.2821249999979,
+    "embedMsPerPhrase": 0.4448137602591819,
+    "mode": "context",
+    "msPerFixtureJd": 22.641020749999825,
+    "chosen": {
+      "tau": 0.84,
+      "margin": 0.03,
+      "tauContext": 0.6,
+      "maxPerSegment": 3
+    },
+    "dev": {
+      "precision": 0.9473684210526315,
+      "recall": 0.3673469387755102,
+      "tp": 18,
+      "fp": 1,
+      "gold": 49,
+      "negativeHits": 0,
+      "negatives": 50,
+      "wrong": [
+        "+api-design ← \"interfaces\" (0.858) in \"Inclusive, accessible interfaces\""
+      ]
+    },
+    "fixtures": {
+      "precision": 1,
+      "recall": 0.42857142857142855,
+      "tp": 6,
+      "fp": 0,
+      "gold": 14,
+      "fpUnlabelled": 0,
+      "right": [
+        "fullstack-senior: +api-design ← \"APIs\" (0.890, via \"api design\") in \"Designing REST and GraphQL APIs\"",
+        "ai-platform: +ai-platform ← \"through a gateway\" (0.925, via \"ai gateway\") in \"Exposing AI capabilities through a gateway or internal platform\"",
+        "prose-only-startup: +full-stack ← \"across the stack\" (0.855, via \"full stack\") in \"You have at least four years of experience shipping web applications in producti\"",
+        "prose-only-startup: +mentoring ← \"mentored\" (0.864, via \"mentorship\") in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "boilerplate-payments: +api-design ← \"APIs used by thousands\" (0.872, via \"api design\") in \"Design and build payment APIs used by thousands of merchants\"",
+        "boilerplate-payments: +tech-leadership ← \"lead technical\" (0.899, via \"technical lead\") in \"Mentor engineers and lead technical design reviews\""
+      ],
+      "wrong": [],
+      "missed": [
+        "frontend-senior: -automated-testing in \"Strong testing habits (Jest, React Testing Library)\"",
+        "fullstack-senior: -full-stack in \"You'll build features end to end across our Node.js services and React frontend.\"",
+        "poor-match-backend: -system-design in \"Distributed systems and microservice design\"",
+        "prose-only-startup: -tech-leadership in \"Ideally you have also run a small team or mentored junior engineers.\"",
+        "responsibilities-tech: -codebase-migrations in \"Migrate legacy services from JavaScript to TypeScript, one package at a time\"",
+        "responsibilities-tech: -build-systems in \"Partner with product teams to improve build times and developer productivity\"",
+        "responsibilities-tech: -tech-leadership in \"You've led a large-scale codebase migration\"",
+        "boilerplate-payments: -mentoring in \"Mentor engineers and lead technical design reviews\""
+      ]
+    },
+    "rows": {
+      "scan": 55,
+      "embedded": 58,
+      "total": 70,
+      "spuriousScan": 0,
+      "spuriousEmbed": 0,
+      "perFixture": [
+        {
+          "name": "frontend-senior",
+          "scan": "9/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "fullstack-senior",
+          "scan": "8/10",
+          "embed": "9/10"
+        },
+        {
+          "name": "ai-platform",
+          "scan": "9/10",
+          "embed": "10/10"
+        },
+        {
+          "name": "poor-match-backend",
+          "scan": "7/8",
+          "embed": "7/8"
+        },
+        {
+          "name": "non-engineering-marketing",
+          "scan": "7/7",
+          "embed": "7/7"
+        },
+        {
+          "name": "prose-only-startup",
+          "scan": "0/5",
+          "embed": "0/5"
+        },
+        {
+          "name": "responsibilities-tech",
+          "scan": "7/10",
+          "embed": "7/10"
+        },
+        {
+          "name": "boilerplate-payments",
+          "scan": "8/10",
+          "embed": "9/10"
+        }
+      ]
+    },
+    "fixtureOracle": {
+      "params": {
+        "tau": 0.82,
+        "margin": 0.05,
+        "tauContext": 0,
+        "maxPerSegment": 3
+      },
+      "tp": 6,
+      "gold": 14
+    },
+    "curve": [
+      {
+        "tau": 0.5,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.51,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.52,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.53,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.54,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.55,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.56,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.57,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.58,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.59,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.6,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.61,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.62,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.63,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.64,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.65,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.66,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.67,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.68,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.69,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.7,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 3
+      },
+      {
+        "tau": 0.71,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.46938775510204084,
+        "devNegHits": 2
+      },
+      {
+        "tau": 0.72,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.4489795918367347,
+        "devNegHits": 2
+      },
+      {
+        "tau": 0.73,
+        "precision": 0.5333333333333333,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 7,
+        "devRecall": 0.4489795918367347,
+        "devNegHits": 2
+      },
+      {
+        "tau": 0.74,
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 6,
+        "devRecall": 0.4489795918367347,
+        "devNegHits": 2
+      },
+      {
+        "tau": 0.75,
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 6,
+        "devRecall": 0.4489795918367347,
+        "devNegHits": 2
+      },
+      {
+        "tau": 0.76,
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 6,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.77,
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 6,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.78,
+        "precision": 0.6666666666666666,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 4,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.79,
+        "precision": 0.7272727272727273,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 3,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.8,
+        "precision": 0.8,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 2,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.81,
+        "precision": 0.8,
+        "recall": 0.5714285714285714,
+        "tp": 8,
+        "fp": 2,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.82,
+        "precision": 0.875,
+        "recall": 0.5,
+        "tp": 7,
+        "fp": 1,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.83,
+        "precision": 0.8571428571428571,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 1,
+        "devRecall": 0.42857142857142855,
+        "devNegHits": 1
+      },
+      {
+        "tau": 0.84,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.3673469387755102,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.85,
+        "precision": 1,
+        "recall": 0.42857142857142855,
+        "tp": 6,
+        "fp": 0,
+        "devRecall": 0.30612244897959184,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.86,
+        "precision": 1,
+        "recall": 0.35714285714285715,
+        "tp": 5,
+        "fp": 0,
+        "devRecall": 0.2653061224489796,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.87,
+        "precision": 1,
+        "recall": 0.2857142857142857,
+        "tp": 4,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.88,
+        "precision": 1,
+        "recall": 0.21428571428571427,
+        "tp": 3,
+        "fp": 0,
+        "devRecall": 0.20408163265306123,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.89,
+        "precision": 1,
+        "recall": 0.14285714285714285,
+        "tp": 2,
+        "fp": 0,
+        "devRecall": 0.12244897959183673,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.9,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0.02040816326530612,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.91,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.92,
+        "precision": 1,
+        "recall": 0.07142857142857142,
+        "tp": 1,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.93,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.94,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      },
+      {
+        "tau": 0.95,
+        "precision": 1,
+        "recall": 0,
+        "tp": 0,
+        "fp": 0,
+        "devRecall": 0,
+        "devNegHits": 0
+      }
+    ],
+    "holdout": {
+      "labelled": 12,
+      "unlabelled": 0,
+      "precision": 0.2625,
+      "recall": 0.5121951219512195,
+      "tp": 21,
+      "fp": 59,
+      "fpOnRequirements": 16,
+      "gold": 41,
+      "unmatchedLabels": 0,
+      "curve": [
+        {
+          "tau": 0.5,
+          "precision": 0.12804878048780488,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 143
+        },
+        {
+          "tau": 0.55,
+          "precision": 0.12804878048780488,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 143
+        },
+        {
+          "tau": 0.6,
+          "precision": 0.12804878048780488,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 143
+        },
+        {
+          "tau": 0.65,
+          "precision": 0.12804878048780488,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 143
+        },
+        {
+          "tau": 0.7,
+          "precision": 0.12883435582822086,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 142
+        },
+        {
+          "tau": 0.75,
+          "precision": 0.1337579617834395,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 136
+        },
+        {
+          "tau": 0.8,
+          "precision": 0.1590909090909091,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 111
+        },
+        {
+          "tau": 0.85,
+          "precision": 0.3088235294117647,
+          "recall": 0.5121951219512195,
+          "tp": 21,
+          "fp": 47
+        },
+        {
+          "tau": 0.9,
+          "precision": 0.125,
+          "recall": 0.024390243902439025,
+          "tp": 1,
+          "fp": 7
+        },
+        {
+          "tau": 0.95,
+          "precision": 1,
+          "recall": 0,
+          "tp": 0,
+          "fp": 0
+        }
+      ],
+      "oracle95": null
+    },
+    "skipped": [
+      "Relational database design in Postgres (scan finds postgresql)"
+    ]
+  }
+]

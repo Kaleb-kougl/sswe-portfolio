@@ -58,3 +58,17 @@ docs/*
 # docs/* is ignored above; these are tracked
 !docs/hero-pipeline.md
 !docs/contact-delivery.md
+
+# Held-out job descriptions for the fit-checker evals are third-party postings.
+# Kept local until we decide how (or whether) to commit them.
+/evals/cases/holdout/*.txt
+/evals/cases/holdout/*.labels.json
+/evals/cases/holdout-test/
+/evals/cases/dev/
+# Eval results on the held-out JDs quote their text: keep them local too.
+/evals/local/results/holdout/
+/evals/embed/results/holdout/
+/evals/chat/results/holdout/
+
+# BEM refactor computed-style baseline (large, local-only)
+/e2e/bem/__baseline__/computed/

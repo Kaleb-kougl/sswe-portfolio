@@ -73,7 +73,7 @@ function IllustrationPanel({
     <div
       role="presentation"
       aria-hidden
-      className={`flex h-28 w-full items-center justify-center overflow-hidden rounded-md ${className}`}
+      className={`work-illustration ${className}`}
     >
       {children}
     </div>
@@ -169,8 +169,8 @@ function CssTranslationDrawing() {
     <IllustrationPanel className="gap-1.5 bg-panel p-2">
       {/* Left: the source. Property names take the link ink, values the body
           ink, which is the same two-tone the rest of the site gives code. */}
-      <div className="min-w-0 flex-1 self-stretch overflow-hidden rounded-xs border border-hairline bg-surface px-2 py-0.5 shadow-hairline">
-        <code className="block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px]">
+      <div className="work-illustration__pane work-illustration__pane--light">
+        <code className="work-illustration__code">
           {CSS_DECLARATIONS.map(([property, value]) => (
             <span key={`${property}${value}`} className="block">
               {property ? <span className="text-link">{property}: </span> : null}
@@ -188,8 +188,8 @@ function CssTranslationDrawing() {
       {/* Right: the emitted tree, on the package's own dark canvas. Paper for
           instance names, periwinkle for the values they carry — both already
           pigments this file draws with, so the panel needs no new ink. */}
-      <div className="min-w-0 flex-1 self-stretch overflow-hidden rounded-xs bg-[#161310] px-2 py-0.5">
-        <code className="block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px]">
+      <div className="work-illustration__pane bg-[#161310]">
+        <code className="work-illustration__code">
           {EMITTED_INSTANCES.map((instance) => (
             <span key={`${instance.mark}${instance.name}${instance.detail}`} className="block">
               <span className="text-[#6F675E]">{instance.mark}</span>
@@ -347,11 +347,11 @@ const ILLUSTRATIONS: Record<WorkProjectId, ReactNode> = {
   'analytics-extension': <ExtensionPopupDrawing />,
 };
 
-/* Written out in full so Tailwind's scanner sees every class it must emit. */
+/* Tone → `.badge` modifier (styles/blocks/badge.css). */
 const BADGE_TONE: Record<WorkBadgeTone, string> = {
-  lime: 'bg-badge-lime text-badge-lime-ink',
-  blue: 'bg-badge-blue text-badge-blue-ink',
-  neutral: 'bg-badge-neutral text-badge-neutral-ink',
+  lime: 'badge--lime',
+  blue: 'badge--blue',
+  neutral: 'badge--neutral',
 };
 
 export function WorkSection() {
@@ -362,7 +362,7 @@ export function WorkSection() {
 
         <h2
           id="work-heading"
-          className="mt-4 font-display text-[clamp(2.25rem,7vw,3.5rem)] leading-[1.05] tracking-display text-ink"
+          className="section__heading mt-4 text-[clamp(2.25rem,7vw,3.5rem)] tracking-display text-ink"
         >
           Things I&rsquo;ve shipped.
         </h2>
@@ -375,27 +375,27 @@ export function WorkSection() {
           {WORK_PROJECTS.map((project) => (
             <li
               key={project.id}
-              className="flex flex-col rounded-lg border border-hairline bg-surface p-5 shadow-card"
+              className="card card--lg card--elevated flex flex-col p-5"
             >
               {ILLUSTRATIONS[project.id]}
 
               <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <h3 className="font-display text-xl tracking-display text-ink">
+                <h3 className="work-card__title">
                   {project.name}
                 </h3>
                 <span
-                  className={`rounded-pill px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] ${BADGE_TONE[project.badge.tone]}`}
+                  className={`badge ${BADGE_TONE[project.badge.tone]} px-2.5 py-1 text-[10px] uppercase tracking-[0.1em]`}
                 >
                   {project.badge.label}
                 </span>
               </div>
 
-              <p className="mt-3 grow text-[0.9375rem] leading-relaxed text-body">
+              <p className="work-card__description mt-3 grow">
                 {project.description}
               </p>
 
               {project.links.length > 0 ? (
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-1">
+                <div className="work-card__footer mt-4">
                   {/* Only this card has something live to run. */}
                   {project.id === 'r3f-projectiles' ? <ProjectileDemoLauncher /> : null}
 
@@ -406,7 +406,7 @@ export function WorkSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       /* min-h-11 = 44px: the tap target, not just the text. */
-                      className="inline-flex min-h-11 items-center gap-1 rounded-xs text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover"
+                      className="link inline-flex min-h-11 items-center gap-1 rounded-xs text-sm font-semibold"
                     >
                       {link.label}
                       <span className="sr-only">
@@ -417,7 +417,7 @@ export function WorkSection() {
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 flex min-h-11 items-center border-t border-hairline font-mono text-xs text-muted">
+                <p className="work-card__note mt-4">
                   {project.linkNote}
                 </p>
               )}

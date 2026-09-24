@@ -1,0 +1,78 @@
+/* =====================================================================
+   .site-nav — the fixed top bar: wordmark, section links (desktop), menu
+   toggle + panel (below 900px). The translucent surface is `.nav-surface`
+   in globals.css (unlayered), which sits on the same <header>; it sets
+   only background, backdrop-filter and border-bottom, so nothing here
+   overlaps it. The toggle and CTA are `.button`s.
+
+   Active link: [aria-current="true"], which SiteNav sets on exactly the
+   link the scrollspy owns (and nothing else sets aria-current here).
+   ORDER MATTERS: each [aria-current] rule follows its base rule.
+   ===================================================================== */
+
+.site-nav {
+  @apply fixed inset-x-0 top-0 z-[2];
+}
+
+/* --- Wordmark ------------------------------------------------------- */
+.site-nav__brand {
+  @apply inline-flex min-h-[44px] items-center gap-3 whitespace-nowrap font-display text-[17px] tracking-[-0.03em] text-ink min-[900px]:text-[21px];
+}
+
+/* ink / ink / lime-with-ink-inset-ring / cta — the 2x2 block mark. */
+.site-nav__mark {
+  @apply grid grid-cols-2 gap-[2px];
+}
+
+.site-nav__mark-cell {
+  @apply size-[9px] rounded-[1px] bg-ink;
+}
+
+.site-nav__mark-cell--lime {
+  @apply bg-lime inset-ring inset-ring-ink;
+}
+
+.site-nav__mark-cell--cta {
+  @apply bg-cta;
+}
+
+/* --- Desktop links -------------------------------------------------- */
+.site-nav__link {
+  @apply inline-flex min-h-[44px] items-center border-b-2 border-transparent px-1 text-[15px] font-semibold text-muted transition-colors hover:text-ink;
+}
+
+.site-nav__link[aria-current="true"] {
+  @apply border-cta text-ink;
+}
+
+/* Résumé download: shown from 900px (margin stays a utility). */
+.site-nav__resume {
+  @apply hidden min-h-[44px] items-center px-1 text-[15px] font-semibold text-muted transition-colors hover:text-ink min-[900px]:inline-flex;
+}
+
+/* --- Menu toggle bars ----------------------------------------------- */
+.site-nav__burger {
+  @apply flex flex-col gap-[4px];
+}
+
+.site-nav__burger-line {
+  @apply block h-[2px] w-[18px] bg-ink;
+}
+
+/* --- Mobile menu panel ---------------------------------------------- */
+.site-nav__menu {
+  @apply border-t border-hairline bg-paper px-6 pb-4 min-[900px]:hidden;
+}
+
+.site-nav__menu-link {
+  @apply flex min-h-[44px] items-center text-[16px] font-semibold text-muted;
+}
+
+/* Section links are divided; the trailing Résumé link is not. */
+.site-nav__menu-link--section {
+  @apply border-b border-hairline;
+}
+
+.site-nav__menu-link[aria-current="true"] {
+  @apply text-ink;
+}

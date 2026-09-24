@@ -53,14 +53,14 @@ export function HeroSection() {
     <section
       id="hero"
       aria-labelledby="hero-heading"
-      className="relative flex flex-col justify-center px-6 pb-16 pt-[calc(var(--nav-height)+3rem)] min-[900px]:min-h-dvh min-[900px]:px-12 min-[900px]:pb-24"
+      className="hero"
     >
       <div className="w-full max-w-[660px]">
         <p className="eyebrow">{HERO_EYEBROW}</p>
 
         <h1
           id="hero-heading"
-          className="mt-6 text-balance font-display text-[40px] leading-[0.95] tracking-[-0.035em] text-ink min-[900px]:text-[82px]"
+          className="hero__title mt-6"
         >
           {HERO_HEADLINE}
         </h1>
@@ -73,7 +73,7 @@ export function HeroSection() {
           that took 10% off cycle time, and the secure gateway that opens
           internal AI platforms to third-party agents.
         */}
-        <p className="mt-7 max-w-[54ch] text-[17px] leading-relaxed text-body min-[900px]:text-[19px]">
+        <p className="hero__lead mt-7 max-w-[54ch]">
           {`TypeScript and React since ${CAREER_START_YEAR}: component libraries, module federation, Core Web Vitals and frontend SLOs.`}{' '}
           Lately, AI in the delivery path — code-generation harnesses, and a
           secure gateway that opens internal AI platforms to third-party
@@ -83,37 +83,38 @@ export function HeroSection() {
         <div className="mt-9 flex flex-wrap items-center gap-3">
           <a
             href="#work"
-            className="inline-flex min-h-[44px] items-center rounded-pill bg-cta px-6 text-[15px] font-semibold text-cta-ink shadow-cta transition-transform hover:-translate-y-px"
+            className="button button--pill button--primary button--hero px-6 transition-transform hover:-translate-y-px"
           >
             See my work
           </a>
           <a
             href={CONTACT_INFO.github}
             rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center rounded-pill border border-control bg-surface px-6 text-[15px] font-semibold text-ink transition-colors hover:bg-panel"
+            className="button button--pill button--outline button--hero px-6 transition-colors hover:bg-panel"
           >
             GitHub
           </a>
+          {/* Its own route (plan v4, Phase 2e): the fit checker's code never
+              ships with this page, only this link does. A plain <a>, not
+              next/link: <Link> is a Client Component, and this page doesn't
+              otherwise load it — it measured +2.3 KB gzip on the homepage JS
+              budget (scripts/check-homepage-js.mjs) for a prefetch of a page
+              few visitors open. */}
+          <a
+            href="/fit"
+            className="button button--pill button--outline button--hero px-6 transition-colors hover:bg-panel"
+          >
+            Check your role against my work
+          </a>
         </div>
 
-        <dl className="mt-14 grid grid-cols-1 border-t border-hairline min-[900px]:grid-cols-3">
-          {HERO_STATS.map((stat, index) => (
-            <div
-              key={stat.term}
-              className={[
-                'border-b border-hairline py-4 min-[900px]:border-b-0 min-[900px]:py-5',
-                index > 0
-                  ? 'min-[900px]:border-l min-[900px]:border-hairline min-[900px]:pl-6'
-                  : '',
-                index < HERO_STATS.length - 1 ? 'min-[900px]:pr-6' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <dt className="font-mono text-[11px] font-bold uppercase leading-none tracking-[0.12em] text-muted">
+        <dl className="hero__stats mt-14">
+          {HERO_STATS.map((stat) => (
+            <div key={stat.term} className="hero__stat">
+              <dt className="label-mono label-mono--tight">
                 {stat.term}
               </dt>
-              <dd className="mt-2 text-[15px] font-semibold text-ink">
+              <dd className="hero__stat-value mt-2">
                 {stat.detail}
               </dd>
             </div>
@@ -123,9 +124,9 @@ export function HeroSection() {
 
       {/* Tells the reader the fixed 3D backdrop is scroll-driven. Desktop only:
           on the auto-height mobile hero there is no "bottom" to pin it to. */}
-      <p className="absolute bottom-10 right-12 hidden items-center gap-3 min-[900px]:flex">
-        <span aria-hidden="true" className="h-px w-16 bg-ink" />
-        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+      <p className="hero__scroll-hint">
+        <span aria-hidden="true" className="hero__scroll-rule" />
+        <span className="hero__scroll-label">
           Scroll: the blocks rearrange for each section
         </span>
       </p>
