@@ -1,6 +1,8 @@
 import { GAP_VOCABULARY, gapTerm, normalizeSkill, SKILLS_TABLE } from '@/data/corpus/skills';
 import { detectSkills } from '@/lib/fit/scan';
 
+import { hasFigure, numberFamilies, type NumberFamily } from './figures';
+
 /**
  * CHAT ROUTER (measurement spike, not wired into any page).
  *
@@ -269,9 +271,20 @@ export type ChatIntent =
   | { kind: 'projects' }
   | { kind: 'project'; id: string }
   | { kind: 'profile'; topic: ProfileTopic; unstated: UnstatedTopic | null }
-  | { kind: 'skills'; asked: AskedSkill[]; leading: boolean }
-  | { kind: 'query'; query: string; leading: boolean }
-  | { kind: 'unknown-term'; term: string; leading: boolean };
+  | { kind: 'skills'; asked: AskedSkill[]; leading: boolean; figures: Figures }
+  | { kind: 'query'; query: string; leading: boolean; figures: Figures }
+  | { kind: 'unknown-term'; term: string; leading: boolean; figures: Figures };
+
+/**
+ * A question that carries a figure: the families it is a figure of (see
+ * figures.ts), possibly none. Null when the question states no number.
+ */
+export type Figures = NumberFamily[] | null;
+
+/** The number families of a message's figures, or null when it has none. */
+export function figuresOf(message: string): Figures {
+  return hasFigure(message) ? numberFamilies(message) : null;
+}
 
 const INJECTION =
   /\b(?:ignore|disregard|forget|override|bypass)\b[^.?!\n]{0,40}\b(?:rules?|instructions?|prompts?|guidelines|evidence|everything|above|previous|constraints|policy)\b|\bsystem\s*(?:override|prompt|message|:)|<\/?\s*(?:system|assistant|user)\s*>|\byou are now\b|\bfrom now on,? you\b|\bpretend (?:you(?:'|’)?re|you are|to be)\b|\bact as\b|\bjailbreak\b|\bDAN\b|\bdeveloper mode\b|\bnew instructions\b|\[\s*(?:system|admin|assistant)\s*\]|\brate (?:him|kaleb) \d|\b(?:reveal|print|show|repeat) (?:me )?(?:your|the) (?:system )?(?:prompt|instructions)\b|\b(?:say|tell me|write|state|claim|confirm) (?:that )?(?:he(?:'|’)s|he is|kaleb is|kaleb(?:'|’)s) (?:a |an |the )?(?:perfect|ideal|great|excellent|best|top|10x|genius|amazing)/;
@@ -478,6 +491,7 @@ export function routeChat(raw: string): ChatIntent {
   if (isInjection(message)) return { kind: 'help', reason: 'injection' };
 
   const leading = isLeading(message);
+  const figures = figuresOf(message);
   const skills = chatSkills(message);
   const project = projectFor(message);
   const employerOnly = project && EMPLOYER_NAMES.has(project.name);
@@ -491,16 +505,18 @@ export function routeChat(raw: string): ChatIntent {
 
   if (CONTACT_CUES.test(message)) return { kind: 'profile', ...profileTopic(message) };
 
-  if (skills.length > 0) return { kind: 'skills', asked: skills, leading };
+  if (skills.length > 0) return { kind: 'skills', asked: skills, leading, figures };
 
   if (ABOUT_CUES.test(message)) return { kind: 'profile', topic: 'about', unstated: null };
 
   const term = unknownTerm(message);
-  if (term) return { kind: 'unknown-term', term, leading };
+  if (term) return { kind: 'unknown-term', term, leading, figures };
 
   const query = leading ? claimFreeQuery(message) : message;
-  if ((EXPERIENCE_CUES.test(message) || leading) && searchableWords(query).length >= 2) {
-    return { kind: 'query', query: query.slice(0, 500), leading };
+  // A figure of a known kind needs only one word to search on ("20% faster?").
+  const minWords = figures && figures.length > 0 ? 1 : 2;
+  if ((EXPERIENCE_CUES.test(message) || leading) && searchableWords(query).length >= minWords) {
+    return { kind: 'query', query: query.slice(0, 500), leading, figures };
   }
 
   return { kind: 'help', reason: 'no-match' };

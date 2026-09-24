@@ -35,12 +35,12 @@ const MESSAGE_LIMIT = 12_000;
  * __tests__/chat/ask-panel.test.tsx holds the two lists equal.
  */
 export const PANEL_EXAMPLES: readonly string[] = [
-  'Has he used React?',
+  'Have you used React?',
   'Kubernetes?',
   'React and Go?',
   'Tell me about r3f-projectiles',
-  'How do I contact him?',
-  'Is he available?',
+  'How do I contact you?',
+  'Are you available?',
 ];
 
 let engineModule: Promise<Engine> | null = null;
@@ -105,8 +105,13 @@ export function AskPanel() {
     setEngine(loaded);
     setError(null);
     setText('');
-    setTurns((prev) => [...prev, { id: nextId.current++, question: q, reply }]);
-    setAnnouncement(reply.announce);
+    // The id is taken outside the updater, which Strict Mode runs twice.
+    const id = nextId.current++;
+    setTurns((prev) => [...prev, { id, question: q, reply }]);
+    // Cleared first, then set on the next frame: the same question twice gives
+    // the same string, and an unchanged live region is never re-announced.
+    setAnnouncement('');
+    requestAnimationFrame(() => setAnnouncement(reply.announce));
     fieldRef.current?.focus();
   }
 
@@ -148,7 +153,7 @@ export function AskPanel() {
             value={text}
             onChange={(event) => setText(event.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Has he used GraphQL?"
+            placeholder="Have you used GraphQL?"
             autoComplete="off"
             aria-invalid={error ? true : undefined}
             aria-describedby={[ids.hint, error ? ids.error : null].filter(Boolean).join(' ')}
@@ -191,7 +196,7 @@ export function AskPanel() {
       {turns.length > 0 && engine ? (
         <section aria-label="Answers" className="mt-8">
           <ol className="space-y-6">
-            {turns.map((turn) => (
+            {turns.map((turn, index) => (
               <li
                 key={turn.id}
                 ref={(el) => {
@@ -202,7 +207,7 @@ export function AskPanel() {
                 data-kind={turn.reply.kind}
                 className="scroll-mt-24"
               >
-                <engine.AskTurn turnId={turn.id} question={turn.question} reply={turn.reply} onAsk={(q) => void ask(q)} />
+                <engine.AskTurn turnId={turn.id} position={index + 1} question={turn.question} reply={turn.reply} onAsk={(q) => void ask(q)} />
               </li>
             ))}
           </ol>

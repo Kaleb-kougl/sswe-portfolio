@@ -2,16 +2,18 @@ import { GAP_VOCABULARY, SKILL_CATEGORIES, SKILL_CATEGORY, SKILLS_TABLE, type Sk
 import type { Evidence, Profile } from '@/data/corpus';
 import { SITE_URL } from '@/data/site';
 import { analyzeWithoutModel } from '@/lib/fit/analyze';
-import type { FitReport } from '@/lib/fit/contract';
+import type { FitReport, Verdict } from '@/lib/fit/contract';
 import { validateJd } from '@/lib/fit/prompt';
 import { runTool, type Project } from '@/lib/tools';
 
+import { NO_FIGURE_LINE, statesFigureOf } from './figures';
 import {
   PROJECT_ALIASES,
   editDistance,
   routeChat,
   type AskedSkill,
   type ChatIntent,
+  type Figures,
   type ProfileTopic,
   type UnstatedTopic,
 } from './route';
@@ -44,7 +46,12 @@ export interface EvidenceCard {
   where: string;
   period: string | null;
   metric: string | null;
-  source: { label: string; href: string; external: boolean };
+  /**
+   * `label` is the corpus's full source label ("Résumé: Software Engineer II,
+   * Indeed.com"), kept as the link's accessible name; `short` is what the card
+   * shows after the entry and dates ("Résumé", "GitHub", "npm", "Paper").
+   */
+  source: { label: string; short: string; href: string; external: boolean };
 }
 
 export type Finding =
@@ -53,8 +60,9 @@ export type Finding =
       /** The skill's label, or null for a keyword search. */
       skill: string | null;
       lead: string;
+      /** The first CARDS_SHOWN records, ranked: a stated metric first, then the most recent. */
       cards: EvidenceCard[];
-      /** Records past the first few, behind a disclosure. */
+      /** The rest, behind a "Show N more" disclosure. */
       more: EvidenceCard[];
     }
   | {
@@ -83,9 +91,37 @@ export interface ProjectItem {
   ask: string | null;
 }
 
+/** A pasted JD, summarised in the thread; the full report opens in the checker above. */
+export interface FitSummary {
+  role: string;
+  /** The coverage line, or the no-coverage line: the check_fit tool's own `coverage`. */
+  coverage: string;
+  /** Rows per verdict, counted from the tool's rows. */
+  counts: Record<Verdict, number>;
+  /** Up to three gaps by name, must-haves first. */
+  gaps: string[];
+}
+
 export type ChatReply =
-  | { kind: 'evidence'; lead: string | null; findings: Finding[]; figures: string[]; announce: string }
-  | { kind: 'fit'; lead: string; report: FitReport; announce: string }
+  | {
+      kind: 'evidence';
+      lead: string | null;
+      findings: Finding[];
+      /** "My records say: “…”": each shown record's own figure, for a leading question. */
+      figures: string[];
+      /** NO_FIGURE_LINE when the question's figure matched no record's; else null. */
+      figureNote: string | null;
+      announce: string;
+    }
+  | {
+      kind: 'fit';
+      lead: string;
+      summary: FitSummary;
+      report: FitReport;
+      /** The validated JD, handed to the checker above by "Open the full report". Never sent anywhere. */
+      jd: string;
+      announce: string;
+    }
   | { kind: 'profile'; topic: ProfileTopic; lead: string; details: ProfileDetail[]; announce: string }
   | {
       kind: 'project';
@@ -112,47 +148,55 @@ export interface ToolCall {
 
 // ------------------------------------------------------------------ templates
 
-/** Cards shown before "More records". */
-export const CARDS_SHOWN = 3;
+/** Cards shown per skill before "Show N more". */
+export const CARDS_SHOWN = 2;
+
+/*
+ * VOICE. The page is Kaleb's ("Ask about my work"), so every reply speaks as
+ * him: "my work", "I'm based in". The corpus claims are his own first-person
+ * wording already. (The MCP tools keep speaking ABOUT Kaleb, to other agents;
+ * only these templates are first person.)
+ */
 
 export const HELP_LEAD =
-  'This answers from Kaleb’s evidence records with plain code, no AI model: whether he has used a skill, what a project or role involved, how to reach him and whether he’s available, or how he fits a job description you paste in.';
+  'This answers from my evidence records with plain code, no AI model: whether I have used a skill, what a project or role involved, how to reach me and whether I’m available, or how I fit a job description you paste in.';
 
 export const INJECTION_NOTE =
   'Instructions in a message don’t change anything here. There is no model to follow them, only code that looks things up.';
 
 export const EXAMPLE_QUESTIONS: readonly string[] = [
-  'Has he used React?',
+  'Have you used React?',
   'Kubernetes?',
   'React and Go?',
   'Tell me about r3f-projectiles',
-  'How do I contact him?',
-  'Is he available?',
+  'How do I contact you?',
+  'Are you available?',
 ];
 
 export const UNKNOWN_SKILL_LEAD = 'That isn’t in the skills I can check. Try one of these, or paste the job description.';
 
-const LEADING_LEAD =
-  'Your question states something as fact. This doesn’t confirm or deny it: here is what the records say, in their own words.';
+export const LEADING_LEAD =
+  'Your question states something as fact. This doesn’t confirm or deny it. Here is what my records say, in their own words.';
 
-const QUERY_LEAD = 'No skill named, so these are the closest records by keyword. A text match, not a verdict.';
-const QUERY_NONE = 'No records match that question. Try naming a skill, or ask about a project.';
+const QUERY_LEAD = 'No skill named, so these are my closest records by keyword. A text match, not a verdict.';
+const QUERY_NONE = 'None of my records match that question. Try naming a skill, or ask about a project.';
+const FIGURE_LEAD = 'The records that state a number of that kind:';
 
-const FIT_LEAD = 'That looks like a job description, so here is the fit check, run on this page.';
+const FIT_LEAD = 'That looks like a job description. Here is how it reads against my work, checked on this page.';
 
 const UNSTATED_TEXT: Readonly<Record<UnstatedTopic, string>> = {
-  relocation: 'His profile doesn’t say whether he would relocate. Ask him directly:',
-  remote: 'His profile doesn’t say whether he wants remote, hybrid or on-site work. Ask him directly:',
-  visa: 'His profile doesn’t cover work authorization. Ask him directly:',
-  salary: 'His profile doesn’t state pay expectations. Ask him directly:',
-  phone: 'There is no phone number here on purpose. Email or the contact form reach him:',
+  relocation: 'My profile doesn’t say whether I would relocate. Ask me directly:',
+  remote: 'My profile doesn’t say whether I want remote, hybrid or on-site work. Ask me directly:',
+  visa: 'My profile doesn’t cover work authorization. Ask me directly:',
+  salary: 'My profile doesn’t state pay expectations. Ask me directly:',
+  phone: 'There is no phone number here on purpose. Email or the contact form reach me:',
 };
 
 const found = (total: number) => `Yes — ${total} ${total === 1 ? 'record' : 'records'}:`;
 const foundLeading = (label: string, total: number) => `${total} ${total === 1 ? 'record mentions' : 'records mention'} ${label}:`;
-const noEvidence = (label: string) => `No evidence of ${label} in Kaleb’s work.`;
-const relatedLead = (label: string, category: string) =>
-  `Related, not ${label} evidence: the closest ${category} work.`;
+const noEvidence = (label: string) => `No evidence of ${label} in my work.`;
+const relatedLead = (label: string, category: string) => `Related, not ${label} evidence: my closest ${category} work.`;
+const figureLine = (metric: string) => `My records say: “${metric}.”`;
 
 // ------------------------------------------------------------------ tool calls
 
@@ -198,6 +242,17 @@ function where(project: Project | undefined, entry: string): string {
   return project.kind === 'role' && project.context ? `${project.name}, ${project.context}` : project.name;
 }
 
+/** The source's kind, short enough to sit after the entry and dates on one line. */
+export function shortSourceLabel(label: string, href: string): string {
+  if (/^r[ée]sum[ée](?![a-z])/i.test(label)) return 'Résumé';
+  if (/^work\b/i.test(label)) return 'Work card';
+  if (/^https?:\/\/(?:[\w-]+\.)*github\.com\//.test(href)) return 'GitHub';
+  if (/^https?:\/\/(?:[\w-]+\.)*npmjs\.com\//.test(href)) return 'npm';
+  if (/^https:\/\/doi\.org\//.test(href)) return 'Paper';
+  if (/^https?:\/\/(?:[\w-]+\.)*roblox\.com\//.test(href)) return 'Roblox';
+  return 'Source';
+}
+
 function card(e: Evidence, calls: Calls): EvidenceCard {
   const project = calls.projectList().find((p) => p.id === e.entry);
   return {
@@ -206,8 +261,29 @@ function card(e: Evidence, calls: Calls): EvidenceCard {
     where: where(project, e.entry),
     period: e.period ?? project?.period ?? null,
     metric: e.metric ?? null,
-    source: { label: e.source.label, ...localHref(e.source.href) },
+    source: { label: e.source.label, short: shortSourceLabel(e.source.label, e.source.href), ...localHref(e.source.href) },
   };
+}
+
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+/** A period's end as a sortable number ("Aug 2022 – Dec 2024" → 2024.11); undated is -1. */
+export function periodEnd(period: string | null): number {
+  if (!period) return -1;
+  const end = period.split(/[–—-]/).at(-1)!.trim().toLowerCase();
+  if (/present|now|current/.test(end)) return 9999;
+  const year = /(\d{4})/.exec(end);
+  if (!year) return -1;
+  const month = MONTHS.findIndex((m) => end.startsWith(m));
+  return Number(year[1]) + (month >= 0 ? month : 11) / 100;
+}
+
+/** Records with a stated metric first, then the most recent; ties keep the tool's order. */
+export function rankCards(cards: readonly EvidenceCard[]): EvidenceCard[] {
+  return cards
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => Number(!!b.c.metric) - Number(!!a.c.metric) || periodEnd(b.c.period) - periodEnd(a.c.period) || a.i - b.i)
+    .map(({ c }) => c);
 }
 
 function split(cards: EvidenceCard[]): { cards: EvidenceCard[]; more: EvidenceCard[] } {
@@ -241,7 +317,7 @@ function skillFinding(skill: AskedSkill, leading: boolean, calls: Calls): Findin
     const rel = related(skill, calls);
     return { status: 'none', skill: skill.label, lead: noEvidence(skill.label), relatedLead: rel.lead, related: rel.cards };
   }
-  const cards = out.results.map((e) => card(e, calls));
+  const cards = rankCards(out.results.map((e) => card(e, calls)));
   return {
     status: 'found',
     skill: skill.label,
@@ -250,30 +326,50 @@ function skillFinding(skill: AskedSkill, leading: boolean, calls: Calls): Findin
   };
 }
 
-function queryFinding(query: string, calls: Calls): Finding {
+/**
+ * Records by keyword. When the question carries a figure, only records that
+ * state a figure of the same family stay ("team of 10" keeps "led a team of
+ * 6 engineers", drops "5 teams" and "~12 engineers mentored"); if none do,
+ * the finding is null and the reply says NO_FIGURE_LINE instead.
+ */
+function queryFinding(query: string, figures: Figures, calls: Calls): Finding | null {
+  if (figures) {
+    const out = calls.run<SearchOutput>('search_evidence', { query, limit: 50 });
+    const matching = out.results.filter((e) => statesFigureOf(e, figures));
+    if (matching.length === 0) return null;
+    return { status: 'found', skill: null, lead: FIGURE_LEAD, ...split(rankCards(matching.map((e) => card(e, calls)))) };
+  }
   const out = calls.run<SearchOutput>('search_evidence', { query, limit: 4 });
   if (out.results.length === 0) return { status: 'none', skill: null, lead: QUERY_NONE, relatedLead: null, related: [] };
-  return { status: 'found', skill: null, lead: QUERY_LEAD, cards: out.results.map((e) => card(e, calls)), more: [] };
+  return { status: 'found', skill: null, lead: QUERY_LEAD, ...split(out.results.map((e) => card(e, calls))) };
 }
 
-/** "The evidence says X": each shown record's own figure, verbatim. */
-function figuresOf(findings: readonly Finding[]): string[] {
-  const metrics = findings.flatMap((f) => (f.status === 'found' ? [...f.cards, ...f.more] : [])).flatMap((c) => (c.metric ? [c.metric] : []));
-  return [...new Set(metrics)].map((m) => `The evidence says: “${m}.”`);
+/**
+ * "My records say X": each found record's own figure, verbatim. With a figure
+ * in the question, only figures of the same family.
+ */
+function figureLines(findings: readonly Finding[], figures: Figures): string[] {
+  const cards = findings.flatMap((f) => (f.status === 'found' ? [...f.cards, ...f.more] : []));
+  const metrics = cards.filter((c) => c.metric && (!figures || statesFigureOf({ claim: '', metric: c.metric }, figures))).map((c) => c.metric!);
+  return [...new Set(metrics)].map(figureLine);
 }
 
-function evidenceReply(findings: Finding[], leading: boolean): ChatReply {
-  const announce = findings
-    .map((f) => {
-      if (f.skill === null) return f.status === 'found' ? 'Closest records by keyword.' : 'No records match.';
+function evidenceReply(findings: Finding[], leading: boolean, figures: Figures = null): ChatReply {
+  const lines = leading ? figureLines(findings, figures) : [];
+  const figureNote = leading && figures && lines.length === 0 ? NO_FIGURE_LINE : null;
+  const announce = [
+    ...(figureNote ? [figureNote] : []),
+    ...findings.map((f) => {
+      if (f.skill === null) return f.status === 'found' ? (figures ? 'Records that state a number of that kind.' : 'Closest records by keyword.') : 'No records match.';
       return f.status === 'found' ? `${f.skill}: ${f.lead.replace(/:$/, '.')}` : f.lead;
-    })
-    .join(' ');
+    }),
+  ].join(' ');
   return {
     kind: 'evidence',
     lead: leading ? LEADING_LEAD : null,
     findings,
-    figures: leading ? figuresOf(findings) : [],
+    figures: lines,
+    figureNote,
     announce,
   };
 }
@@ -298,23 +394,23 @@ function profileReply(topic: ProfileTopic, unstated: UnstatedTopic | null, calls
   let details: ProfileDetail[];
   switch (topic) {
     case 'contact':
-      lead = `Email ${p.email}, or use the contact form.`;
+      lead = `Email me at ${p.email}, or use the contact form.`;
       details = contact;
       break;
     case 'availability':
-      lead = p.availability ? `${p.availability}.` : 'His profile doesn’t state his availability.';
+      lead = p.availability ? `I’m ${lowerFirst(p.availability)}.` : 'My profile doesn’t state my availability.';
       details = [availability, roles, ...contact.slice(0, 2)];
       break;
     case 'location':
-      lead = `Based in ${p.location}.`;
+      lead = `I’m based in ${p.location}.`;
       details = [location, availability, ...contact.slice(0, 2)];
       break;
     case 'roles':
-      lead = p.roleTargets.length ? `Looking for: ${p.roleTargets.join('; ')}.` : 'His profile doesn’t list target roles.';
+      lead = p.roleTargets.length ? `I’m targeting these roles: ${p.roleTargets.join('; ')}.` : 'My profile doesn’t list target roles.';
       details = [roles, availability, ...contact.slice(0, 2)];
       break;
     case 'about':
-      lead = `${p.name}, ${p.title}. From his profile: “${p.summary}”`;
+      lead = `I’m ${p.name}, ${p.title}. From my profile: “${p.summary}”`;
       details = [title, location, availability, roles, ...contact];
       break;
     case 'unstated':
@@ -325,12 +421,17 @@ function profileReply(topic: ProfileTopic, unstated: UnstatedTopic | null, calls
   return { kind: 'profile', topic, lead, details, announce: lead };
 }
 
+/** "Available now (as of …)" → "available now (as of …)", after "I’m". */
+function lowerFirst(text: string): string {
+  return /^[A-Z][a-z]/.test(text) ? text[0].toLowerCase() + text.slice(1) : text;
+}
+
 // ------------------------------------------------------------------ projects
 
 function projectReply(id: string, calls: Calls): ChatReply {
   const p = calls.run<Project & { evidence: Evidence[] }>('get_project', { id });
   const meta = [p.kind === 'role' ? 'Role' : 'Project', p.context, p.period].filter(Boolean).join(' · ');
-  const cards = p.evidence.map((e) => card(e, calls));
+  const cards = rankCards(p.evidence.map((e) => card(e, calls)));
   return {
     kind: 'project',
     name: p.name,
@@ -359,20 +460,57 @@ function projectsReply(calls: Calls): ChatReply {
       ask: p.kind === 'project' && name ? `Tell me about ${name}` : null,
     };
   });
-  const lead = 'His roles and projects, each backed by evidence records:';
+  const lead = 'My roles and projects, each backed by evidence records:';
   return { kind: 'projects', lead, items, announce: lead };
 }
 
 // ------------------------------------------------------------------ fit
 
+const GAPS_SHOWN = 3;
+
+/** A gap row's name: the skill it names, else its own (clipped) text. */
+function gapName(row: FitReport['requirements'][number]): string {
+  const skill = row.otherSkills[0] ?? (row.skills[0] ? SKILLS_TABLE.find((s) => s.id === row.skills[0])?.label : undefined);
+  if (skill) return skill;
+  return row.text.length <= 48 ? row.text : `${row.text.slice(0, 47).trimEnd()}…`;
+}
+
 function fitReply(jd: string, calls: Calls): ChatReply {
   const check = validateJd(jd);
   if (!check.ok) return helpReply(check.message, null);
-  // The check_fit tool runs `analyzeWithoutModel` on the same text; the
-  // report view needs the FitReport shape it is built from, so both run.
+  // The check_fit tool runs `analyzeWithoutModel` on the same text. The
+  // summary is counted from the tool's rows; the gap names need the rows'
+  // skill tags, which only the FitReport carries, so both run.
   const out = calls.run<CheckFitOutput>('check_fit', { job_description: check.jd });
   const report = analyzeWithoutModel(check.jd);
-  return { kind: 'fit', lead: FIT_LEAD, report, announce: `Fit check ready. ${out.coverage}.`.replace(/\.\.$/, '.') };
+  const counts: Record<Verdict, number> = { strong: 0, partial: 0, gap: 0, not_assessed: 0 };
+  for (const r of out.requirements) counts[r.verdict as Verdict]++;
+  const gapRows = report.requirements.filter((r) => r.verdict === 'gap');
+  const ordered = [...gapRows.filter((r) => r.priority === 'must'), ...gapRows.filter((r) => r.priority !== 'must')];
+  const gaps = [...new Set(ordered.map(gapName))].slice(0, GAPS_SHOWN);
+  return {
+    kind: 'fit',
+    lead: FIT_LEAD,
+    summary: { role: out.role, coverage: out.coverage, counts, gaps },
+    report,
+    jd: check.jd,
+    announce: `Fit check ready. ${out.coverage}.`.replace(/\.\.$/, '.'),
+  };
+}
+
+/** "3 strong · 2 partial · 4 gaps · 1 not assessed": the counts as the summary card words them. */
+export function countLine(counts: Record<Verdict, number>): string {
+  return [
+    `${counts.strong} strong`,
+    `${counts.partial} partial`,
+    `${counts.gap} ${counts.gap === 1 ? 'gap' : 'gaps'}`,
+    `${counts.not_assessed} not assessed`,
+  ].join(' · ');
+}
+
+/** The gaps line: an absence, worded as one. */
+export function gapsLine(gaps: readonly string[]): string | null {
+  return gaps.length ? `No evidence in my work for: ${gaps.join(', ')}.` : null;
 }
 
 // ------------------------------------------------------------------ help, unknown
@@ -390,16 +528,16 @@ function suggestionsFor(term: string): string[] {
     .filter((s) => s.d <= Math.max(2, Math.floor(t.length / 3)))
     .sort((a, b) => a.d - b.d)
     .map((s) => s.label);
-  return [...new Set([...near, ...DEFAULT_SUGGESTIONS])].slice(0, 4).map((label) => `Has he used ${label}?`);
+  return [...new Set([...near, ...DEFAULT_SUGGESTIONS])].slice(0, 4).map((label) => `Have you used ${label}?`);
 }
 
-function unknownReply(term: string, leading: boolean, calls: Calls): ChatReply {
+function unknownReply(term: string, leading: boolean, figures: Figures, calls: Calls): ChatReply {
   // A single word the vocabulary doesn't know may still be a keyword the
   // records use ("teams"). More than one word ("Next.js" → "next", "js")
   // would match fragments, so it is simply unknown.
   if (/^[A-Za-z]+$/.test(term)) {
-    const finding = queryFinding(term, calls);
-    if (finding.status === 'found') return evidenceReply([finding], leading);
+    const finding = queryFinding(term, figures, calls);
+    if (finding?.status === 'found') return evidenceReply([finding], leading, figures);
   }
   return { kind: 'unknown-skill', lead: UNKNOWN_SKILL_LEAD, suggestions: suggestionsFor(term), announce: UNKNOWN_SKILL_LEAD };
 }
@@ -428,11 +566,14 @@ function build(intent: ChatIntent, calls: Calls): ChatReply {
       return evidenceReply(
         intent.asked.map((s) => skillFinding(s, intent.leading, calls)),
         intent.leading,
+        intent.figures,
       );
-    case 'query':
-      return evidenceReply([queryFinding(intent.query, calls)], intent.leading);
+    case 'query': {
+      const finding = queryFinding(intent.query, intent.leading ? intent.figures : null, calls);
+      return evidenceReply(finding ? [finding] : [], intent.leading, intent.figures);
+    }
     case 'unknown-term':
-      return unknownReply(intent.term, intent.leading, calls);
+      return unknownReply(intent.term, intent.leading, intent.leading ? intent.figures : null, calls);
   }
 }
 
@@ -451,18 +592,21 @@ export function answer(message: string): ChatReply {
 
 /**
  * Every statement a reply makes, as plain text: what the faithfulness test
- * checks. Left out, because they state nothing about Kaleb: a fit row's
- * requirement text (the visitor's own posting, quoted back), field captions
+ * checks. Left out, because they state nothing about Kaleb: field captions
  * ("Email", "LinkedIn"), and suggestion and example chips (questions the
- * visitor can send). The fit rows' notes are included.
+ * visitor can send). A card's short source label and its full one (the
+ * link's accessible name) are both included. A pasted JD's summary card
+ * says its coverage line, verdict counts and gap names; the full report's
+ * rows are the checker's, above.
  */
 export function replyText(reply: ChatReply): string {
-  const cardText = (c: EvidenceCard) => [c.claim, c.where, c.period, c.metric, c.source.label].filter(Boolean).join('. ');
+  const cardText = (c: EvidenceCard) => [c.claim, c.where, c.period, c.metric, c.source.short, c.source.label].filter(Boolean).join('. ');
   switch (reply.kind) {
     case 'evidence':
       return [
         reply.lead,
         ...reply.figures,
+        reply.figureNote,
         ...reply.findings.flatMap((f) =>
           f.status === 'found'
             ? [f.skill, f.lead, ...[...f.cards, ...f.more].map(cardText)]
@@ -473,7 +617,17 @@ export function replyText(reply: ChatReply): string {
         .filter(Boolean)
         .join('\n');
     case 'fit':
-      return [reply.lead, reply.announce, ...reply.report.requirements.map((r) => r.note)].join('\n');
+      // What the summary card shows. The row notes live in the full report,
+      // which the checker above renders (and fit's own tests cover).
+      return [
+        reply.lead,
+        reply.summary.coverage,
+        `${countLine(reply.summary.counts)}.`,
+        gapsLine(reply.summary.gaps),
+        reply.announce,
+      ]
+        .filter(Boolean)
+        .join('\n');
     case 'profile':
       return [reply.lead, ...reply.details.map((d) => d.value)].join('\n');
     case 'project':

@@ -1,10 +1,11 @@
 'use client';
 
 import { AlertCircle } from 'lucide-react';
-import { type FormEvent, useEffect, useId, useRef, useState } from 'react';
+import { type FormEvent, useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 
 import type { FitReport } from '@/lib/fit/contract';
 
+import { OPEN_REPORT_EVENT, type OpenReportDetail } from './open-report';
 import { afterLoadAndIdle, usePrivateMode, type Flow } from './private-mode';
 
 type Results = typeof import('./fit-results');
@@ -90,12 +91,21 @@ export function FitChecker() {
 
   // Focus moves to the report's heading when a scan finishes, so keyboard and
   // screen-reader users land on the result instead of hunting for it.
+  // From the chat's "Open the full report", the page is far below the report,
+  // so it is also scrolled to the middle of the screen rather than the edge.
+  const openedFromChat = useRef(false);
   useEffect(() => {
-    if (scan) headingRef.current?.focus();
+    if (!scan) return;
+    const heading = headingRef.current;
+    if (openedFromChat.current && heading) {
+      openedFromChat.current = false;
+      heading.focus({ preventScroll: true });
+      const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      heading.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    } else heading?.focus();
   }, [scan]);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function run(text: string) {
     if (loading) return;
     setLoading(true);
     let engine: Results;
@@ -109,7 +119,7 @@ export function FitChecker() {
     }
     setLoading(false);
     setResults(engine);
-    const check = engine.validateJd(jd);
+    const check = engine.validateJd(text);
     if (!check.ok) {
       setError(check.message);
       fieldRef.current?.focus();
@@ -119,6 +129,25 @@ export function FitChecker() {
     reset();
     setScan((prev) => ({ report: engine.analyzeWithoutModel(check.jd), jd: check.jd, run: (prev?.run ?? 0) + 1 }));
   }
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void run(jd);
+  }
+
+  // "Open the full report" in the chat below (./open-report.ts): the JD it
+  // summarised goes into this form and runs here, and focus lands on the
+  // report heading as for any scan. In-page only; nothing is sent.
+  const openReport = useEffectEvent((text: string) => {
+    openedFromChat.current = true;
+    setJd(text);
+    void run(text);
+  });
+  useEffect(() => {
+    const onOpen = (event: Event) => openReport((event as CustomEvent<OpenReportDetail>).detail.jd);
+    window.addEventListener(OPEN_REPORT_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_REPORT_EVENT, onOpen);
+  }, []);
 
   const modelReport =
     flow.step === 'done' ? flow.report : flow.step === 'running' && flow.rows.length > 0 && scan ? partialReport(scan.report, flow.rows) : null;

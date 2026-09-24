@@ -4,19 +4,27 @@ import { detectSkills } from '@/lib/fit/scan';
 import type { ChatContext, ContextRow } from '@/lib/chat/context';
 import { checkAnswer, extractNumbers } from '@/lib/chat/faithfulness';
 import {
+  CARDS_SHOWN,
   EXAMPLE_QUESTIONS,
   HELP_LEAD,
+  LEADING_LEAD,
   INJECTION_NOTE,
   UNKNOWN_SKILL_LEAD,
   answer,
   answerWithCalls,
+  countLine,
+  periodEnd,
+  rankCards,
   replyText,
+  shortSourceLabel,
   type ChatReply,
   type ToolCall,
 } from '@/lib/chat/answer';
 import type { ChatIntent } from '@/lib/chat/route';
 import { CORPUS } from '@/data/corpus';
 import type { Verdict } from '@/lib/fit/contract';
+import { coverageLine, NO_COVERAGE_LINE } from '@/lib/fit/markdown';
+import { NO_FIGURE_LINE, numberFamilies } from '@/lib/chat/figures';
 
 import { PHRASINGS } from '../../evals/chat/phrasings';
 import { INJECTION_JD, QUESTIONS } from '../../evals/chat/questions';
@@ -43,6 +51,18 @@ function skillsIn(value: unknown): string[] {
   return [];
 }
 
+/**
+ * Figures a reply may derive from a tool's output without restating it: the
+ * JD summary card counts check_fit's rows by verdict ("4 strong · 0 partial"),
+ * and a count of rows is a fact about that output.
+ */
+function derived(calls: readonly ToolCall[]): string {
+  const fit = calls.find((c) => c.tool === 'check_fit')?.output as { requirements: { verdict: Verdict }[] } | undefined;
+  if (!fit) return '';
+  const count = (v: Verdict) => fit.requirements.filter((r) => r.verdict === v).length;
+  return `Rows by verdict: ${count('strong')} strong, ${count('partial')} partial, ${count('gap')} gap, ${count('not_assessed')} not assessed.`;
+}
+
 const TOOL_FOR: Record<ChatReply['kind'], ChatContext['tool']> = {
   evidence: 'search_evidence',
   fit: 'check_fit',
@@ -59,7 +79,7 @@ const TOOL_FOR: Record<ChatReply['kind'], ChatContext['tool']> = {
  * show every record the tool returned, so every record is allowed).
  */
 function contextFor(reply: ChatReply, calls: readonly ToolCall[], intent: ChatIntent): ChatContext {
-  const text = calls.flatMap((c) => leaves(c.output)).join('\n');
+  const text = [...calls.flatMap((c) => leaves(c.output)), derived(calls)].join('\n');
   const unsupported =
     reply.kind === 'evidence' && intent.kind === 'skills'
       ? intent.asked.filter((_, i) => reply.findings[i]?.status === 'none').map((s) => s.id)
@@ -130,8 +150,8 @@ describe('answer: evidence', () => {
     const r = as(answer('Has he used Kubernetes?'), 'evidence');
     const f = r.findings[0];
     if (f.status !== 'none') throw new Error('expected none');
-    expect(f.lead).toBe('No evidence of Kubernetes in Kaleb’s work.');
-    expect(f.relatedLead).toMatch(/^Related, not Kubernetes evidence: the closest cloud and delivery work\.$/);
+    expect(f.lead).toBe('No evidence of Kubernetes in my work.');
+    expect(f.relatedLead).toMatch(/^Related, not Kubernetes evidence: my closest cloud and delivery work\.$/);
     expect(f.related.length).toBeGreaterThan(0);
     for (const c of f.related) expect(c.claim).not.toMatch(/kubernetes/i);
   });
@@ -142,13 +162,52 @@ describe('answer: evidence', () => {
       ['React', 'found'],
       ['Go', 'none'],
     ]);
-    expect(r.announce).toMatch(/^React: Yes — \d+ records\. No evidence of Go in Kaleb’s work\.$/);
+    expect(r.announce).toMatch(/^React: Yes — \d+ records\. No evidence of Go in my work\.$/);
   });
 
   it('a canonical tag with no records is a gap too', () => {
     const f = as(answer('Is he any good with PostgreSQL?'), 'evidence').findings[0];
     expect(f.status).toBe('none');
-    expect(f.lead).toBe('No evidence of PostgreSQL in Kaleb’s work.');
+    expect(f.lead).toBe('No evidence of PostgreSQL in my work.');
+  });
+
+  it(`shows at most ${CARDS_SHOWN} cards per skill, ranked metric first then newest; the rest go behind "Show N more"`, () => {
+    const r = as(answer('React and Go?'), 'evidence');
+    const react = r.findings[0];
+    if (react.status !== 'found') throw new Error('expected found');
+    expect(CARDS_SHOWN).toBe(2);
+    expect(react.cards).toHaveLength(2);
+    expect(react.more.length).toBe(CORPUS.evidence.filter((e) => e.skills.includes('react')).length - 2);
+    const all = [...react.cards, ...react.more];
+    expect(all).toEqual(rankCards(all));
+    // Metric first: every record with a metric comes before every one without.
+    const firstPlain = all.findIndex((c) => !c.metric);
+    expect(all.slice(firstPlain).every((c) => !c.metric)).toBe(true);
+    // Then recency.
+    const plain = all.filter((c) => !c.metric).map((c) => periodEnd(c.period));
+    expect(plain).toEqual([...plain].sort((a, b) => b - a));
+  });
+
+  it('periodEnd reads a period’s end; undated sorts last', () => {
+    expect(periodEnd('Aug 2022 – Dec 2024')).toBeCloseTo(2024.11);
+    expect(periodEnd('Dec 2024 – Jun 2026')).toBeGreaterThan(periodEnd('Aug 2022 – Dec 2024'));
+    expect(periodEnd('2019')).toBeCloseTo(2019.11);
+    expect(periodEnd('Jan 2025 – Present')).toBe(9999);
+    expect(periodEnd(null)).toBe(-1);
+  });
+
+  it('each card has a short source label and a full one, and no card repeats its entry', () => {
+    expect(shortSourceLabel('Résumé: Software Engineer II, Indeed.com', 'https://x/#career')).toBe('Résumé');
+    expect(shortSourceLabel('Work: Indeed Analytics Extension (internal, no public link)', 'https://x/#work')).toBe('Work card');
+    expect(shortSourceLabel('roblox-css on GitHub', 'https://github.com/Kaleb-kougl/roblox-css')).toBe('GitHub');
+    expect(shortSourceLabel('@k9kbdev/roblox-css on npm', 'https://www.npmjs.com/package/@k9kbdev/roblox-css')).toBe('npm');
+    expect(shortSourceLabel('Analytical Chemistry (ACS), DOI', 'https://doi.org/10.1021/x')).toBe('Paper');
+    const f = as(answer('Has he used React?'), 'evidence').findings[0];
+    if (f.status !== 'found') throw new Error('expected found');
+    for (const c of [...f.cards, ...f.more]) {
+      expect(['Résumé', 'Work card', 'GitHub', 'npm', 'Paper', 'Roblox']).toContain(c.source.short);
+      expect(c.source.short).not.toContain(c.where);
+    }
   });
 
   it('an experience question without a skill is a keyword search, labelled as one', () => {
@@ -162,9 +221,10 @@ describe('answer: evidence', () => {
 describe('answer: leading questions and numbers', () => {
   it('"He led a team of 10, right?": the evidence, not a yes; the lead never repeats the 10', () => {
     const r = as(answer('He led a team of 10, right?'), 'evidence');
-    expect(r.lead).toMatch(/^Your question states something as fact\. This doesn’t confirm or deny it/);
+    expect(r.lead).toBe(LEADING_LEAD);
+    expect(r.lead).toMatch(/doesn’t confirm or deny it\. Here is what my records say, in their own words\.$/);
     expect(r.lead).not.toMatch(/\d/);
-    expect(r.figures).toContain('The evidence says: “Led a team of 6 engineers.”');
+    expect(r.figures).toEqual(['My records say: “Led a team of 6 engineers.”']);
     const text = replyText(r);
     expect(text).not.toMatch(/\byes\b/i);
     // A "10" may appear only inside a quoted record ("across a team of 10"), never in a template.
@@ -193,9 +253,55 @@ describe('answer: leading questions and numbers', () => {
     expect(replyText(r)).not.toMatch(/\bYes\b|\bexpert\b/);
   });
 
+  it('a figure only brings records with a figure of the same kind', () => {
+    // "team of 10": the team-of-6 record, not "5 teams", "~12 engineers mentored" or "across a team of 10".
+    const team = as(answer('He led a team of 10, right?'), 'evidence');
+    const teamIds = team.findings.flatMap((f) => (f.status === 'found' ? [...f.cards, ...f.more] : [])).map((c) => c.id);
+    expect(teamIds).toEqual(['indeed-sr-swe.onehost-architecture']);
+    expect(team.figureNote).toBeNull();
+
+    // "20% faster?": percentages only.
+    const pct = as(answer('20% faster?'), 'evidence');
+    const pctCards = pct.findings.flatMap((f) => (f.status === 'found' ? [...f.cards, ...f.more] : []));
+    expect(pctCards.length).toBeGreaterThan(0);
+    for (const c of pctCards) expect(`${c.claim} ${c.metric}`).toMatch(/\d+%/);
+    expect(pctCards.map((c) => c.id)).not.toContain('ibm-staff-swe.build-time'); // "29x faster"
+    expect(pct.figures.every((f) => /\d+%/.test(f))).toBe(true);
+    expect(replyText(pct)).not.toMatch(/\b20%/);
+
+    // A figure of no known kind: the fallback line, no records.
+    const odd = as(answer('He shipped 40 things last sprint, right?'), 'evidence');
+    expect(odd.figureNote).toBe(NO_FIGURE_LINE);
+    expect(odd.findings).toEqual([]);
+    expect(odd.figures).toEqual([]);
+    expect(odd.lead).toBe(LEADING_LEAD);
+    expect(replyText(odd)).not.toContain('40');
+
+    // A known kind no record states: the fallback line too, and the skill's records still answer the skill.
+    const years = as(answer('He is a React expert with 10 years of experience, yes?'), 'evidence');
+    expect(years.figureNote).toBe(NO_FIGURE_LINE);
+    expect(years.figures).toEqual([]);
+  });
+
+  it('number families read the noun attached to the figure', () => {
+    expect(numberFamilies('He led a team of 10')).toEqual(['team']);
+    expect(numberFamilies('led a team of 6 engineers')).toContain('team');
+    expect(numberFamilies('Did he manage 8 engineers?')).toEqual(['team']);
+    expect(numberFamilies('reclaiming 20+ engineer hours per week across a team of 10')).toEqual(['time']);
+    expect(numberFamilies('~12 engineers mentored')).toEqual(['mentoring']);
+    expect(numberFamilies('20+ components used by 5 teams')).toEqual(['count']);
+    expect(numberFamilies('15% faster Time to Interactive for 680M+ users')).toEqual(['percent', 'users']);
+    expect(numberFamilies('rebuild/hot-reload 29x faster')).toEqual(['multiple']);
+    expect(numberFamilies('Bundle 6 MB → 300 KB')).toEqual(['size']);
+    expect(numberFamilies('10 years of Python')).toEqual(['years']);
+    expect(numberFamilies('He shipped 40 things')).toEqual([]);
+  });
+
   it('the TTI question quotes the real figure', () => {
     const r = as(answer('I heard he cut Time to Interactive by 50%. True?'), 'evidence');
     expect(r.figures.join(' ')).toContain('15% faster Time to Interactive');
+    // Percentages only: no "29x faster", no "6 engineers".
+    for (const f of r.figures) expect(f).toMatch(/\d+%/);
   });
 });
 
@@ -203,20 +309,20 @@ describe('answer: profile, project, projects', () => {
   it('contact: email and contact form, from get_profile', () => {
     const r = as(answer('How can I contact him?'), 'profile');
     expect(r.topic).toBe('contact');
-    expect(r.lead).toBe(`Email ${CORPUS.profile.email}, or use the contact form.`);
+    expect(r.lead).toBe(`Email me at ${CORPUS.profile.email}, or use the contact form.`);
     expect(r.details.find((d) => d.label === 'Contact form')?.href).toBe('/#contact');
     expect(r.details.find((d) => d.label === 'Email')?.href).toBe(`mailto:${CORPUS.profile.email}`);
   });
 
   it('availability, location and role targets lead with the answer', () => {
-    expect(as(answer('is he available'), 'profile').lead).toBe(`${CORPUS.profile.availability}.`);
-    expect(as(answer('where is he based'), 'profile').lead).toBe(`Based in ${CORPUS.profile.location}.`);
-    expect(as(answer('What roles is he targeting?'), 'profile').lead).toBe(`Looking for: ${CORPUS.profile.roleTargets.join('; ')}.`);
+    expect(as(answer('is he available'), 'profile').lead).toBe(`I’m ${CORPUS.profile.availability!.replace(/^A/, 'a')}.`);
+    expect(as(answer('where is he based'), 'profile').lead).toBe(`I’m based in ${CORPUS.profile.location}.`);
+    expect(as(answer('What roles is he targeting?'), 'profile').lead).toBe(`I’m targeting these roles: ${CORPUS.profile.roleTargets.join('; ')}.`);
   });
 
   it('what the profile does not say, it says it does not say', () => {
     const r = as(answer('Would he relocate to New York?'), 'profile');
-    expect(r.lead).toMatch(/^His profile doesn’t say whether he would relocate\./);
+    expect(r.lead).toMatch(/^My profile doesn’t say whether I would relocate\. Ask me directly:$/);
     expect(replyText(r)).not.toContain('New York');
     expect(as(answer("What's his phone number?"), 'profile').lead).toMatch(/no phone number/);
   });
@@ -224,7 +330,10 @@ describe('answer: profile, project, projects', () => {
   it('a project: its card and every evidence record behind it', () => {
     const r = as(answer('Tell me about bonkball'), 'project');
     expect(r.name).toBe('BonkBall');
-    expect([...r.cards, ...r.more].map((c) => c.id)).toEqual(CORPUS.evidence.filter((e) => e.entry === 'hammerball').map((e) => e.id));
+    const ids = CORPUS.evidence.filter((e) => e.entry === 'hammerball').map((e) => e.id);
+    expect([...r.cards, ...r.more].map((c) => c.id).sort()).toEqual([...ids].sort());
+    // The one record with a metric leads.
+    expect(r.cards[0].metric).toBeTruthy();
     expect(r.links[0].href).toMatch(/^https:\/\/www\.roblox\.com\//);
   });
 
@@ -243,6 +352,32 @@ describe('answer: fit, help, unknown', () => {
     expect(r.report.mode).toBe('scan');
     expect(r.report.requirements.length).toBeGreaterThan(3);
     expect(r.announce).toMatch(/^Fit check ready\. /);
+    expect(r.jd).toBe(jd.trim());
+  });
+
+  it.each(FIXTURES.map((f) => [f.name, f.jd] as const))('the JD summary card agrees with the report: %s', (_name, jd) => {
+    const { reply } = answerWithCalls(jd);
+    if (reply.kind !== 'fit') return; // a posting validateJd turns away is a help reply
+    const { summary, report } = reply;
+    const tally = (v: Verdict) => report.requirements.filter((row) => row.verdict === v).length;
+    expect(summary.counts).toEqual({ strong: tally('strong'), partial: tally('partial'), gap: tally('gap'), not_assessed: tally('not_assessed') });
+    expect(summary.role).toBe(report.role);
+    expect(summary.coverage).toBe(report.coverage ? coverageLine(report.coverage) : NO_COVERAGE_LINE);
+    expect(summary.gaps.length).toBeLessThanOrEqual(3);
+    expect(summary.gaps.length).toBe(Math.min(3, new Set(summary.gaps).size));
+    if (tally('gap') > 0) expect(summary.gaps.length).toBeGreaterThan(0);
+    else expect(summary.gaps).toEqual([]);
+    const text = replyText(reply);
+    expect(text).toContain(countLine(summary.counts));
+    if (summary.gaps.length) expect(text).toContain(`No evidence in my work for: ${summary.gaps.join(', ')}.`);
+  });
+
+  it('the JD summary names must-have gaps before nice-to-have ones', () => {
+    const r = as(answer(FIXTURES.find((f) => f.name === 'fullstack-senior')!.jd), 'fit');
+    const gapRows = r.report.requirements.filter((row) => row.verdict === 'gap');
+    const firstMust = gapRows.find((row) => row.priority === 'must');
+    if (firstMust) expect(r.summary.gaps[0]).toBeTruthy();
+    expect(countLine({ strong: 3, partial: 1, gap: 1, not_assessed: 0 })).toBe('3 strong · 1 partial · 1 gap · 0 not assessed');
   });
 
   it('an injection line inside a JD is just a row', () => {
@@ -314,7 +449,7 @@ describe('every templated reply passes the spike’s faithfulness checker', () =
   it('never repeats a number from the visitor’s message that no tool returned', () => {
     for (const message of ALL_MESSAGES) {
       const { reply, calls } = answerWithCalls(message);
-      const allowed = new Set(extractNumbers(calls.flatMap((c) => leaves(c.output)).join('\n')));
+      const allowed = new Set(extractNumbers([...calls.flatMap((c) => leaves(c.output)), derived(calls)].join('\n')));
       const extra = extractNumbers(replyText(reply)).filter((n) => !allowed.has(n));
       expect(extra, message.slice(0, 60)).toEqual([]);
     }

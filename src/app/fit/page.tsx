@@ -106,7 +106,7 @@ export default function FitPage() {
             Ask about my work
           </h2>
           <p className="mt-4 max-w-[60ch] font-ui text-[17px] leading-relaxed text-body">
-            Has he used a skill, what did a project involve, is he available, how does he fit this role. Each answer
+            Have I used a skill, what did a project involve, am I available, how do I fit this role. Each answer
             quotes the records behind it, and says so when there are none.
           </p>
           <p data-testid="ask-privacy" className="mt-4 max-w-[64ch] rounded-md border border-hairline bg-panel px-4 py-3 font-ui text-sm leading-relaxed text-body">
