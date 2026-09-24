@@ -12,6 +12,7 @@ import {
   type Verdict,
 } from './contract';
 import { entryLabel, evidenceLabel } from './labels';
+import { missingParts, uncoveredQualifiers } from './qualifiers';
 
 /**
  * DETERMINISTIC JUDGING — Phase 2b of docs/plans/2026-09-23-ai-features.md.
@@ -19,8 +20,10 @@ import { entryLabel, evidenceLabel } from './labels';
  * The model's output is a list of requirements and the skill tags they name.
  * Everything a visitor reads as a judgement — verdict, evidence, note,
  * coverage — is computed here from the corpus. Nothing here reads the job
- * description, so no text in it can change a verdict; the worst a hostile JD
- * can do is change what gets extracted.
+ * description beyond each requirement's own text, and that text is only
+ * checked for qualifiers (`qualifiers.ts`), which can lower a verdict but
+ * never raise one; the worst a hostile JD can do is change what gets
+ * extracted, or understate itself.
  *
  * Pure and deterministic: the only clock is the `now` argument.
  */
@@ -351,10 +354,18 @@ function fit(lead: string, items: string[], tail: string[]): string {
  *
  * - names skills (`skills` or `otherSkills`): `assessSkills` decides. If
  *   `minYears` is set and the career total falls short, strong is capped at
- *   partial. The note lists the evidence, then the named skills with none
- *   ("Nothing for Go."), then the years arithmetic.
+ *   partial. If the text names a qualifier (a domain, scale, setting or
+ *   depth; see `qualifiers.ts`) that no cited record covers, strong is
+ *   capped at partial too. The note lists the evidence, then the named
+ *   skills and domains with none ("Nothing for Go, payments."), then any
+ *   other missing qualifier ("No evidence at that scale."), then the years
+ *   arithmetic.
  * - names no skills but has `minYears`: judged on years alone — strong if
- *   met, gap if not, with the arithmetic in the note.
+ *   met, gap if not, with the arithmetic in the note. A met row whose text
+ *   names a qualifier nothing in the corpus covers is partial.
+ *
+ * The requirement's text can only lower a verdict (through a qualifier),
+ * never raise one.
  * - names neither: not_assessed, excluded from coverage.
  */
 export function judgeRequirement(
@@ -371,7 +382,13 @@ export function judgeRequirement(
     if (req.minYears === null) {
       return { ...req, verdict: 'not_assessed', evidenceIds: [], note: NOT_ASSESSED_NOTE };
     }
-    return { ...req, verdict: yearsShort ? 'gap' : 'strong', evidenceIds: [], note: years };
+    if (yearsShort) return { ...req, verdict: 'gap', evidenceIds: [], note: years };
+    // A years-only row cites nothing: its claim is the career, so its
+    // qualifiers ("5+ years in fintech") are checked against the whole corpus.
+    const missing = missingParts(uncoveredQualifiers(req.text, corpus.evidence));
+    const nothing = missing.nothingFor.length ? `Nothing for ${missing.nothingFor.join(', ')}.` : '';
+    const capped = nothing !== '' || missing.sentences.length > 0;
+    return { ...req, verdict: capped ? 'partial' : 'strong', evidenceIds: [], note: fit('', [], [years, nothing, ...missing.sentences]) };
   }
 
   const { verdict: skillVerdict, uncovered } = assessSkills(req, corpus);
@@ -384,14 +401,19 @@ export function judgeRequirement(
     return { ...req, verdict: 'gap', evidenceIds: [], note: fit('', [], [GAP_NOTE, closestLine, years]) };
   }
 
-  const verdict: Verdict = skillVerdict === 'strong' && yearsShort ? 'partial' : skillVerdict;
   const evidence = selectEvidence(req.skills, corpus);
-  const nothingFor = uncovered.length ? `Nothing for ${uncovered.join(', ')}.` : '';
+  // Qualifiers are checked against the records the row cites, so the badge
+  // never vouches for something the visitor can't see evidence of.
+  const missing = missingParts(uncoveredQualifiers(req.text, evidence));
+  const qualifierShort = missing.nothingFor.length + missing.sentences.length > 0;
+  const verdict: Verdict = skillVerdict === 'strong' && (yearsShort || qualifierShort) ? 'partial' : skillVerdict;
+  const missingNames = [...uncovered, ...missing.nothingFor];
+  const nothingFor = missingNames.length ? `Nothing for ${missingNames.join(', ')}.` : '';
   return {
     ...req,
     verdict,
     evidenceIds: evidence.map((e) => e.id),
-    note: fit('Evidence: ', evidence.map(cite), [nothingFor, years]),
+    note: fit('Evidence: ', evidence.map(cite), [nothingFor, ...missing.sentences, years]),
   };
 }
 

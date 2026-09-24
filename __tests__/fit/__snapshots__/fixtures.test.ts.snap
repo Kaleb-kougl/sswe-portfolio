@@ -32,8 +32,8 @@ exports[`fixture verdicts that must not drift > verdict tallies match the review
       },
       "gap": 3,
       "not_assessed": 3,
-      "partial": 0,
-      "strong": 4,
+      "partial": 1,
+      "strong": 3,
     },
     "scan": {
       "coverage": {
@@ -42,8 +42,8 @@ exports[`fixture verdicts that must not drift > verdict tallies match the review
       },
       "gap": 2,
       "not_assessed": 3,
-      "partial": 0,
-      "strong": 4,
+      "partial": 1,
+      "strong": 3,
     },
   },
   "frontend-senior": {
@@ -160,13 +160,13 @@ exports[`fixture verdicts that must not drift > verdict tallies match the review
     },
     "scan": {
       "coverage": {
-        "covered": 4,
+        "covered": 3.5,
         "mustHaves": 4,
       },
       "gap": 1,
       "not_assessed": 1,
-      "partial": 1,
-      "strong": 7,
+      "partial": 2,
+      "strong": 6,
     },
   },
 }

@@ -15,8 +15,8 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 
 ## Nice-to-have
 
-- **Strong**: Design and build payment APIs used by thousands of merchants
-  Evidence: Pattern system of pure functions (r3f-projectiles), GolfTV GraphQL API on AWS (IBM), Variant-driven animation primitives (roblox-css).
+- **Partial**: Design and build payment APIs used by thousands of merchants
+  Evidence: Pattern system of pure functions (r3f-projectiles), GolfTV GraphQL API on AWS (IBM), Variant-driven animation primitives (roblox-css). Nothing for payments. No evidence at that scale.
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Variant-driven animation primitives (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)

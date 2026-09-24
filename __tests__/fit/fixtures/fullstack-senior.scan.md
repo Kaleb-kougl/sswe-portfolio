@@ -38,7 +38,7 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Partial**: Microservices at scale
-  Evidence: Stateless bridge to microservices (Indeed Analytics Extension).
+  Evidence: Stateless bridge to microservices (Indeed Analytics Extension). No evidence at that scale.
   - Stateless bridge to microservices (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
 - **Gap**: Docker and Kubernetes
   Not in my work yet.

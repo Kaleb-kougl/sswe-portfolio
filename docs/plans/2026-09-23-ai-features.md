@@ -145,6 +145,7 @@ Same `FitReport`. Coverage is shown whenever the JD had recognisable sections.
   - `partial`: 1 matching record without a metric
   - `gap`: no matching records, but the requirement names skills (`skills` or `otherSkills`)
   - `not_assessed`: names no skills (for example "excellent communication"). Shown, but excluded from coverage
+- **Qualifiers cap strong at partial** (`qualifiers.ts`): a requirement's own text is checked for a domain (payments, healthcare, ads, games…), a scale ("thousands of merchants", "at scale", "high-traffic"), a setting ("in production", startup, B2B/SaaS, professional/industry experience) or a depth word ("expert", "deep knowledge", "led the design of"). Each must be covered by a cited record (a years-only row: any record): a domain named in its claim/skills/entry, a stated size of the same kind and at least as large, a record from employment, or a metric / lead role. One uncovered qualifier caps `strong` → `partial` and the note says what's missing. It never raises a verdict.
 - **Years:** when `minYears` is set, compare it to years since `CAREER_START_YEAR`, stated in the note either way.
 - **Coverage** = (strong + 0.5 × partial) / must-haves, rendered as "7 of 9 must-haves covered".
 - **Notes are templates:** "Evidence: OneHost migration (Indeed), …", or for gaps "Not in my work yet. Closest: …", where "closest" means records sharing a skill *category*. Unsoftened.

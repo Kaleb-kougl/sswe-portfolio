@@ -2,7 +2,7 @@
 
 Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-**4 of 4 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**3.5 of 4 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
 ## Must-have
 
@@ -18,8 +18,8 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   - Halved Webpack build time (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Bundle cut from 6 MB to 300 KB (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
-- **Strong**: You've led a large-scale codebase migration
-  Evidence: Led the OneHost micro-frontend migration (Indeed), Luxon timezone migration (Indeed), IBM Developer rebuild for SEO and vitals (IBM).
+- **Partial**: You've led a large-scale codebase migration
+  Evidence: Led the OneHost micro-frontend migration (Indeed), Luxon timezone migration (Indeed), IBM Developer rebuild for SEO and vitals (IBM). No evidence at that scale.
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Luxon timezone migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)

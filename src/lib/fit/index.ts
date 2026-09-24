@@ -35,6 +35,8 @@ export {
   ROLE_FALLBACK,
   sanitizeRequirement,
 } from './judge';
+export { detectQualifiers, DOMAINS, fromEmployment, missingParts, RULES, showsLeadership, statedSizes, uncoveredQualifiers } from './qualifiers';
+export type { Qualifier, QualifierKind, ScaleKind } from './qualifiers';
 export { detectSkills, SCAN_DISCLAIMER, SCAN_SHADOW_TERMS, SCAN_STOP_TERMS, termPattern } from './scan';
 export {
   analyzeText,
