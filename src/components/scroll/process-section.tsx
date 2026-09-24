@@ -218,7 +218,8 @@ export function ProcessSection() {
               the fit checker
             </a>{' '}
             runs no model: it is instant, works on every device, and the job description never
-            leaves the page.
+            leaves the page. A small on-device chat bot went through the same test and was dropped
+            too: its answers read well but embellished in ways no automatic check could catch.
           </p>
         </div>
       </div>
