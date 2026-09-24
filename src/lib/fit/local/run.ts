@@ -13,7 +13,7 @@ import {
 import { FIRST_ROW_BUDGET_MS } from './gate';
 import { decisionsGrammar, decisionsMaxTokens } from './grammar';
 import { createArrayItemExtractor } from './json-stream';
-import type { ErrorCode, FromWorker, RunStats } from './protocol';
+import type { AnswerRecord, ErrorCode, FromWorker, RunStats, RunStrategy } from './protocol';
 
 /**
  * ONE PRIVATE-MODE RUN, independent of WebLLM — the worker's logic with the
@@ -95,8 +95,17 @@ export interface StreamChunk {
   };
 }
 
+/** One short, grammar-forced completion's first-token distribution (v2's questions). */
+export interface AskResult {
+  /** The first output token's top logprobs (at most 5), over grammar-allowed tokens. */
+  top: { token: string; logprob: number }[];
+  usage?: StreamChunk['usage'];
+}
+
 export interface RunEngine {
   stream(messages: ChatMessage[], opts: { grammar: string; maxTokens: number }): AsyncIterable<StreamChunk>;
+  /** v2 only: one completion of at most one token, with logprobs. */
+  ask?(messages: ChatMessage[], opts: { grammar: string }): Promise<AskResult>;
   interrupt(): void;
 }
 
@@ -140,7 +149,78 @@ export function parseDecision(raw: string): SegmentDecision | null {
   }
 }
 
+/**
+ * What a strategy's driver sees: the segmentation, and `accept` to hand in
+ * the next candidate's decision (in candidate order). `accept` merges,
+ * streams rows and disarms the watchdog; everything else is shared.
+ */
+export interface DriveContext {
+  seg: SegmentedJd;
+  /** Hands in the decision for the next undecided candidate. */
+  accept(decision: SegmentDecision, fromModel: boolean): void;
+  /** How many candidates have a decision so far. */
+  decided(): number;
+  /** True once the run was cancelled or timed out; stop asking the engine. */
+  ended(): boolean;
+}
+
+/** What a driver reports back for `done`: stats fields and, for v2, its answers. */
+export interface DriveResult {
+  stats?: Partial<RunStats>;
+  answers?: AnswerRecord[];
+}
+
+/** One strategy's model work. Throwing ends the run with an error (unless it already ended). */
+export type Driver = (ctx: DriveContext) => Promise<DriveResult | void>;
+
+/** v1: one grammar-forced generation of exactly n decisions, parsed as it streams. */
+function streamDecisions(deps: RunDeps): Driver {
+  return async (ctx) => {
+    const { seg } = ctx;
+    const n = seg.candidates.length;
+    let usage: StreamChunk['usage'];
+    const extractor = createArrayItemExtractor('decisions');
+    const stream = deps.engine.stream(deps.buildMessages(seg), {
+      grammar: decisionsGrammar(n),
+      maxTokens: decisionsMaxTokens(n),
+    });
+    for await (const chunk of stream) {
+      if (ctx.ended()) break;
+      if (chunk.usage) usage = chunk.usage;
+      if (!chunk.delta) continue;
+      for (const raw of extractor.push(chunk.delta)) {
+        if (ctx.decided() >= n) break;
+        const decision = parseDecision(raw);
+        const k = ctx.decided();
+        if (decision) ctx.accept(decision, true);
+        else ctx.accept(deps.defaultDecision(seg.segments[seg.candidates[k]]), false);
+      }
+    }
+    return {
+      stats: {
+        tokensPerSecond: usage?.extra?.decode_tokens_per_s ?? null,
+        promptTokens: usage?.prompt_tokens ?? null,
+        completionTokens: usage?.completion_tokens ?? null,
+        prefillTokensPerSecond: usage?.extra?.prefill_tokens_per_s ?? null,
+        timeToFirstTokenMs: ms(usage?.extra?.time_to_first_token_s),
+        grammarInitMs: ms(usage?.extra?.grammar_init_s),
+        grammarPerTokenMs: ms(usage?.extra?.grammar_per_token_s),
+      },
+    };
+  };
+}
+
+/** The v1 run (plan v4): see the header. */
 export function runExtraction(id: number, jd: string, deps: RunDeps): RunHandle {
+  return runWith(id, jd, deps, streamDecisions(deps), 'v1');
+}
+
+/**
+ * The shared run skeleton: validate, segment, the watchdog, the in-order
+ * row stream, the fallback for undecided candidates, the final report and
+ * stats. `drive` supplies the decisions (v1 streams them, v2 asks questions).
+ */
+export function runWith(id: number, jd: string, deps: RunDeps, drive: Driver, strategy: RunStrategy): RunHandle {
   const now = deps.now ?? (() => performance.now());
   const setTimer = deps.setTimer ?? ((fn: () => void, ms: number) => setTimeout(fn, ms));
   const clearTimer = deps.clearTimer ?? ((h: unknown) => clearTimeout(h as ReturnType<typeof setTimeout>));
@@ -251,7 +331,7 @@ export function runExtraction(id: number, jd: string, deps: RunDeps): RunHandle 
       flush();
     };
 
-    let usage: StreamChunk['usage'];
+    let driven: DriveResult | void = undefined;
 
     if (n > 0) {
       watchdog = setTimer(() => {
@@ -260,24 +340,8 @@ export function runExtraction(id: number, jd: string, deps: RunDeps): RunHandle 
         end({ type: 'too_slow', id, elapsedMs: now() - started });
       }, budget);
 
-      const extractor = createArrayItemExtractor('decisions');
       try {
-        const stream = deps.engine.stream(deps.buildMessages(seg), {
-          grammar: decisionsGrammar(n),
-          maxTokens: decisionsMaxTokens(n),
-        });
-        for await (const chunk of stream) {
-          if (ended) break;
-          if (chunk.usage) usage = chunk.usage;
-          if (!chunk.delta) continue;
-          for (const raw of extractor.push(chunk.delta)) {
-            if (decisions.length >= n) break;
-            const decision = parseDecision(raw);
-            const k = decisions.length;
-            if (decision) accept(decision, true);
-            else accept(deps.defaultDecision(seg.segments[seg.candidates[k]]), false);
-          }
-        }
+        driven = await drive({ seg, accept, decided: () => decisions.length, ended: () => ended });
       } catch (err) {
         if (ended) return; // interrupted by cancel or the watchdog
         end({ type: 'error', id, code: classifyError(err), message: errorMessage(err) });
@@ -305,18 +369,16 @@ export function runExtraction(id: number, jd: string, deps: RunDeps): RunHandle 
     const stats: RunStats = {
       firstRowMs,
       totalMs: now() - started,
-      tokensPerSecond: usage?.extra?.decode_tokens_per_s ?? null,
-      promptTokens: usage?.prompt_tokens ?? null,
-      completionTokens: usage?.completion_tokens ?? null,
-      prefillTokensPerSecond: usage?.extra?.prefill_tokens_per_s ?? null,
-      timeToFirstTokenMs: ms(usage?.extra?.time_to_first_token_s),
-      grammarInitMs: ms(usage?.extra?.grammar_init_s),
-      grammarPerTokenMs: ms(usage?.extra?.grammar_per_token_s),
+      tokensPerSecond: null,
+      promptTokens: null,
+      completionTokens: null,
+      ...driven?.stats,
+      strategy,
       candidates: n,
       decidedByModel,
       firstDecisionMs,
     };
-    end({ type: 'done', id, report, stats, decisions });
+    end({ type: 'done', id, report, stats, decisions, ...(driven?.answers ? { answers: driven.answers } : {}) });
   })();
 
   return { done, cancel };

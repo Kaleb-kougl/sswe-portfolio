@@ -52,7 +52,21 @@ export {
   selectCandidates,
   splitSentences,
 } from './segment';
-export { capRequirements, defaultDecision, isBlurb, mergeDecisions, mergeOne } from './merge';
+export { capRequirements, COMPANY_VOICE, defaultDecision, isBlurb, mergeDecisions, mergeOne } from './merge';
 export { analyzeWithDecisions, analyzeWithoutModel, reportCoverage } from './analyze';
+export {
+  MAX_PROPOSALS,
+  PROPOSAL_HINTS,
+  proposeSkills,
+  routeAll,
+  routeReasons,
+  scoreProposals,
+  uncertainSegments,
+} from './route';
+export type { Proposal, RouteReason } from './route';
+export { countOverrides, decide, decideAll, groupAnswers, NEVER, priorityApplies, THRESHOLDS } from './abstain';
+export type { Answer, DecisionTrace, Overrides, QuestionKind, QuestionMode, SegmentAnswers, Thresholds } from './abstain';
+export { pYesFrom, QUESTION_SYSTEM_PROMPT, questionMessages, QUESTIONS, SECTION_NAMES, YES_NO_GRAMMAR } from './questions';
+export type { Question, TopLogprob } from './questions';
 export { coverageLine, escapeMarkdown, NO_COVERAGE_LINE, reportToMarkdown, VERDICT_LABELS } from './markdown';
 export { entryLabel, EVIDENCE_LABELS, evidenceLabel } from './labels';

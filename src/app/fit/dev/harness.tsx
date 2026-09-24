@@ -3,7 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 
 import type { FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
-import type { LocalFitSession, LocalModelId, ProbeOutcome, RunStats } from '@/lib/fit/local/client';
+import type {
+  AnswerRecord,
+  LocalFitSession,
+  LocalModelId,
+  ProbeOutcome,
+  QuestionMode,
+  RunStats,
+  RunStrategy,
+} from '@/lib/fit/local/client';
 
 type ClientModule = typeof import('@/lib/fit/local/client');
 
@@ -27,8 +35,16 @@ export interface EvalRun {
   report: FitReport;
   stats: RunStats | null;
   decisions: SegmentDecision[] | null;
+  /** v2: every question asked, with P(yes). */
+  answers: AnswerRecord[] | null;
   rows: { index: number; atMs: number; row: Requirement }[];
   wallMs: number;
+}
+
+/** How a scripted run should decide: v1 (one generation) or v2 (routed yes/no questions). */
+export interface EvalRunOptions {
+  strategy?: RunStrategy;
+  questions?: QuestionMode;
 }
 
 /**
@@ -38,7 +54,7 @@ export interface EvalRun {
  */
 export interface FitEvalHook {
   load(modelId?: LocalModelId): Promise<{ fromCache: boolean; elapsedMs: number; modelId: string }>;
-  run(jd: string): Promise<EvalRun>;
+  run(jd: string, opts?: EvalRunOptions): Promise<EvalRun>;
   dispose(): void;
 }
 
@@ -52,6 +68,12 @@ declare global {
 function modelFromUrl(): LocalModelId | undefined {
   if (typeof window === 'undefined') return undefined;
   return (new URLSearchParams(window.location.search).get('model') as LocalModelId | null) ?? undefined;
+}
+
+/** `?strategy=v1|v2` picks the run strategy for the Run button (default v1). */
+function strategyFromUrl(): RunStrategy {
+  if (typeof window === 'undefined') return 'v1';
+  return new URLSearchParams(window.location.search).get('strategy') === 'v2' ? 'v2' : 'v1';
 }
 
 export function Harness() {
@@ -96,15 +118,16 @@ export function Harness() {
         const r = await evalSession.load();
         return { ...r, modelId: modelId ?? c.LOCAL_MODEL_ID };
       },
-      async run(jd) {
+      async run(jd, opts) {
         if (!evalSession) throw new Error('load() first');
         const rows: EvalRun['rows'] = [];
         const t0 = performance.now();
-        const report = await evalSession.run(jd, (row, index) => rows.push({ index, atMs: performance.now() - t0, row }));
+        const report = await evalSession.run(jd, (row, index) => rows.push({ index, atMs: performance.now() - t0, row }), opts);
         return {
           report,
           stats: evalSession.state.stats,
           decisions: evalSession.state.decisions ?? null,
+          answers: evalSession.state.answers ?? null,
           rows,
           wallMs: performance.now() - t0,
         };
@@ -174,11 +197,21 @@ export function Harness() {
             setRows([]);
             void step('run', async () => {
               const s = await getSession();
-              const report = await s.run(jd, (row, i) => {
-                say(`row ${i}: ${row.verdict} ${row.text}`);
-                setRows((r) => [...r, row]);
-              });
-              return { role: report.role, coverage: report.coverage, rows: report.requirements.length, stats: s.state.stats };
+              const report = await s.run(
+                jd,
+                (row, i) => {
+                  say(`row ${i}: ${row.verdict} ${row.text}`);
+                  setRows((r) => [...r, row]);
+                },
+                { strategy: strategyFromUrl() },
+              );
+              return {
+                strategy: strategyFromUrl(),
+                role: report.role,
+                coverage: report.coverage,
+                rows: report.requirements.length,
+                stats: s.state.stats,
+              };
             });
           }}
         >

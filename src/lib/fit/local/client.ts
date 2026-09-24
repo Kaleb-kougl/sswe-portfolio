@@ -1,3 +1,4 @@
+import type { QuestionMode } from '@/lib/fit/abstain';
 import type { FitReport, Requirement } from '@/lib/fit/contract';
 
 import { isModelCached } from './cache';
@@ -23,7 +24,9 @@ import {
   type LoadProgress,
   type ProbeFailure,
   type ProbeResult,
+  type AnswerRecord,
   type RunStats,
+  type RunStrategy,
   type SessionState,
   type ToWorker,
 } from './protocol';
@@ -48,7 +51,19 @@ import {
 
 export { LOCAL_MODEL, LOCAL_MODEL_ID, LOCAL_MODELS, formatBytes } from './model';
 export type { LocalModelId } from './model';
-export type { BenchResult, LoadProgress, RunStats, SessionState, ProbeResult, PrivateModeOffer, StorageCheck, BenchVerdict };
+export type {
+  AnswerRecord,
+  BenchResult,
+  LoadProgress,
+  RunStats,
+  RunStrategy,
+  SessionState,
+  ProbeResult,
+  PrivateModeOffer,
+  StorageCheck,
+  BenchVerdict,
+};
+export type { QuestionMode } from '@/lib/fit/abstain';
 
 export type WorkerFactory = () => Worker;
 
@@ -194,7 +209,12 @@ export interface LocalFitSession {
    * Resolves with the full report; `onRow` fires as each requirement lands.
    * Timing (first row, total, tokens/s) is on `state.stats` afterwards.
    */
-  run(jd: string, onRow?: (row: Requirement, index: number) => void): Promise<FitReport>;
+  run(
+    jd: string,
+    onRow?: (row: Requirement, index: number) => void,
+    /** The dev harness and evals only; the /fit page runs the default (v1). */
+    opts?: { strategy?: RunStrategy; questions?: QuestionMode },
+  ): Promise<FitReport>;
   /** Stops the in-flight load or run; its promise rejects with code `cancelled`. */
   cancel(): void;
   /** Terminates the worker (frees GPU memory). The session is unusable after. */
@@ -318,12 +338,12 @@ export function createLocalFitSession(
       );
       return { fromCache: msg.fromCache, elapsedMs: msg.elapsedMs };
     },
-    async run(jd, onRow) {
+    async run(jd, onRow, runOpts) {
       if (isTooSlowLatched(opts.storage ?? sessionStore())) {
         throw new LocalFitError('too_slow', 'Private mode was too slow on this device earlier in this session.');
       }
       const msg = await request<FromWorker & { type: 'done' }>(
-        (id) => ({ type: 'run', id, jd }),
+        (id) => ({ type: 'run', id, jd, ...(runOpts?.strategy ? { strategy: runOpts.strategy } : {}), ...(runOpts?.questions ? { questions: runOpts.questions } : {}) }),
         (m) => {
           if (m.type === 'row') onRow?.(m.row, m.index);
         },

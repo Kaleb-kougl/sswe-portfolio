@@ -41,8 +41,10 @@ import {
 import { runBench } from './bench';
 import { probeGpu } from './gate';
 import { LOCAL_MODEL, LOCAL_MODELS, weightsUrl, type LocalModel, type LocalModelId } from './model';
-import { toLoadProgress, type FromWorker, type ToWorker } from './protocol';
-import { classifyError, errorMessage, runExtraction, type RunEngine, type RunHandle } from './run';
+import { toLoadProgress, type FromWorker, type RunStrategy, type ToWorker } from './protocol';
+import { classifyError, errorMessage, runExtraction, type RunDeps, type RunEngine, type RunHandle } from './run';
+import { runQuestions } from './run-v2';
+import type { QuestionMode } from '@/lib/fit/abstain';
 
 const scope = self as unknown as {
   navigator: { gpu?: GPU };
@@ -164,18 +166,46 @@ function asRunEngine(mlc: MLCEngine): RunEngine {
         };
       }
     },
+    /**
+     * v2's one-token question. Logprobs are WebLLM's softmax over the
+     * grammar-masked logits AT THE REQUEST'S TEMPERATURE (0.2.85,
+     * `sampleTokenFromLogits`): temperature 0 is clamped to 1e-6 and gives a
+     * one-hot distribution, so it must be 1 here. `top_p` near 0 keeps the
+     * sampled token the argmax; it doesn't touch the reported logprobs.
+     * Penalties are pinned off (Qwen's config defaults repetition to 1.1).
+     */
+    async ask(messages, { grammar }) {
+      const reply = await mlc.chat.completions.create({
+        messages,
+        stream: false,
+        temperature: 1,
+        top_p: 1e-5,
+        max_tokens: 1,
+        logprobs: true,
+        top_logprobs: 5,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        repetition_penalty: 1,
+        response_format: { type: 'grammar', grammar },
+        ...(model.extraBody ? { extra_body: model.extraBody } : {}),
+      });
+      return {
+        top: reply.choices[0]?.logprobs?.content?.[0]?.top_logprobs ?? [],
+        usage: reply.usage ?? undefined,
+      };
+    },
     interrupt() {
       void mlc.interruptGenerate();
     },
   };
 }
 
-async function handleRun(id: number, jd: string) {
+async function handleRun(id: number, jd: string, strategy: RunStrategy = 'v1', questions?: QuestionMode) {
   if (!engine || !loaded) {
     return post({ type: 'error', id, code: 'not_loaded', message: 'Load the model first.' });
   }
   let handle: RunHandle | null = null;
-  handle = runExtraction(id, jd, {
+  const deps: RunDeps = {
     engine: asRunEngine(engine),
     post,
     now,
@@ -189,7 +219,8 @@ async function handleRun(id: number, jd: string) {
     judgeRequirement: (req) => judgeRequirement(req),
     judge: (extraction) => judge(extraction),
     reportCoverage,
-  });
+  };
+  handle = strategy === 'v2' ? runQuestions(id, jd, deps, { questions }) : runExtraction(id, jd, deps);
   current = { id, cancel: () => handle?.cancel() };
   try {
     await handle.done;
@@ -214,7 +245,7 @@ scope.addEventListener('message', (event) => {
       if (!busy(msg.id)) void handleLoad(msg.id, msg.modelId);
       return;
     case 'run':
-      if (!busy(msg.id)) void handleRun(msg.id, msg.jd);
+      if (!busy(msg.id)) void handleRun(msg.id, msg.jd, msg.strategy, msg.questions);
       return;
     case 'cancel':
       current?.cancel();

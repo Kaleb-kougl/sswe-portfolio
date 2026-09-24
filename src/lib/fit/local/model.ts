@@ -52,6 +52,26 @@ export interface LocalModel {
 const MiB = 1024 * 1024;
 
 export const LOCAL_MODELS = {
+  /**
+   * The smallest shortlisted model, added for model + code v2 (plan 2f),
+   * where each call is a one-token yes/no answer. Revision and shard sizes
+   * read 2026-09-23 (8 shards, 277,996,288 B); 944.62 MB VRAM (WebLLM's
+   * prebuilt config, which uses a 1k-prefill-chunk `_cs1k` library);
+   * tied embeddings, so the 136M-parameter embedding doubles as the LM head.
+   */
+  'Qwen2.5-0.5B-Instruct-q4f16_1-MLC': {
+    id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
+    repo: 'mlc-ai/Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
+    revision: '32ff081fe7e4dfe4ffb167b94c66fdf11e02b8ad',
+    downloadBytes: 277_996_288,
+    vramMB: 945,
+    hiddenSize: 896,
+    layers: 24,
+    activeParams: 494_000_000,
+    needsShaderF16: true,
+    minStorageBufferBindingBytes: 256 * MiB,
+    minBufferBytes: 256 * MiB,
+  },
   'Llama-3.2-1B-Instruct-q4f16_1-MLC': {
     id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
     repo: 'mlc-ai/Llama-3.2-1B-Instruct-q4f16_1-MLC',

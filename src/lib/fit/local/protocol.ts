@@ -1,4 +1,5 @@
-import type { FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
+import type { QuestionKind, QuestionMode } from '@/lib/fit/abstain';
+import type { CanonicalSkillId, FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
 
 import type { LocalModelId } from './model';
 
@@ -24,7 +25,12 @@ export type ToWorker =
    * harness and the model comparison use it); omitted → `LOCAL_MODEL_ID`.
    */
   | { type: 'load'; id: number; modelId?: LocalModelId }
-  | { type: 'run'; id: number; jd: string }
+  /**
+   * `strategy` (default v1): v1 decides every candidate in one generation;
+   * v2 asks short yes/no questions where code is unsure (plan 2f). `questions`
+   * is v2's question set (default `routed`; evals use `all`).
+   */
+  | { type: 'run'; id: number; jd: string; strategy?: RunStrategy; questions?: QuestionMode }
   /**
    * Cancels whatever is in flight (a load or a run). The reply is `cancelled`
    * carrying the id of the request it stopped.
@@ -86,6 +92,23 @@ export interface LoadProgress {
   text: string;
 }
 
+/** v1: one N-item generation; v2: routed per-segment yes/no questions (plan 2f). */
+export type RunStrategy = 'v1' | 'v2';
+
+/** One v2 question and its answer, as the evals record it for offline threshold sweeps. */
+export interface AnswerRecord {
+  /** Segment index (into `segmentJd(jd).segments`). */
+  index: number;
+  kind: QuestionKind;
+  skill?: CanonicalSkillId;
+  /** P(yes) from the answer token's logprobs; null if no yes/no token was in the top 5. */
+  pYes: number | null;
+  /** Wall time of this one completion. */
+  ms: number;
+  /** Tokens prefilled for it (all of them unless WebLLM reused its KV cache). */
+  promptTokens: number | null;
+}
+
 export interface RunStats {
   firstRowMs: number | null;
   totalMs: number;
@@ -108,6 +131,17 @@ export interface RunStats {
   decidedByModel?: number;
   /** Time to the first complete decision (the watchdog's signal of progress). */
   firstDecisionMs?: number | null;
+  strategy?: RunStrategy;
+  /** v2: questions asked (each one short completion). */
+  questionsAsked?: number;
+  /** v2: questions whose top tokens had neither yes nor no (answer ignored). */
+  unanswered?: number;
+  /** v2: per-question wall time. */
+  questionMs?: { median: number | null; max: number | null };
+  /** v2: tokens prefilled per question (median). */
+  questionPromptTokens?: number | null;
+  /** v2: where the model changed code's decision (at the run's thresholds). */
+  overrides?: { keep: number; drop: number; priority: number; skills: number };
 }
 
 export type ErrorCode =
@@ -137,6 +171,8 @@ export type FromWorker =
       stats: RunStats;
       /** One per candidate segment, in order, as used for the report (model's or default). */
       decisions?: SegmentDecision[];
+      /** v2: every question asked, with P(yes). */
+      answers?: AnswerRecord[];
     }
   /** The watchdog fired: no first row within the budget. Generation stopped. */
   | { type: 'too_slow'; id: number; elapsedMs: number }
@@ -173,6 +209,8 @@ export interface SessionState {
   loaded: boolean;
   /** The last run's per-segment decisions (evals and the dev harness read them). */
   decisions?: SegmentDecision[] | null;
+  /** The last v2 run's answers (evals read them). */
+  answers?: AnswerRecord[] | null;
 }
 
 export const INITIAL_SESSION: SessionState = {
@@ -203,6 +241,7 @@ export function startRequest(state: SessionState, request: ToWorker): SessionSta
         report: null,
         stats: null,
         decisions: null,
+        answers: null,
         error: null,
       };
     default:
@@ -232,6 +271,7 @@ export function reduceSession(state: SessionState, msg: FromWorker): SessionStat
         report: msg.report,
         stats: msg.stats,
         decisions: msg.decisions ?? null,
+        answers: msg.answers ?? null,
         activeId: null,
       };
     case 'too_slow':

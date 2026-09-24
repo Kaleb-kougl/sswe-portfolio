@@ -1,0 +1,1971 @@
+{
+  "model": "Llama-3.2-1B-Instruct-q4f16_1-MLC-v1",
+  "strategy": "v1",
+  "date": "2026-09-24",
+  "cases_set": "fixtures",
+  "downloadBytes": 695242752,
+  "load": {
+    "fromCache": true,
+    "elapsedMs": 1549.5,
+    "modelId": "Llama-3.2-1B-Instruct-q4f16_1-MLC"
+  },
+  "cases": [
+    {
+      "fixture": "frontend-senior",
+      "run": {
+        "report": {
+          "role": "Senior Frontend Engineer",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "We're hiring a senior engineer to own our customer-facing web app.",
+              "priority": "must",
+              "skills": [
+                "web-applications"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-swe.agent-portal"
+              ],
+              "note": "Evidence: Agent portal, 30% faster API response (IBM)."
+            },
+            {
+              "text": "5+ years building production React and TypeScript applications",
+              "priority": "must",
+              "skills": [
+                "react",
+                "typescript",
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components",
+                "roblox-css.parsers",
+                "analytics-extension.troubleshooting-time"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed), Hand-written CSS value parsers (roblox-css). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Built or maintained a design system or shared component library",
+              "priority": "must",
+              "skills": [
+                "design-systems",
+                "component-libraries"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "Excellent written communication",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Micro-frontends or Module Federation",
+              "priority": "nice",
+              "skills": [
+                "micro-frontends",
+                "module-federation"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "Next.js and server-side rendering",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "GraphQL",
+              "priority": "nice",
+              "skills": [
+                "graphql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Mentoring other engineers",
+              "priority": "nice",
+              "skills": [
+                "mentoring"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.mentoring"
+              ],
+              "note": "Evidence: Mentored ~12 engineers (Indeed)."
+            }
+          ],
+          "coverage": {
+            "covered": 3,
+            "mustHaves": 3
+          }
+        },
+        "stats": {
+          "firstRowMs": 1015.5999999046326,
+          "totalMs": 2674.199999809265,
+          "tokensPerSecond": 90.70419450547304,
+          "promptTokens": 1020,
+          "completionTokens": 165,
+          "prefillTokensPerSecond": 1228.0279317566988,
+          "timeToFirstTokenMs": 830.5999999046326,
+          "grammarInitMs": 0,
+          "grammarPerTokenMs": 0.029696973164876315,
+          "strategy": "v1",
+          "candidates": 11,
+          "decidedByModel": 11,
+          "firstDecisionMs": 1015.5999999046326
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2674.3999996185303,
+        "rowTimesMs": [
+          1016,
+          1188,
+          1642,
+          1967,
+          2137,
+          2309,
+          2480,
+          2652
+        ]
+      },
+      "score": {
+        "fixture": "frontend-senior",
+        "candidates": 11,
+        "keep": {
+          "correct": 7,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 7,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 7,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 6,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 7,
+          "total": 10
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 7,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 3,
+          "mustHaves": 3
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 5
+        },
+        "diffs": [
+          "KEPT [unknown] We're hiring a senior engineer to own our customer-facing web app.",
+          "WRONG SKILL +wcag: 5+ years building production React and TypeScript applications",
+          "DROPPED [requirements] Deep knowledge of web accessibility (WCAG 2.1 AA)",
+          "DROPPED [requirements] Experience improving Core Web Vitals and frontend performance",
+          "DROPPED [requirements] Strong testing habits (Jest, React Testing Library)"
+        ]
+      }
+    },
+    {
+      "fixture": "fullstack-senior",
+      "run": {
+        "report": {
+          "role": "Senior Full Stack Engineer",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "You'll build features end to end across our Node.js services and React frontend.",
+              "priority": "must",
+              "skills": [
+                "node-js",
+                "react"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components",
+                "ibm-staff-swe.video-upload-pipeline",
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed), Node.js video upload pipeline (IBM), IBM Developer rebuild for SEO and vitals (IBM)."
+            },
+            {
+              "text": "6+ years of professional software engineering experience",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": 6,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 6 asked."
+            },
+            {
+              "text": "PostgreSQL schema design and query tuning",
+              "priority": "must",
+              "skills": [
+                "postgresql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "Designing REST and GraphQL APIs",
+              "priority": "must",
+              "skills": [
+                "graphql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "Microservices at scale",
+              "priority": "nice",
+              "skills": [
+                "microservices"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "analytics-extension.stateless-bridge"
+              ],
+              "note": "Evidence: Stateless bridge to microservices (Indeed Analytics Extension)."
+            },
+            {
+              "text": "Docker and Kubernetes",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Docker",
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            }
+          ],
+          "coverage": {
+            "covered": 3,
+            "mustHaves": 4
+          }
+        },
+        "stats": {
+          "firstRowMs": 1004.8999996185303,
+          "totalMs": 2451.2999997138977,
+          "tokensPerSecond": 91.44634528373568,
+          "promptTokens": 982,
+          "completionTokens": 147,
+          "prefillTokensPerSecond": 1193.1956257594168,
+          "timeToFirstTokenMs": 823,
+          "grammarInitMs": 21.299999713897705,
+          "grammarPerTokenMs": 0.03401361192975728,
+          "strategy": "v1",
+          "candidates": 10,
+          "decidedByModel": 10,
+          "firstDecisionMs": 1004.7999997138977
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2451.5,
+        "rowTimesMs": [
+          1005,
+          1175,
+          1622,
+          1810,
+          2262,
+          2429
+        ]
+      },
+      "score": {
+        "fixture": "fullstack-senior",
+        "candidates": 10,
+        "keep": {
+          "correct": 6,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 6,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 6,
+          "total": 6
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 2
+        },
+        "rowAgreement": {
+          "correct": 3,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 6,
+          "total": 10
+        },
+        "spuriousRows": 0,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 6,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 3,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 5,
+          "mustHaves": 6
+        },
+        "diffs": [
+          "PRIORITY must ≠ nice: You'll build features end to end across our Node.js services and React frontend.",
+          "WRONG SKILL +wcag: 6+ years of professional software engineering experience",
+          "DROPPED [requirements] Node.js and TypeScript on the backend",
+          "DROPPED [requirements] React on the frontend",
+          "DROPPED [requirements] Shipping on AWS with CI/CD",
+          "DROPPED [requirements] Comfortable owning an on-call rotation"
+        ]
+      }
+    },
+    {
+      "fixture": "ai-platform",
+      "run": {
+        "report": {
+          "role": "Senior Software Engineer, AI Platform",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Join the team building the platform every product team uses to ship LLM features.",
+              "priority": "must",
+              "skills": [
+                "genai"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "video-pipeline.orchestrator",
+                "video-pipeline.structured-output"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "5+ years of software engineering",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Structured outputs, evals and guardrails for model quality",
+              "priority": "must",
+              "skills": [
+                "structured-output",
+                "output-validation"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "video-pipeline.structured-output",
+                "video-pipeline.quality-gates"
+              ],
+              "note": "Evidence: Model output bound to a Pydantic schema (Agentic AI Video Creator), Scored quality-gate validators (Agentic AI Video Creator)."
+            },
+            {
+              "text": "RAG and vector databases",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "RAG",
+                "Vector databases"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Exposing AI capabilities through a gateway or internal platform",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "TypeScript",
+              "priority": "nice",
+              "skills": [
+                "typescript"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "r3f-projectiles.pattern-system",
+                "r3f-projectiles.engine"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Pattern system of pure functions (r3f-projectiles), GPU-instanced projectile engine on npm (r3f-projectiles)."
+            },
+            {
+              "text": "Model fine-tuning",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Model fine-tuning"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest AI work: Agentic pipeline with Gemini and LangChain (Agentic AI Video Creator)."
+            },
+            {
+              "text": "Model Context Protocol (MCP)",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            }
+          ],
+          "coverage": {
+            "covered": 3,
+            "mustHaves": 4
+          }
+        },
+        "stats": {
+          "firstRowMs": 1009.9000000953674,
+          "totalMs": 2626.300000190735,
+          "tokensPerSecond": 92.73830926304203,
+          "promptTokens": 1000,
+          "completionTokens": 165,
+          "prefillTokensPerSecond": 1209.1898428053205,
+          "timeToFirstTokenMs": 827,
+          "grammarInitMs": 3.8000001907348633,
+          "grammarPerTokenMs": 0.028484855998646145,
+          "strategy": "v1",
+          "candidates": 11,
+          "decidedByModel": 11,
+          "firstDecisionMs": 1009.8000001907349
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2626.5999999046326,
+        "rowTimesMs": [
+          1010,
+          1181,
+          1621,
+          1937,
+          2102,
+          2268,
+          2435,
+          2604
+        ]
+      },
+      "score": {
+        "fixture": "ai-platform",
+        "candidates": 11,
+        "keep": {
+          "correct": 7,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 7,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 7,
+          "total": 8
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 5,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 6,
+          "total": 10
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 7,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 3,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 5.5,
+          "mustHaves": 7
+        },
+        "diffs": [
+          "KEPT [unknown] Join the team building the platform every product team uses to ship LLM features.",
+          "WRONG SKILL +wcag: 5+ years of software engineering",
+          "DROPPED [requirements] Built production applications on large language models",
+          "DROPPED [requirements] Agentic workflows: tool use, multi-step agents",
+          "DROPPED [requirements] Python"
+        ]
+      }
+    },
+    {
+      "fixture": "poor-match-backend",
+      "run": {
+        "report": {
+          "role": "Backend Engineer, Infrastructure (Go / Kubernetes)",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "We run high-throughput services in Go on Kubernetes.",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Go",
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM)."
+            },
+            {
+              "text": "5+ years writing production services in Go",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [
+                "Go"
+              ],
+              "minYears": 5,
+              "verdict": "partial",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed). Nothing for Go. Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Kafka or another event streaming platform",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [
+                "Kafka"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            },
+            {
+              "text": "PostgreSQL",
+              "priority": "must",
+              "skills": [
+                "postgresql",
+                "graphql"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-architecture",
+                "ibm-swe.golftv-graphql"
+              ],
+              "note": "Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM). Nothing for PostgreSQL."
+            },
+            {
+              "text": "gRPC",
+              "priority": "nice",
+              "skills": [
+                "threejs"
+              ],
+              "otherSkills": [
+                "gRPC"
+              ],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "r3f-projectiles.instanced-renderer",
+                "r3f-projectiles.engine"
+              ],
+              "note": "Evidence: 20,000 bullets in one instanced draw (r3f-projectiles), GPU-instanced projectile engine on npm (r3f-projectiles). Nothing for gRPC."
+            }
+          ],
+          "coverage": {
+            "covered": 1,
+            "mustHaves": 4
+          }
+        },
+        "stats": {
+          "firstRowMs": 986,
+          "totalMs": 2362.3999996185303,
+          "tokensPerSecond": 92.94520081824977,
+          "promptTokens": 949,
+          "completionTokens": 144,
+          "prefillTokensPerSecond": 1197.4763406940062,
+          "timeToFirstTokenMs": 792.5,
+          "grammarInitMs": 20.59999990463257,
+          "grammarPerTokenMs": 0.039583338631524,
+          "strategy": "v1",
+          "candidates": 9,
+          "decidedByModel": 9,
+          "firstDecisionMs": 985.8999996185303
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "graphql"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "threejs"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2362.6000003814697,
+        "rowTimesMs": [
+          986,
+          1155,
+          1611,
+          1817,
+          2186
+        ]
+      },
+      "score": {
+        "fixture": "poor-match-backend",
+        "candidates": 9,
+        "keep": {
+          "correct": 4,
+          "total": 9
+        },
+        "keptLabelled": {
+          "correct": 4,
+          "total": 8
+        },
+        "keptPrecision": {
+          "correct": 4,
+          "total": 5
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 3
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 1
+        },
+        "rowAgreement": {
+          "correct": 1,
+          "total": 8
+        },
+        "verdictAgreement": {
+          "correct": 1,
+          "total": 8
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 4,
+          "total": 8
+        },
+        "coverage": {
+          "covered": 1,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 5
+        },
+        "diffs": [
+          "KEPT [unknown] We run high-throughput services in Go on Kubernetes.",
+          "WRONG SKILL +wcag: 5+ years writing production services in Go",
+          "DROPPED [requirements] Operating Kubernetes clusters in production",
+          "DROPPED [requirements] Distributed systems and microservice design",
+          "WRONG SKILL +graphql: PostgreSQL",
+          "DROPPED [requirements] Willingness to join the on-call rotation",
+          "WRONG SKILL +threejs: gRPC",
+          "DROPPED [preferred] Terraform"
+        ]
+      }
+    },
+    {
+      "fixture": "non-engineering-marketing",
+      "run": {
+        "report": {
+          "role": "Senior Content Marketing Manager",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Own our content engine from strategy to distribution.",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "5+ years in B2B content marketing",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "Google Analytics and campaign reporting",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "A/B testing landing pages",
+              "priority": "must",
+              "skills": [
+                "seo"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: IBM Developer rebuild for SEO and vitals (IBM)."
+            }
+          ],
+          "coverage": {
+            "covered": 1.5,
+            "mustHaves": 2
+          }
+        },
+        "stats": {
+          "firstRowMs": 949.7000002861023,
+          "totalMs": 2061.300000190735,
+          "tokensPerSecond": 95.2232280250754,
+          "promptTokens": 912,
+          "completionTokens": 122,
+          "prefillTokensPerSecond": 1193.2487240251287,
+          "timeToFirstTokenMs": 764.3000001907349,
+          "grammarInitMs": 20.5,
+          "grammarPerTokenMs": 0.02950819203110993,
+          "strategy": "v1",
+          "candidates": 8,
+          "decidedByModel": 8,
+          "firstDecisionMs": 949.7000002861023
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "seo"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2061.5999999046326,
+        "rowTimesMs": [
+          950,
+          1117,
+          1558,
+          1739
+        ]
+      },
+      "score": {
+        "fixture": "non-engineering-marketing",
+        "candidates": 8,
+        "keep": {
+          "correct": 3,
+          "total": 8
+        },
+        "keptLabelled": {
+          "correct": 3,
+          "total": 7
+        },
+        "keptPrecision": {
+          "correct": 3,
+          "total": 4
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 0
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 2
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 0
+        },
+        "rowAgreement": {
+          "correct": 1,
+          "total": 7
+        },
+        "verdictAgreement": {
+          "correct": 1,
+          "total": 7
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 3,
+          "total": 7
+        },
+        "coverage": {
+          "covered": 1.5,
+          "mustHaves": 2
+        },
+        "idealCoverage": null,
+        "diffs": [
+          "KEPT [unknown] Own our content engine from strategy to distribution.",
+          "WRONG SKILL +wcag: 5+ years in B2B content marketing",
+          "DROPPED [requirements] SEO strategy and keyword research",
+          "DROPPED [requirements] HubSpot",
+          "WRONG SKILL +seo: A/B testing landing pages",
+          "DROPPED [requirements] Exceptional storytelling",
+          "DROPPED [preferred] Stakeholder management across Sales and Product"
+        ]
+      }
+    },
+    {
+      "fixture": "prose-only-startup",
+      "run": {
+        "report": {
+          "role": "Founding Engineer at Loop Health",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Loop Health is a small team building care-coordination software for clinics.",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "We're looking for a founding engineer to own our web product from the database to the browser.",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "You have at least four years of experience shipping web applications in production, and you're comfortable across the stack.",
+              "priority": "must",
+              "skills": [
+                "web-applications"
+              ],
+              "otherSkills": [],
+              "minYears": 4,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-swe.agent-portal"
+              ],
+              "note": "Evidence: Agent portal, 30% faster API response (IBM). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 4 asked."
+            },
+            {
+              "text": "Ideally you have also run a small team or mentored junior engineers.",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "You communicate clearly in writing, because we're remote across three time zones.",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            }
+          ],
+          "coverage": {
+            "covered": 2,
+            "mustHaves": 2
+          }
+        },
+        "stats": {
+          "firstRowMs": 1082.5999999046326,
+          "totalMs": 2560.199999809265,
+          "tokensPerSecond": 89.75454872223963,
+          "promptTokens": 1033,
+          "completionTokens": 147,
+          "prefillTokensPerSecond": 1149.6939343350027,
+          "timeToFirstTokenMs": 898.5,
+          "grammarInitMs": 6,
+          "grammarPerTokenMs": 0.04897958080784807,
+          "strategy": "v1",
+          "candidates": 10,
+          "decidedByModel": 10,
+          "firstDecisionMs": 1082.5
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2560.4000000953674,
+        "rowTimesMs": [
+          1083,
+          1255,
+          1714,
+          2200,
+          2370
+        ]
+      },
+      "score": {
+        "fixture": "prose-only-startup",
+        "candidates": 10,
+        "keep": {
+          "correct": 6,
+          "total": 10
+        },
+        "keptLabelled": {
+          "correct": 3,
+          "total": 5
+        },
+        "keptPrecision": {
+          "correct": 3,
+          "total": 5
+        },
+        "priorityWhereCodeNull": {
+          "correct": 2,
+          "total": 2
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 1,
+          "total": 5
+        },
+        "verdictAgreement": {
+          "correct": 2,
+          "total": 5
+        },
+        "spuriousRows": 2,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 3,
+          "total": 5
+        },
+        "coverage": {
+          "covered": 2,
+          "mustHaves": 2
+        },
+        "idealCoverage": {
+          "covered": 2,
+          "mustHaves": 2
+        },
+        "diffs": [
+          "KEPT [unknown] Loop Health is a small team building care-coordination software for clinics.",
+          "KEPT [unknown] We're looking for a founding engineer to own our web product from the database to the brow",
+          "WRONG SKILL +wcag: We're looking for a founding engineer to own our web product from the database t",
+          "DROPPED [unknown] You write TypeScript every day and know React well.",
+          "DROPPED [unknown] Experience with HIPAA or healthcare data is a plus."
+        ]
+      }
+    },
+    {
+      "fixture": "responsibilities-tech",
+      "run": {
+        "report": {
+          "role": "Platform Engineer, Developer Experience",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Build and maintain our internal CI/CD pipelines on GitHub Actions",
+              "priority": "must",
+              "skills": [
+                "ci-cd"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "Own the Webpack and module federation setup for 30+ micro-frontends",
+              "priority": "must",
+              "skills": [
+                "webpack",
+                "module-federation",
+                "micro-frontends",
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-sr-swe.onehost-lead",
+                "indeed-swe-ii.wcag-components",
+                "indeed-sr-swe.onehost-architecture"
+              ],
+              "note": "Evidence: Led the OneHost micro-frontend migration (Indeed), WCAG across 20+ React components (Indeed), Co-architected OneHost, led 6 engineers (Indeed)."
+            },
+            {
+              "text": "Write clear RFCs and documentation",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Strong TypeScript and Node.js",
+              "priority": "must",
+              "skills": [
+                "typescript",
+                "node-js"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "analytics-extension.troubleshooting-time",
+                "ibm-staff-swe.video-upload-pipeline",
+                "r3f-projectiles.pattern-system"
+              ],
+              "note": "Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles)."
+            },
+            {
+              "text": "Experience with build tooling (Webpack, Vite, or Rollup)",
+              "priority": "must",
+              "skills": [
+                "build-systems",
+                "webpack"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "ibm-staff-swe.build-time",
+                "ibm-staff-swe.bundle-size",
+                "indeed-sr-swe.onehost-lead"
+              ],
+              "note": "Evidence: Halved Webpack build time (IBM), Bundle cut from 6 MB to 300 KB (IBM), Led the OneHost micro-frontend migration (Indeed)."
+            },
+            {
+              "text": "Kubernetes",
+              "priority": "nice",
+              "skills": [],
+              "otherSkills": [
+                "Kubernetes"
+              ],
+              "minYears": null,
+              "verdict": "gap",
+              "evidenceIds": [],
+              "note": "Not in my work yet."
+            }
+          ],
+          "coverage": {
+            "covered": 3.5,
+            "mustHaves": 4
+          }
+        },
+        "stats": {
+          "firstRowMs": 1093,
+          "totalMs": 2787.800000190735,
+          "tokensPerSecond": 89.00636529454273,
+          "promptTokens": 1039,
+          "completionTokens": 165,
+          "prefillTokensPerSecond": 1146.7991169977925,
+          "timeToFirstTokenMs": 906,
+          "grammarInitMs": 5.599999904632568,
+          "grammarPerTokenMs": 0.05878787763190996,
+          "strategy": "v1",
+          "candidates": 11,
+          "decidedByModel": 11,
+          "firstDecisionMs": 1093
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2789.4000000953674,
+        "rowTimesMs": [
+          1095,
+          1267,
+          1730,
+          2067,
+          2240,
+          2766
+        ]
+      },
+      "score": {
+        "fixture": "responsibilities-tech",
+        "candidates": 11,
+        "keep": {
+          "correct": 5,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 5,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 5,
+          "total": 6
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 2
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 3,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 5,
+          "total": 10
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 5,
+          "total": 10
+        },
+        "coverage": {
+          "covered": 3.5,
+          "mustHaves": 4
+        },
+        "idealCoverage": {
+          "covered": 4,
+          "mustHaves": 4
+        },
+        "diffs": [
+          "PRIORITY must ≠ nice: Build and maintain our internal CI/CD pipelines on GitHub Actions",
+          "PRIORITY must ≠ nice: Own the Webpack and module federation setup for 30+ micro-frontends",
+          "WRONG SKILL +wcag: Own the Webpack and module federation setup for 30+ micro-frontends",
+          "DROPPED [responsibilities] Migrate legacy services from JavaScript to TypeScript, one package at a time",
+          "DROPPED [responsibilities] Partner with product teams to improve build times and developer productivity",
+          "KEPT [responsibilities] Write clear RFCs and documentation",
+          "DROPPED [requirements] 4+ years of software engineering experience",
+          "DROPPED [requirements] You've led a large-scale codebase migration",
+          "DROPPED [preferred] Bazel or Nx monorepo experience"
+        ]
+      }
+    },
+    {
+      "fixture": "boilerplate-payments",
+      "run": {
+        "report": {
+          "role": "Senior Software Engineer - Payments",
+          "mode": "model",
+          "requirements": [
+            {
+              "text": "Acme Pay | New York, NY (Hybrid)",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Design and build payment APIs used by thousands of merchants",
+              "priority": "must",
+              "skills": [
+                "wcag"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "strong",
+              "evidenceIds": [
+                "indeed-swe-ii.wcag-components"
+              ],
+              "note": "Evidence: WCAG across 20+ React components (Indeed)."
+            },
+            {
+              "text": "Bachelor's degree in Computer Science or equivalent experience",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "5–8 years of backend engineering experience",
+              "priority": "must",
+              "skills": [
+                "state-management",
+                "animation"
+              ],
+              "otherSkills": [],
+              "minYears": 5,
+              "verdict": "strong",
+              "evidenceIds": [
+                "hammerball.reactive-state",
+                "roblox-css.animation"
+              ],
+              "note": "Evidence: Reactive state across 20+ services (BonkBall). Years: 8 years in software since 2018, including an internship (2026 − 2018), not per skill; 5 asked."
+            },
+            {
+              "text": "Excellent communication skills",
+              "priority": "must",
+              "skills": [],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "not_assessed",
+              "evidenceIds": [],
+              "note": "Not something my portfolio shows either way."
+            },
+            {
+              "text": "Experience in fintech or payments",
+              "priority": "nice",
+              "skills": [
+                "seo",
+                "datadog"
+              ],
+              "otherSkills": [],
+              "minYears": null,
+              "verdict": "partial",
+              "evidenceIds": [
+                "ibm-staff-swe.ibm-developer-react"
+              ],
+              "note": "Evidence: IBM Developer rebuild for SEO and vitals (IBM). Nothing for Datadog."
+            }
+          ],
+          "coverage": null
+        },
+        "stats": {
+          "firstRowMs": 998.2999997138977,
+          "totalMs": 2771.5,
+          "tokensPerSecond": 89.17923977905629,
+          "promptTokens": 980,
+          "completionTokens": 172,
+          "prefillTokensPerSecond": 1218.6023380159536,
+          "timeToFirstTokenMs": 804.1999998092651,
+          "grammarInitMs": 0,
+          "grammarPerTokenMs": 0.05174420323482783,
+          "strategy": "v1",
+          "candidates": 11,
+          "decidedByModel": 11,
+          "firstDecisionMs": 998.1999998092651
+        },
+        "decisions": [
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "wcag"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "state-management",
+              "animation"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": []
+          },
+          {
+            "requirement": true,
+            "priority": "must",
+            "addSkills": [
+              "seo",
+              "datadog"
+            ]
+          },
+          {
+            "requirement": false,
+            "priority": "nice",
+            "addSkills": []
+          }
+        ],
+        "answers": null,
+        "wallMs": 2771.6000003814697,
+        "rowTimesMs": [
+          998,
+          1174,
+          1628,
+          1852,
+          2328,
+          2587
+        ]
+      },
+      "score": {
+        "fixture": "boilerplate-payments",
+        "candidates": 11,
+        "keep": {
+          "correct": 5,
+          "total": 11
+        },
+        "keptLabelled": {
+          "correct": 5,
+          "total": 10
+        },
+        "keptPrecision": {
+          "correct": 5,
+          "total": 6
+        },
+        "priorityWhereCodeNull": {
+          "correct": 0,
+          "total": 1
+        },
+        "addSkillsPrecision": {
+          "correct": 0,
+          "total": 5
+        },
+        "addSkillsRecall": {
+          "correct": 0,
+          "total": 3
+        },
+        "rowAgreement": {
+          "correct": 2,
+          "total": 10
+        },
+        "verdictAgreement": {
+          "correct": 4,
+          "total": 10
+        },
+        "spuriousRows": 1,
+        "labelsMissed": 0,
+        "recallInclMissed": {
+          "correct": 5,
+          "total": 10
+        },
+        "coverage": null,
+        "idealCoverage": {
+          "covered": 1,
+          "mustHaves": 3
+        },
+        "diffs": [
+          "KEPT [unknown] Acme Pay | New York, NY (Hybrid)",
+          "PRIORITY must ≠ nice: Design and build payment APIs used by thousands of merchants",
+          "WRONG SKILL +wcag: Design and build payment APIs used by thousands of merchants",
+          "DROPPED [responsibilities] Improve reliability and observability of our Java and Kotlin services",
+          "DROPPED [responsibilities] Mentor engineers and lead technical design reviews",
+          "WRONG SKILL +state-management: 5–8 years of backend engineering experience",
+          "WRONG SKILL +animation: 5–8 years of backend engineering experience",
+          "DROPPED [requirements] Proficiency in Java or Kotlin",
+          "DROPPED [requirements] Experience with SQL databases and Kafka",
+          "WRONG SKILL +seo: Experience in fintech or payments",
+          "WRONG SKILL +datadog: Experience in fintech or payments",
+          "DROPPED [preferred] Familiarity with GraphQL"
+        ]
+      }
+    }
+  ],
+  "totals": {
+    "candidates": 81,
+    "keep": {
+      "correct": 43,
+      "total": 81
+    },
+    "keptLabelled": {
+      "correct": 40,
+      "total": 70
+    },
+    "keptPrecision": {
+      "correct": 40,
+      "total": 48
+    },
+    "priorityWhereCodeNull": {
+      "correct": 2,
+      "total": 6
+    },
+    "addSkillsPrecision": {
+      "correct": 0,
+      "total": 15
+    },
+    "addSkillsRecall": {
+      "correct": 0,
+      "total": 14
+    },
+    "rowAgreement": {
+      "correct": 22,
+      "total": 70
+    },
+    "verdictAgreement": {
+      "correct": 32,
+      "total": 70
+    },
+    "spuriousRows": 8,
+    "labelsMissed": 0,
+    "recallInclMissed": {
+      "correct": 40,
+      "total": 70
+    },
+    "coverageExact": {
+      "correct": 1,
+      "total": 8
+    }
+  },
+  "timing": {
+    "firstRowMs": {
+      "median": 1007.3999998569489,
+      "max": 1093
+    },
+    "firstDecisionMs": {
+      "median": 1007.2999999523163,
+      "max": 1093
+    },
+    "totalMs": {
+      "median": 2593.25,
+      "max": 2787.800000190735
+    },
+    "prefillTokPerS": {
+      "median": 1195.3625323595675,
+      "max": 1228.0279317566988
+    },
+    "decodeTokPerS": {
+      "median": 91.07526989460436,
+      "max": 95.2232280250754
+    },
+    "grammarMsPerToken": {
+      "median": 0.03679847528064064,
+      "max": 0.05878787763190996
+    },
+    "completionTokensPerCandidate": {
+      "median": 15,
+      "max": 16
+    },
+    "decidedByModel": "81 of 81"
+  }
+}

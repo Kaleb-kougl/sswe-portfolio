@@ -26,7 +26,7 @@ const namesSkill = (s: Segment) => s.skills.length + s.otherSkills.length > 0;
  * Company voice: a line about the employer ("We're a remote-first team…",
  * "Our stack is…", "Join us…"), not a demand on the candidate.
  */
-const COMPANY_VOICE = /^(?:(?:we|we're|we’re|we've|we’ve|we'll|we’ll|our|us|join)\b|at [A-Z][\w&.-]*,)/i;
+export const COMPANY_VOICE = /^(?:(?:we|we're|we’re|we've|we’ve|we'll|we’ll|our|us|join)\b|at [A-Z][\w&.-]*,)/i;
 
 /**
  * A segment that isn't a requirement by itself: a lead-in that ends in ":"

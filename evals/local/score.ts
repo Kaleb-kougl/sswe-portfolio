@@ -8,13 +8,17 @@ import {
   type SegmentedJd,
 } from '@/lib/fit';
 
-import { idealDecisions, type Fixture } from '../../__tests__/fit/fixtures';
+import { labelledDecisions, type Fixture } from '../holdout';
 
 /**
  * Scores one path (a model's decisions, or the no-model `defaultDecision`s)
- * on one labelled fixture, against the fixture's labels and against the
- * report a perfect model would produce (`idealDecisions`). Pure; used by
- * compare.eval.ts. The metrics follow the plan's Phase 3 graders (v4).
+ * on one labelled JD, against its labels and against the report a perfect
+ * model would produce. Labels are matched to candidate segments by
+ * evals/holdout.ts (exact on the fixtures, tolerant on holdout JDs); a label
+ * that matches no candidate is `labelsMissed`, a loss for every path, and
+ * counts only in `recallInclMissed`. Pure; used by compare.eval.ts, the
+ * sweep and the embedding eval. The metrics follow the plan's Phase 3
+ * graders (v4).
  */
 
 export interface Counts {
@@ -43,6 +47,10 @@ export interface FixtureScore {
   verdictAgreement: Counts;
   /** Rows in the report that are not labelled requirements. */
   spuriousRows: number;
+  /** Labels that match no candidate segment (lost to segmentation, for every path). */
+  labelsMissed: number;
+  /** Labels whose segment was kept, over ALL labels (missed ones count as not kept). The other counts are per labelled segment. */
+  recallInclMissed: Counts;
   coverage: FitReport['coverage'];
   idealCoverage: FitReport['coverage'];
   /** Per-candidate diffs vs ideal, for reading the failures. */
@@ -64,9 +72,8 @@ export function scoreFixture(
   now: Date,
 ): FixtureScore {
   const seg = segmentJd(fixture.jd.trim());
-  const ideal = idealDecisions(fixture, seg);
+  const { ideal, mapping } = labelledDecisions(fixture, seg);
   const idealReport = analyzeWithDecisions(fixture.jd, ideal, now);
-  const labels = new Map(fixture.labels.map((l) => [l.text, l]));
 
   const s: FixtureScore = {
     fixture: fixture.name,
@@ -80,6 +87,8 @@ export function scoreFixture(
     rowAgreement: { ...ZERO },
     verdictAgreement: { ...ZERO },
     spuriousRows: 0,
+    labelsMissed: mapping.missed.length,
+    recallInclMissed: { correct: 0, total: fixture.labels.length },
     coverage: report.coverage,
     idealCoverage: idealReport.coverage,
     diffs: [],
@@ -89,7 +98,7 @@ export function scoreFixture(
     const segment = seg.segments[index];
     const d = decisions[pos];
     const want = ideal[pos];
-    const label = labels.get(segment.text);
+    const label = mapping.byCandidate[pos];
     s.keep.total++;
     if (d.requirement === want.requirement) s.keep.correct++;
     else s.diffs.push(`${want.requirement ? 'DROPPED' : 'KEPT'} [${segment.section}] ${segment.text.slice(0, 90)}`);
@@ -120,6 +129,9 @@ export function scoreFixture(
       if (d.requirement && added.includes(id)) s.addSkillsRecall.correct++;
     }
   });
+
+  // Recall over every label (several may share a segment; a missed one counts as not kept).
+  s.recallInclMissed.correct = mapping.candidateOfLabel.filter((pos) => pos !== null && decisions[pos].requirement).length;
 
   const rowByText = new Map(report.requirements.map((r) => [r.text, r]));
   for (const want of idealReport.requirements) {
@@ -160,6 +172,8 @@ export function totals(scores: readonly FixtureScore[]): Totals {
     rowAgreement: { ...ZERO },
     verdictAgreement: { ...ZERO },
     spuriousRows: 0,
+    labelsMissed: 0,
+    recallInclMissed: { ...ZERO },
     coverageExact: { ...ZERO },
   };
   for (const s of scores) {
@@ -173,6 +187,8 @@ export function totals(scores: readonly FixtureScore[]): Totals {
     t.rowAgreement = add(t.rowAgreement, s.rowAgreement);
     t.verdictAgreement = add(t.verdictAgreement, s.verdictAgreement);
     t.spuriousRows += s.spuriousRows;
+    t.labelsMissed += s.labelsMissed ?? 0;
+    t.recallInclMissed = add(t.recallInclMissed, s.recallInclMissed ?? { correct: s.keptLabelled.correct, total: s.keptLabelled.total });
     // Scan mode hides coverage when no must-have was found; compare like for like.
     const same = JSON.stringify(s.coverage) === JSON.stringify(s.idealCoverage);
     t.coverageExact = add(t.coverageExact, { correct: same ? 1 : 0, total: 1 });
