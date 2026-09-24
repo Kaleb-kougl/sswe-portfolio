@@ -65,7 +65,7 @@ const PREVIEW_CHECKS: PreviewCheck[] = [
   { name: 'hero.glb size', value: '8.5 KB of 500 KB budget', status: 'passing' },
   {
     name: 'homepage JS',
-    value: '160.3 KB gzip, ≤ baseline + 1 KB',
+    value: '161.2 KB gzip, ≤ baseline + 1 KB',
     status: 'passing',
     note: 'every <script src> in the prerendered page; the lazy 3D scene is not counted',
   },
@@ -198,6 +198,27 @@ export function ProcessSection() {
               );
             })}
           </ul>
+        </div>
+
+        {/* --- Why the fit checker has no model --------------------------
+            Numbers from evals/local/results/2026-09-23-summary.md ("row
+            agreement"). Keep the caveat: the rules were written against the
+            same 8 JDs, so this is not yet a held-out result. */}
+        <div className="mt-12 md:mt-14">
+          <h3 className="font-display text-lg leading-tight text-ink">
+            The fit checker ships without a model.
+          </h3>
+          <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-body-soft">
+            I measured three on-device language models (0.7–1 GB downloads) against plain code on
+            8 labelled job descriptions. Code matched the ideal report on 55 of 70 requirements; the
+            best model, 29. So{' '}
+            <a href="/fit" className="font-semibold text-ink underline underline-offset-4">
+              the fit checker
+            </a>{' '}
+            runs no model: it is instant, works on every device, and the job description never
+            leaves the page. The rules were written against those same 8, so a rematch on unseen
+            postings comes next.
+          </p>
         </div>
       </div>
     </section>
