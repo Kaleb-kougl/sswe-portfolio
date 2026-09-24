@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { AskPanel } from '@/components/fit/ask-panel';
 import { FitChecker } from '@/components/fit/fit-checker';
 import { formatBytes, LOCAL_MODEL, PRIVATE_MODE_ENABLED } from '@/lib/fit/local/model';
 
@@ -63,6 +64,13 @@ export default function FitPage() {
           Paste a job description. Each requirement comes back with a verdict and links to the work behind it, and the
           gaps are listed as gaps.
         </p>
+        <p className="mt-3 font-ui text-[15px] text-muted">
+          Just one question?{' '}
+          <a href="#ask" className="font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover">
+            Ask about my work
+          </a>
+          .
+        </p>
 
         <section
           aria-labelledby="fit-privacy-heading"
@@ -88,6 +96,28 @@ export default function FitPage() {
         <div className="mt-10">
           <FitChecker />
         </div>
+
+        {/* Below the checker rather than a tab beside it: both stay visible and
+            linkable (#ask), the checker's markup and tests are untouched, and a
+            JD pasted into either one gets the same report. */}
+        <section id="ask" aria-labelledby="ask-heading" className="mt-20 border-t border-hairline pt-12 md:mt-24 md:pt-16">
+          <p className="eyebrow">Ask a question</p>
+          <h2 id="ask-heading" className="mt-4 font-display text-[30px] leading-[1.05] tracking-[-0.03em] text-ink md:text-[44px]">
+            Ask about my work
+          </h2>
+          <p className="mt-4 max-w-[60ch] font-ui text-[17px] leading-relaxed text-body">
+            Has he used a skill, what did a project involve, is he available, how does he fit this role. Each answer
+            quotes the records behind it, and says so when there are none.
+          </p>
+          <p data-testid="ask-privacy" className="mt-4 max-w-[64ch] rounded-md border border-hairline bg-panel px-4 py-3 font-ui text-sm leading-relaxed text-body">
+            <strong className="font-semibold text-ink">No AI model.</strong>{' '}Answers come from plain code that looks your
+            question up in my evidence records and fills in fixed sentences, so it can&rsquo;t make anything up. Your
+            question stays on this page: it isn&rsquo;t sent anywhere, stored or logged.
+          </p>
+          <div className="mt-8">
+            <AskPanel />
+          </div>
+        </section>
       </main>
     </>
   );
