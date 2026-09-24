@@ -267,11 +267,9 @@ export type PrivateMode = ReturnType<typeof usePrivateMode>;
 
 // ------------------------------------------------------------------ UI
 
-const SECONDARY_BUTTON =
-  'inline-flex min-h-[44px] items-center justify-center rounded-pill border border-control bg-surface px-5 py-2.5 font-ui text-sm font-semibold text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel disabled:cursor-not-allowed disabled:opacity-60';
+const SECONDARY_BUTTON = 'button button--pill button--secondary button--md button--disableable justify-center';
 
-const PRIMARY_BUTTON =
-  'inline-flex min-h-[44px] items-center justify-center rounded-pill bg-cta px-5 py-2.5 font-ui text-sm font-bold text-cta-ink shadow-cta transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60';
+const PRIMARY_BUTTON = 'button button--pill button--primary button--fade button--md button--disableable justify-center font-bold';
 
 const PHASE_LABEL: Record<LoadProgress['phase'], string> = {
   download: 'Downloading the model',
@@ -324,13 +322,13 @@ function ConsentDialog({
         returnFocusTo.current?.focus();
         if (!confirmed.current) onDecline();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-[520px] rounded-xl border border-hairline bg-surface p-0 text-body shadow-raised backdrop:bg-ink/40"
+      className="card card--raised m-auto w-[calc(100%-2rem)] max-w-[520px] p-0 text-body backdrop:bg-ink/40"
     >
       <div className="p-5 sm:p-7">
-        <h2 id="fit-consent-title" className="font-display text-2xl leading-tight text-ink">
+        <h2 id="fit-consent-title" className="private-mode__dialog-title">
           Run Private mode on this device?
         </h2>
-        <ul id="fit-consent-body" className="mt-4 list-disc space-y-2 pl-5 font-ui text-sm leading-relaxed text-body">
+        <ul id="fit-consent-body" className="private-mode__dialog-list mt-4">
           {cached ? (
             <li>The model is already saved in this browser, so nothing new is downloaded.</li>
           ) : (
@@ -406,36 +404,36 @@ export function PrivateModePanel({
       data-testid="private-mode"
       data-offer={offer.state}
       aria-labelledby="private-mode-heading"
-      className="mt-10 min-h-[176px] rounded-xl border border-hairline bg-panel p-5 shadow-hairline sm:p-6"
+      className="card card--panel card--hairline card--padded mt-10 min-h-[176px]"
     >
-      <h2 id="private-mode-heading" className="font-display text-xl leading-tight text-ink">
+      <h2 id="private-mode-heading" className="private-mode__heading">
         Private mode
       </h2>
 
       {offer.state === 'checking' ? (
-        <p className="mt-2 font-ui text-sm text-muted">Checking whether this device can run it…</p>
+        <p className="private-mode__note mt-2">Checking whether this device can run it…</p>
       ) : (
         <>
-          <p className="mt-2 max-w-[60ch] font-ui text-sm leading-relaxed text-body">
+          <p className="private-mode__intro mt-2">
             For a closer read, a small language model can run on this device and decide which lines are
             requirements and how important each is. It&rsquo;s a {MODEL_SIZE} download, once. The job description
             still never leaves this device.
           </p>
 
           {flow.step === 'no-storage' ? (
-            <p className="mt-3 font-ui text-sm font-semibold text-ink">
+            <p className="private-mode__status mt-3">
               Not enough storage for the ~{MODEL_SIZE} model. The keyword scan above still stands.
             </p>
           ) : null}
 
           {flow.step === 'problem' ? (
-            <p data-testid="private-mode-problem" className="mt-3 font-ui text-sm font-semibold text-ink">
+            <p data-testid="private-mode-problem" className="private-mode__status mt-3">
               {flow.message} The keyword scan above still stands.
             </p>
           ) : null}
 
           {flow.step === 'slow' ? (
-            <p className="mt-3 font-ui text-sm font-semibold text-ink">
+            <p className="private-mode__status mt-3">
               This device would take about {flow.seconds} s to check the first requirement, so the download hasn&rsquo;t
               started.
             </p>
@@ -443,29 +441,29 @@ export function PrivateModePanel({
 
           {flow.step === 'loading' ? (
             <div className="mt-4">
-              <label htmlFor="private-mode-progress" className="block font-ui text-sm font-semibold text-ink">
+              <label htmlFor="private-mode-progress" className="private-mode__progress-label">
                 {flow.progress ? PHASE_LABEL[flow.progress.phase] : 'Starting the download'}
               </label>
               <progress
                 id="private-mode-progress"
-                className="mt-2 block h-2 w-full appearance-none overflow-hidden rounded-pill border-0 bg-panel-subtle [&::-moz-progress-bar]:bg-ink [&::-webkit-progress-bar]:bg-panel-subtle [&::-webkit-progress-value]:rounded-pill [&::-webkit-progress-value]:bg-ink"
+                className="private-mode__progress mt-2"
                 max={flow.progress?.totalBytes || LOCAL_MODEL.downloadBytes}
                 value={flow.progress && flow.progress.phase !== 'init' ? flow.progress.loadedBytes : undefined}
               />
-              <p className="mt-1 font-mono text-[12px] tabular-nums text-muted">
+              <p className="private-mode__progress-bytes mt-1">
                 {mb(flow.progress?.loadedBytes ?? 0)} of {mb(flow.progress?.totalBytes || LOCAL_MODEL.downloadBytes)}
               </p>
             </div>
           ) : null}
 
           {flow.step === 'running' ? (
-            <p className="mt-3 font-ui text-sm font-semibold text-ink">
+            <p className="private-mode__status mt-3">
               {flow.rows.length} of ~{Math.max(expectedRows, flow.rows.length)} requirements checked
             </p>
           ) : null}
 
           {flow.step === 'done' ? (
-            <p className="mt-3 font-ui text-sm font-semibold text-ink">
+            <p className="private-mode__status mt-3">
               The Private-mode report replaced the keyword scan above.{' '}
               <a href="#fit-report-heading">Go to the report</a>
             </p>
@@ -493,7 +491,7 @@ export function PrivateModePanel({
               </button>
             ) : null}
             {offer.state === 'disabled' ? (
-              <p id={reasonId} className="font-ui text-sm text-muted">
+              <p id={reasonId} className="private-mode__note">
                 {offer.message}
               </p>
             ) : null}

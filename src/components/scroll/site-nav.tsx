@@ -12,22 +12,14 @@ const NAV_LINKS = [
   { id: 'contact', label: 'Contact' },
 ] as const;
 
-const linkClass = (isActive: boolean) =>
-  [
-    'inline-flex min-h-[44px] items-center border-b-2 px-1 text-[15px] font-semibold transition-colors',
-    isActive
-      ? 'border-cta text-ink'
-      : 'border-transparent text-muted hover:text-ink',
-  ].join(' ');
-
 /** ink / ink / lime-with-ink-inset-ring / cta — the site's 2x2 block mark. */
 function BlockMark() {
   return (
-    <span aria-hidden="true" className="grid grid-cols-2 gap-[2px]">
-      <span className="size-[9px] rounded-[1px] bg-ink" />
-      <span className="size-[9px] rounded-[1px] bg-ink" />
-      <span className="size-[9px] rounded-[1px] bg-lime inset-ring inset-ring-ink" />
-      <span className="size-[9px] rounded-[1px] bg-cta" />
+    <span aria-hidden="true" className="site-nav__mark">
+      <span className="site-nav__mark-cell" />
+      <span className="site-nav__mark-cell" />
+      <span className="site-nav__mark-cell site-nav__mark-cell--lime" />
+      <span className="site-nav__mark-cell site-nav__mark-cell--cta" />
     </span>
   );
 }
@@ -91,14 +83,14 @@ export function SiteNav() {
   }, [menuOpen, closeMenu]);
 
   return (
-    <header className="nav-surface fixed inset-x-0 top-0 z-[2]">
+    <header className="site-nav nav-surface">
       {/* Tight gap/padding below 900px: at 375px the wordmark, the 44px toggle
           and the CTA together overflow `gap-6 px-6`, and flexbox resolves that
           by wrapping both the wordmark and the button onto two lines. */}
       <div className="flex h-[var(--nav-height)] items-center justify-between gap-3 px-4 min-[900px]:gap-6 min-[900px]:px-12">
         <a
           href="#hero"
-          className="inline-flex min-h-[44px] items-center gap-3 whitespace-nowrap font-display text-[17px] tracking-[-0.03em] text-ink min-[900px]:text-[21px]"
+          className="site-nav__brand"
         >
           <BlockMark />
           Kaleb Kougl
@@ -113,7 +105,7 @@ export function SiteNav() {
                   <a
                     href={`#${link.id}`}
                     aria-current={isActive ? 'true' : undefined}
-                    className={linkClass(isActive)}
+                    className="site-nav__link"
                   >
                     {link.label}
                   </a>
@@ -127,7 +119,7 @@ export function SiteNav() {
             // breaks on every other origin and on local dev.
             href="/KalebK_Resume.pdf"
             download
-            className="ml-5 hidden min-h-[44px] items-center px-1 text-[15px] font-semibold text-muted transition-colors hover:text-ink min-[900px]:inline-flex"
+            className="site-nav__resume ml-5"
           >
             Résumé
           </a>
@@ -138,21 +130,21 @@ export function SiteNav() {
             aria-expanded={menuOpen}
             aria-controls="nav-menu"
             onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))}
-            className="inline-flex size-[44px] shrink-0 items-center justify-center rounded-sm border border-control bg-surface text-ink min-[900px]:hidden"
+            className="button button--rounded button--outline size-[44px] shrink-0 justify-center min-[900px]:hidden"
           >
             <span className="sr-only">
               {menuOpen ? 'Close menu' : 'Open menu'}
             </span>
-            <span aria-hidden="true" className="flex flex-col gap-[4px]">
-              <span className="block h-[2px] w-[18px] bg-ink" />
-              <span className="block h-[2px] w-[18px] bg-ink" />
-              <span className="block h-[2px] w-[18px] bg-ink" />
+            <span aria-hidden="true" className="site-nav__burger">
+              <span className="site-nav__burger-line" />
+              <span className="site-nav__burger-line" />
+              <span className="site-nav__burger-line" />
             </span>
           </button>
 
           <a
             href="#contact"
-            className="inline-flex min-h-[44px] shrink-0 items-center justify-center whitespace-nowrap rounded-pill bg-cta px-4 text-center text-[15px] font-semibold text-cta-ink shadow-cta min-[900px]:px-5"
+            className="button button--pill button--primary button--hero shrink-0 justify-center whitespace-nowrap px-4 text-center min-[900px]:px-5"
           >
             Get in touch
           </a>
@@ -163,7 +155,7 @@ export function SiteNav() {
         <div
           ref={panelRef}
           id="nav-menu"
-          className="border-t border-hairline bg-paper px-6 pb-4 min-[900px]:hidden"
+          className="site-nav__menu"
         >
           <ul className="flex flex-col">
             {NAV_LINKS.map((link) => {
@@ -174,10 +166,7 @@ export function SiteNav() {
                     href={`#${link.id}`}
                     aria-current={isActive ? 'true' : undefined}
                     onClick={closeMenu}
-                    className={[
-                      'flex min-h-[44px] items-center border-b border-hairline text-[16px] font-semibold',
-                      isActive ? 'text-ink' : 'text-muted',
-                    ].join(' ')}
+                    className="site-nav__menu-link site-nav__menu-link--section"
                   >
                     {link.label}
                   </a>
@@ -189,7 +178,7 @@ export function SiteNav() {
                 href="/KalebK_Resume.pdf"
                 download
                 onClick={closeMenu}
-                className="flex min-h-[44px] items-center text-[16px] font-semibold text-muted"
+                className="site-nav__menu-link"
               >
                 Résumé
               </a>

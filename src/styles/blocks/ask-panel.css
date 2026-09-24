@@ -1,0 +1,16 @@
+/* =====================================================================
+   .ask-panel — the "Ask about my work" form on /fit. The form is a
+   `.card card--raised`; its label, hint and textarea are `.field`
+   elements, the chips and buttons `.button`, the "Try" caption
+   `.label-mono`. Only the pieces left over live here.
+   ===================================================================== */
+
+/* Unlike `.field__error` this one has no icon, so it is not a flex row. */
+.ask-panel__error {
+  @apply font-ui text-sm font-semibold text-ink;
+}
+
+/* The example-question chips. */
+.ask-panel__examples {
+  @apply flex flex-wrap gap-2;
+}

@@ -66,7 +66,7 @@ export default function FitPage() {
         </p>
         <p className="mt-3 font-ui text-[15px] text-muted">
           Just one question?{' '}
-          <a href="#ask" className="font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover">
+          <a href="#ask" className="link font-semibold">
             Ask about my work
           </a>
           .
@@ -74,7 +74,7 @@ export default function FitPage() {
 
         <section
           aria-labelledby="fit-privacy-heading"
-          className="mt-8 rounded-xl border border-hairline bg-panel p-5 shadow-hairline sm:p-6"
+          className="card card--panel card--hairline card--padded mt-8"
         >
           <h2 id="fit-privacy-heading" className="font-display text-xl leading-tight text-ink">
             What stays on your device
@@ -102,14 +102,14 @@ export default function FitPage() {
             JD pasted into either one gets the same report. */}
         <section id="ask" aria-labelledby="ask-heading" className="mt-20 border-t border-hairline pt-12 md:mt-24 md:pt-16">
           <p className="eyebrow">Ask a question</p>
-          <h2 id="ask-heading" className="mt-4 font-display text-[30px] leading-[1.05] tracking-[-0.03em] text-ink md:text-[44px]">
+          <h2 id="ask-heading" className="section__heading mt-4 text-[30px] tracking-[-0.03em] text-ink md:text-[44px]">
             Ask about my work
           </h2>
           <p className="mt-4 max-w-[60ch] font-ui text-[17px] leading-relaxed text-body">
             Have I used a skill, what did a project involve, am I available, how do I fit this role. Each answer
             quotes the records behind it, and says so when there are none.
           </p>
-          <p data-testid="ask-privacy" className="mt-4 max-w-[64ch] rounded-md border border-hairline bg-panel px-4 py-3 font-ui text-sm leading-relaxed text-body">
+          <p data-testid="ask-privacy" className="card card--md card--panel mt-4 max-w-[64ch] px-4 py-3 font-ui text-sm leading-relaxed text-body">
             <strong className="font-semibold text-ink">No AI model.</strong>{' '}Answers come from plain code that looks your
             question up in my evidence records and fills in fixed sentences, so it can&rsquo;t make anything up. Your
             question stays on this page: it isn&rsquo;t sent anywhere, stored or logged.

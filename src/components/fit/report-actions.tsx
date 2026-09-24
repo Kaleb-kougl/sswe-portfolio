@@ -13,8 +13,7 @@ import { reportToMarkdown } from '@/lib/fit/markdown';
  */
 export const CONTACT_ABOUT_ROLE_HREF = '/?reason=role#contact';
 
-const BUTTON =
-  'inline-flex min-h-[44px] items-center justify-center rounded-pill border border-control bg-surface px-5 py-2.5 font-ui text-sm font-semibold text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel';
+const BUTTON = 'button button--pill button--secondary button--md justify-center';
 
 /**
  * "Copy as Markdown" and "Email me about this role". The copy button follows

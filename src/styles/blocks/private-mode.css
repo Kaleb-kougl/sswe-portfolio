@@ -1,0 +1,47 @@
+/* =====================================================================
+   .private-mode — the Private-mode box under the fit report and its
+   consent <dialog>. The box is `.card card--panel card--hairline
+   card--padded`, the dialog `.card card--raised`, the buttons `.button`.
+   Margins and flex rows stay as utilities at the call site.
+   ===================================================================== */
+
+.private-mode__heading {
+  @apply font-display text-xl leading-tight text-ink;
+}
+
+/* What Private mode is (the paragraph under the heading). */
+.private-mode__intro {
+  @apply max-w-[60ch] font-ui text-sm leading-relaxed text-body;
+}
+
+/* A step's one-line status: no storage, problem, slow, running, done. */
+.private-mode__status {
+  @apply font-ui text-sm font-semibold text-ink;
+}
+
+/* "Checking whether this device can run it…" and the disabled reason. */
+.private-mode__note {
+  @apply font-ui text-sm text-muted;
+}
+
+/* --- Download progress --------------------------------------------- */
+.private-mode__progress-label {
+  @apply block font-ui text-sm font-semibold text-ink;
+}
+
+.private-mode__progress {
+  @apply block h-2 w-full appearance-none overflow-hidden rounded-pill border-0 bg-panel-subtle [&::-moz-progress-bar]:bg-ink [&::-webkit-progress-bar]:bg-panel-subtle [&::-webkit-progress-value]:rounded-pill [&::-webkit-progress-value]:bg-ink;
+}
+
+.private-mode__progress-bytes {
+  @apply font-mono text-[12px] tabular-nums text-muted;
+}
+
+/* --- Consent dialog ------------------------------------------------- */
+.private-mode__dialog-title {
+  @apply font-display text-2xl leading-tight text-ink;
+}
+
+.private-mode__dialog-list {
+  @apply list-disc space-y-2 pl-5 font-ui text-sm leading-relaxed text-body;
+}

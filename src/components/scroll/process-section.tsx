@@ -113,20 +113,20 @@ const STEPS: ProcessStep[] = [
  *  the surrounding <ol> carries the real numbering. */
 const FILLED_STEP_INDEX = 1;
 
-/* Panel palette. These two values are scoped to the dark checks panel only:
-   #161310 is the `ink` token used as a surface, #EDE8DA is its paper-toned
-   text (14.99:1). `lime` and `cta` appear here as the pass/pending marks —
-   6.00:1 and 13.76:1 on this surface — which is the one place the section spec
-   calls for them outside their usual one-job contract. */
-const PANEL_TEXT = 'text-[#EDE8DA]';
+/* Panel palette (`.pipeline-checks`, src/styles/blocks/pipeline-checks.css). Scoped to the
+   dark checks panel only: #161310 is the `ink` token used as a surface,
+   #EDE8DA is its paper-toned text (14.99:1). `lime` and `cta` appear there as
+   the pass/pending marks — 6.00:1 and 13.76:1 on this surface — which is the
+   one place the section spec calls for them outside their usual one-job
+   contract. */
 
 export function ProcessSection() {
   return (
-    <section id="process" className="w-full py-20 md:py-28">
-      <div className="mx-auto w-full max-w-5xl px-6 md:px-10">
+    <section id="process" className="section">
+      <div className="section__inner">
         <p className="eyebrow">HOW THIS SITE IS BUILT</p>
 
-        <h2 className="mt-5 max-w-[18ch] font-display text-[32px] leading-[1.05] md:text-[52px]">
+        <h2 className="section__heading mt-5 max-w-[18ch] md:text-[52px]">
           The background is a Blender file.
         </h2>
 
@@ -137,18 +137,20 @@ export function ProcessSection() {
 
         <ol className="mt-12 grid gap-7 md:mt-14">
           {STEPS.map((step, index) => (
-            <li key={step.title} className="grid grid-cols-[30px_1fr] items-start gap-x-4">
+            <li key={step.title} className="process-step">
               <span
                 aria-hidden="true"
-                className={`flex h-[30px] w-[30px] items-center justify-center rounded-pill border border-ink font-mono text-xs font-bold leading-none ${
-                  index === FILLED_STEP_INDEX ? 'bg-lime text-lime-ink' : 'bg-surface text-ink'
-                }`}
+                className={
+                  index === FILLED_STEP_INDEX
+                    ? 'process-step__number process-step__number--filled'
+                    : 'process-step__number'
+                }
               >
                 {index + 1}
               </span>
               <div className="pt-1">
-                <h3 className="font-display text-lg leading-tight text-ink">{step.title}</h3>
-                <p className="mt-1.5 max-w-[58ch] text-[15px] leading-relaxed text-body-soft">
+                <h3 className="process-step__title">{step.title}</h3>
+                <p className="process-step__text mt-1.5 max-w-[58ch]">
                   {step.line}
                 </p>
               </div>
@@ -157,40 +159,46 @@ export function ProcessSection() {
         </ol>
 
         {/* --- What CI actually runs ---------------------------------- */}
-        <div className={`mt-12 rounded-md bg-ink p-5 md:mt-14 md:p-6 ${PANEL_TEXT}`}>
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[11.5px] uppercase leading-5 tracking-[0.12em]">
-            <span className="font-bold text-lime">Checks on every preview</span>
-            <span className={PANEL_TEXT}>GitHub Actions</span>
+        <div className="pipeline-checks mt-12 md:mt-14">
+          <div className="pipeline-checks__header">
+            <span className="pipeline-checks__title">Checks on every preview</span>
+            <span className="pipeline-checks__source">GitHub Actions</span>
           </div>
 
-          <ul className="mt-4 font-mono text-[11.5px] leading-5">
+          <ul className="pipeline-checks__list mt-4">
             {PREVIEW_CHECKS.map((check) => {
               const passing = check.status === 'passing';
 
               return (
                 <li
                   key={check.name}
-                  className="grid grid-cols-[1rem_1fr] items-baseline gap-x-3 gap-y-0.5 border-t border-[#EDE8DA]/15 py-2 sm:grid-cols-[1rem_1fr_auto]"
+                  className="pipeline-checks__item"
                 >
                   <span
                     aria-hidden="true"
-                    className={passing ? 'text-lime' : 'text-cta'}
+                    className={
+                      passing
+                        ? 'pipeline-checks__mark pipeline-checks__mark--pass'
+                        : 'pipeline-checks__mark pipeline-checks__mark--pending'
+                    }
                   >
                     {passing ? '✓' : '✗'}
                   </span>
-                  <span className={PANEL_TEXT}>
+                  <span className="pipeline-checks__name">
                     {check.name}
                     <span className="sr-only">{passing ? ' — passing' : ' — pending'}</span>
                     {check.note ? (
-                      <span className="block text-[10.5px] leading-4 text-[#EDE8DA]/55">
+                      <span className="pipeline-checks__note">
                         {check.note}
                       </span>
                     ) : null}
                   </span>
                   <span
-                    className={`col-start-2 sm:col-start-3 sm:text-right ${
-                      passing ? 'text-[#EDE8DA]/70' : 'text-cta'
-                    }`}
+                    className={
+                      passing
+                        ? 'pipeline-checks__result pipeline-checks__result--pass'
+                        : 'pipeline-checks__result pipeline-checks__result--pending'
+                    }
                   >
                     {check.value}
                   </span>

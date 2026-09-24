@@ -1,0 +1,69 @@
+/* =====================================================================
+   .pipeline-checks — the dark "Checks on every preview" list in the
+   Process section: what the CI/CD pipeline (GitHub Actions) runs on each
+   preview deploy, one row per check.
+
+   RAW HEX, ON PURPOSE: #EDE8DA (paper-toned text, 14.99:1 on ink) is the
+   one colour in the blocks without an @theme token. It is used only
+   here, and is deliberately not promoted to a token. `lime` / `cta` mark
+   passing / pending rows — the one place outside their usual one-job
+   contract (see the palette note in process-section.tsx).
+
+   ORDER MATTERS: every modifier follows the rule it overrides.
+   ===================================================================== */
+
+.pipeline-checks {
+  @apply rounded-md bg-ink p-5 text-[#EDE8DA] md:p-6;
+}
+
+.pipeline-checks__header {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2 font-mono text-[11.5px] uppercase leading-5 tracking-[0.12em];
+}
+
+.pipeline-checks__title {
+  @apply font-bold text-lime;
+}
+
+/* Where the checks run ("GitHub Actions"). */
+.pipeline-checks__source {
+  @apply text-[#EDE8DA];
+}
+
+.pipeline-checks__list {
+  @apply font-mono text-[11.5px] leading-5;
+}
+
+/* One check: mark | name (+ note) | result. */
+.pipeline-checks__item {
+  @apply grid grid-cols-[1rem_1fr] items-baseline gap-x-3 gap-y-0.5 border-t border-[#EDE8DA]/15 py-2 sm:grid-cols-[1rem_1fr_auto];
+}
+
+/* The ✓ / ✗ glyph. */
+.pipeline-checks__mark--pass {
+  @apply text-lime;
+}
+
+.pipeline-checks__mark--pending {
+  @apply text-cta;
+}
+
+.pipeline-checks__name {
+  @apply text-[#EDE8DA];
+}
+
+.pipeline-checks__note {
+  @apply block text-[10.5px] leading-4 text-[#EDE8DA]/55;
+}
+
+/* The check's outcome, e.g. a count or a score. */
+.pipeline-checks__result {
+  @apply col-start-2 sm:col-start-3 sm:text-right;
+}
+
+.pipeline-checks__result--pass {
+  @apply text-[#EDE8DA]/70;
+}
+
+.pipeline-checks__result--pending {
+  @apply text-cta;
+}

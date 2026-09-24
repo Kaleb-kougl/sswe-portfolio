@@ -52,9 +52,6 @@ interface Turn {
   reply: Reply;
 }
 
-const CHIP =
-  'inline-flex min-h-[40px] items-center rounded-pill border border-control bg-surface px-3.5 py-2 text-left font-ui text-[13px] font-semibold leading-snug text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel';
-
 function prefersReducedMotion(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
@@ -136,11 +133,11 @@ export function AskPanel() {
 
   return (
     <div data-testid="ask-panel">
-      <form onSubmit={onSubmit} noValidate className="rounded-xl border border-hairline bg-surface p-5 shadow-raised sm:p-7">
-        <label htmlFor={ids.field} className="font-ui text-sm font-semibold text-ink">
+      <form onSubmit={onSubmit} noValidate className="card card--raised p-5 sm:p-7">
+        <label htmlFor={ids.field} className="field__label">
           Your question
         </label>
-        <p id={ids.hint} className="mt-1 font-ui text-sm text-muted">
+        <p id={ids.hint} className="field__hint">
           A skill, a project, how to reach me, or a whole job description. Enter sends; Shift+Enter adds a line.
         </p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -157,29 +154,29 @@ export function AskPanel() {
             autoComplete="off"
             aria-invalid={error ? true : undefined}
             aria-describedby={[ids.hint, error ? ids.error : null].filter(Boolean).join(' ')}
-            className="block min-h-[52px] w-full resize-y rounded-sm border border-control bg-paper px-3.5 py-3 font-ui text-base leading-relaxed text-ink shadow-hairline transition-colors placeholder:text-muted hover:border-ink/40"
+            className="field__control field__control--lg min-h-[52px]"
           />
           <button
             type="submit"
-            className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-pill bg-cta px-6 py-3 font-ui text-base font-bold text-cta-ink shadow-cta transition-opacity hover:opacity-95"
+            className="button button--pill button--primary button--fade button--lg min-h-[48px] shrink-0"
           >
             Ask
           </button>
         </div>
         {error ? (
-          <p id={ids.error} role="alert" className="mt-2 font-ui text-sm font-semibold text-ink">
+          <p id={ids.error} role="alert" className="ask-panel__error mt-2">
             {error}
           </p>
         ) : null}
 
         <div className="mt-5">
-          <p id={`${uid}-examples`} className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+          <p id={`${uid}-examples`} className="label-mono">
             Try
           </p>
-          <ul aria-labelledby={`${uid}-examples`} className="mt-2 flex flex-wrap gap-2">
+          <ul aria-labelledby={`${uid}-examples`} className="ask-panel__examples mt-2">
             {PANEL_EXAMPLES.map((q) => (
               <li key={q}>
-                <button type="button" className={CHIP} onClick={() => void ask(q)}>
+                <button type="button" className="button button--pill button--secondary button--chip" onClick={() => void ask(q)}>
                   {q}
                 </button>
               </li>
@@ -215,7 +212,7 @@ export function AskPanel() {
             <button
               type="button"
               onClick={clear}
-              className="inline-flex min-h-[44px] items-center rounded-pill px-4 font-ui text-sm font-semibold text-muted underline-offset-2 transition-colors hover:text-ink hover:underline"
+              className="button button--pill button--ghost px-4 text-muted transition-colors hover:text-ink"
             >
               Clear answers
             </button>

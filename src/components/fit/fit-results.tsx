@@ -60,8 +60,8 @@ export function FitResults({
       />
 
       {modelReport ? (
-        <details data-testid="scan-disclosure" className="mt-10 rounded-xl border border-hairline bg-panel p-5 sm:p-6">
-          <summary className="min-h-[44px] cursor-pointer content-center font-ui text-sm font-semibold text-ink">
+        <details data-testid="scan-disclosure" className="card card--panel card--padded mt-10">
+          <summary className="fit-results__toggle">
             Show keyword scan
           </summary>
           <div className="mt-4">

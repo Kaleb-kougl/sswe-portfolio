@@ -64,7 +64,7 @@ export function ProjectileDemoLauncher() {
         type="button"
         onClick={() => setOpen(true)}
         /* min-h-11 = 44px, matching the link tap targets beside it. */
-        className="inline-flex min-h-11 items-center gap-1.5 rounded-sm bg-cta px-4 text-sm font-bold text-cta-ink shadow-cta"
+        className="button button--rounded button--primary button--sm gap-1.5 px-4"
       >
         Run the demo
         <span className="sr-only">for r3f-projectiles (opens a dialog)</span>

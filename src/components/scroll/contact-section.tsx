@@ -85,21 +85,15 @@ type Status =
   | { tone: 'sent'; message: string }
   | { tone: 'problem'; message: string; showMailto: boolean };
 
-/** Shared input recipe. A `control` border is only 1.51:1 on paper, so it is
- *  always paired with a `paper` fill + hairline shadow, never left to carry
- *  the control on its own. 16px text keeps iOS Safari from zooming on focus. */
-const FIELD_CLASS =
-  'w-full min-h-[44px] rounded-sm border border-control bg-paper px-3.5 py-2.5 ' +
-  'text-base text-ink shadow-hairline placeholder:text-muted ' +
-  'transition-colors hover:border-ink/40';
-
-const FIELD_ERROR_CLASS = 'border-ink bg-panel-subtle';
+/** Inputs use `.field__control` (styles/blocks/field.css). A `control` border
+ *  is only 1.51:1 on paper, so it is always paired with a `paper` fill +
+ *  hairline shadow, never left to carry the control on its own. 16px text
+ *  keeps iOS Safari from zooming on focus. */
+const fieldClass = (invalid: boolean, extra = '') =>
+  `field__control field__control--md${extra ? ` ${extra}` : ''}${invalid ? ' is-invalid' : ''}`;
 
 /** White pill with a `control` border + shadow — the quiet secondary action. */
-const SECONDARY_LINK_CLASS =
-  'inline-flex min-h-[44px] items-center gap-2 rounded-pill border border-control ' +
-  'bg-surface px-5 py-2.5 font-ui text-sm font-semibold text-ink shadow-hairline ' +
-  'transition-colors hover:border-ink hover:bg-panel';
+const SECONDARY_LINK_CLASS = 'button button--pill button--secondary button--md gap-2';
 
 /**
  * The no-JS notice.
@@ -313,7 +307,7 @@ export function ContactSection({
         <p className="eyebrow">GET IN TOUCH</p>
         <h2
           id={ids.heading}
-          className="mt-4 font-display text-[32px] leading-[1.05] text-ink md:text-[56px]"
+          className="section__heading mt-4 text-ink md:text-[56px]"
         >
           Let&rsquo;s build the next platform.
         </h2>
@@ -324,14 +318,14 @@ export function ContactSection({
       </div>
 
       {/* --- Card --------------------------------------------------------- */}
-      <div className="mx-auto mt-10 w-full max-w-[640px] rounded-xl border border-hairline bg-surface p-5 shadow-raised sm:p-8">
+      <div className="card card--raised mx-auto mt-10 w-full max-w-[640px] p-5 sm:p-8">
         {/* Progress meter ------------------------------------------------- */}
         <div className="mb-6">
           <div className="mb-2 flex items-baseline justify-between gap-3">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+            <span className="label-mono">
               Progress
             </span>
-            <span className="font-mono text-[11px] font-bold tracking-[0.08em] text-ink">
+            <span className="contact-progress__count">
               {completed} of 4
             </span>
           </div>
@@ -342,10 +336,10 @@ export function ContactSection({
             aria-valuemin={0}
             aria-valuemax={4}
             aria-valuetext={`${completed} of 4 fields complete`}
-            className="h-2 w-full overflow-hidden rounded-pill bg-panel-subtle"
+            className="contact-progress"
           >
             <div
-              className="h-full rounded-pill bg-ink transition-[width] duration-300"
+              className="contact-progress__bar"
               style={{ width: `${(completed / 4) * 100}%` }}
             />
           </div>
@@ -396,7 +390,7 @@ export function ContactSection({
           >
             <legend
               id={ids.legend}
-              className="mb-3 font-ui text-sm font-semibold text-ink"
+              className="field__label mb-3"
             >
               What&rsquo;s this about?
             </legend>
@@ -412,14 +406,9 @@ export function ContactSection({
                       setReason(option);
                       setErrors((prev) => ({ ...prev, reason: undefined }));
                     }}
-                    className={
-                      'min-h-[44px] rounded-pill border px-4 py-2.5 font-ui text-sm font-semibold transition-colors ' +
-                      (selected
-                        ? // Selected is a full ink fill, not a border change —
-                          // the border alone is far under the 3:1 non-text minimum.
-                          'border-ink bg-ink text-paper shadow-card'
-                        : 'border-control bg-surface text-body shadow-hairline hover:border-ink hover:text-ink')
-                    }
+                    // Selected/unselected styling keys off aria-pressed
+                    // (styles/blocks/contact.css).
+                    className="contact-reason"
                   >
                     {option}
                   </button>
@@ -434,7 +423,7 @@ export function ContactSection({
               <p
                 id={ids.reasonError}
                 role="alert"
-                className="mt-2 flex items-center gap-1.5 font-ui text-sm font-semibold text-ink"
+                className="field__error mt-2"
               >
                 <AlertCircle size={15} strokeWidth={2.5} aria-hidden="true" />
                 {errors.reason}
@@ -447,7 +436,7 @@ export function ContactSection({
             <div>
               <label
                 htmlFor={ids.name}
-                className="mb-1.5 block font-ui text-sm font-semibold text-ink"
+                className="field__label mb-1.5 block"
               >
                 Name
               </label>
@@ -461,13 +450,13 @@ export function ContactSection({
                 onChange={(event) => setName(event.target.value)}
                 aria-invalid={errors.name ? true : undefined}
                 aria-describedby={describedBy('name', ids.nameError)}
-                className={`${FIELD_CLASS} ${errors.name ? FIELD_ERROR_CLASS : ''}`}
+                className={fieldClass(Boolean(errors.name))}
               />
               {errors.name ? (
                 <p
                   id={ids.nameError}
                   role="alert"
-                  className="mt-1.5 flex items-center gap-1.5 font-ui text-sm font-semibold text-ink"
+                  className="field__error mt-1.5"
                 >
                   <AlertCircle size={15} strokeWidth={2.5} aria-hidden="true" />
                   {errors.name}
@@ -478,7 +467,7 @@ export function ContactSection({
             <div>
               <label
                 htmlFor={ids.email}
-                className="mb-1.5 block font-ui text-sm font-semibold text-ink"
+                className="field__label mb-1.5 block"
               >
                 Email
               </label>
@@ -493,13 +482,13 @@ export function ContactSection({
                 onChange={(event) => setEmail(event.target.value)}
                 aria-invalid={errors.email ? true : undefined}
                 aria-describedby={describedBy('email', ids.emailError)}
-                className={`${FIELD_CLASS} ${errors.email ? FIELD_ERROR_CLASS : ''}`}
+                className={fieldClass(Boolean(errors.email))}
               />
               {errors.email ? (
                 <p
                   id={ids.emailError}
                   role="alert"
-                  className="mt-1.5 flex items-center gap-1.5 font-ui text-sm font-semibold text-ink"
+                  className="field__error mt-1.5"
                 >
                   <AlertCircle size={15} strokeWidth={2.5} aria-hidden="true" />
                   {errors.email}
@@ -512,7 +501,7 @@ export function ContactSection({
           <div className="mt-4">
             <label
               htmlFor={ids.message}
-              className="mb-1.5 block font-ui text-sm font-semibold text-ink"
+              className="field__label mb-1.5 block"
             >
               Message
             </label>
@@ -525,13 +514,13 @@ export function ContactSection({
               onChange={(event) => setMessage(event.target.value)}
               aria-invalid={errors.message ? true : undefined}
               aria-describedby={describedBy('message', ids.messageError)}
-              className={`${FIELD_CLASS} resize-y ${errors.message ? FIELD_ERROR_CLASS : ''}`}
+              className={fieldClass(Boolean(errors.message), 'resize-y')}
             />
             {errors.message ? (
               <p
                 id={ids.messageError}
                 role="alert"
-                className="mt-1.5 flex items-center gap-1.5 font-ui text-sm font-semibold text-ink"
+                className="field__error mt-1.5"
               >
                 <AlertCircle size={15} strokeWidth={2.5} aria-hidden="true" />
                 {errors.message}
@@ -544,7 +533,7 @@ export function ContactSection({
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-pill bg-cta px-6 py-3 font-ui text-base font-bold text-cta-ink shadow-cta transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+              className="button button--pill button--primary button--fade button--lg button--disableable shrink-0"
             >
               {pending ? 'Sending…' : 'Send message'}
             </button>

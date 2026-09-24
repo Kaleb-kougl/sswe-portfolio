@@ -31,7 +31,7 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
       <button
         type="button"
         onClick={copy}
-        className="inline-flex min-h-[44px] shrink-0 items-center rounded-pill border border-control bg-surface px-4 py-2 font-ui text-sm font-semibold text-ink shadow-hairline transition-colors hover:border-ink"
+        className="button button--pill button--outline button--md shrink-0 px-4 py-2 shadow-hairline transition-colors hover:border-ink"
       >
         {copied ? 'Copied' : 'Copy'}
         <span className="sr-only"> {label}</span>

@@ -1,0 +1,29 @@
+/* =====================================================================
+   .projectile-demo — the live demo's canvas frame and controls
+   (components/demos/projectiles/projectile-demo.tsx). Labels are
+   `.label-mono`, the Start/Pause toggle is a `.button`; the control row
+   and its columns' flex/gap stay utilities.
+   ===================================================================== */
+
+/* Letterboxed frame the <Canvas> fills. Ink = the old #161310. */
+.projectile-demo__stage {
+  @apply aspect-[16/10] max-h-[46vh] w-full overflow-hidden rounded-md bg-ink;
+}
+
+.projectile-demo__select {
+  @apply min-h-11 rounded-sm border border-control bg-surface px-3 text-sm font-semibold text-ink;
+}
+
+.projectile-demo__range {
+  @apply h-11 w-44 accent-link;
+}
+
+/* "N instances · 1 draw call". */
+.projectile-demo__readout {
+  @apply font-mono text-xs text-muted;
+}
+
+/* Reduced-motion notice. */
+.projectile-demo__note {
+  @apply text-xs text-muted;
+}

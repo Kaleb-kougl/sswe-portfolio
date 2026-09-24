@@ -1,0 +1,18 @@
+/* =====================================================================
+   .section — a full-width page section with the standard vertical rhythm,
+   its centred content column, and its display heading. Per-section
+   heading sizes (md:text-[56px] etc.), measure and margins stay as
+   utilities.
+   ===================================================================== */
+
+.section {
+  @apply w-full py-20 md:py-28;
+}
+
+.section__inner {
+  @apply mx-auto w-full max-w-5xl px-6 md:px-10;
+}
+
+.section__heading {
+  @apply font-display text-[32px] leading-[1.05];
+}

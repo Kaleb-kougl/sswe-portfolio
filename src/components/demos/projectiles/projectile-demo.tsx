@@ -202,7 +202,7 @@ function InstanceReadout() {
   }, []);
 
   return (
-    <p className="font-mono text-xs text-muted" aria-live="off">
+    <p className="projectile-demo__readout" aria-live="off">
       <span ref={ref}>0</span> instances · 1 draw call
     </p>
   );
@@ -269,7 +269,7 @@ export function ProjectileDemo() {
         data-testid="projectiles-stage"
         role="img"
         aria-label={`A dark arena with ${PROJECTILE_PATTERN_LABELS[pattern]} projectiles fired from its centre, drawn as one GPU-instanced mesh.`}
-        className="aspect-[16/10] max-h-[46vh] w-full overflow-hidden rounded-md bg-[#161310]"
+        className="projectile-demo__stage"
       >
         <Stage
           controls={controls}
@@ -285,7 +285,7 @@ export function ProjectileDemo() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={patternId}
-            className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted"
+            className="label-mono"
           >
             Pattern
           </label>
@@ -293,7 +293,7 @@ export function ProjectileDemo() {
             id={patternId}
             value={pattern}
             onChange={(event) => onPattern(event.target.value as ProjectilePattern)}
-            className="min-h-11 rounded-sm border border-control bg-surface px-3 text-sm font-semibold text-ink"
+            className="projectile-demo__select"
           >
             {PROJECTILE_PATTERNS.map((key) => (
               <option key={key} value={key}>
@@ -306,7 +306,7 @@ export function ProjectileDemo() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={rateId}
-            className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted"
+            className="label-mono"
           >
             Bursts / sec — {fireRate}
           </label>
@@ -318,7 +318,7 @@ export function ProjectileDemo() {
             step={1}
             value={fireRate}
             onChange={(event) => onFireRate(Number(event.target.value))}
-            className="h-11 w-44 accent-link"
+            className="projectile-demo__range"
           />
         </div>
 
@@ -326,7 +326,7 @@ export function ProjectileDemo() {
           type="button"
           onClick={onToggleRunning}
           aria-pressed={running}
-          className="inline-flex min-h-11 items-center rounded-sm bg-cta px-5 text-sm font-bold text-cta-ink shadow-cta"
+          className="button button--rounded button--primary button--sm px-5"
         >
           {running ? 'Pause' : 'Start'}
         </button>
@@ -334,7 +334,7 @@ export function ProjectileDemo() {
         <div className="ml-auto flex flex-col items-end gap-1.5">
           <InstanceReadout />
           {prefersReducedMotion ? (
-            <p className="text-xs text-muted">
+            <p className="projectile-demo__note">
               Paused because your system asks for reduced motion.
             </p>
           ) : null}

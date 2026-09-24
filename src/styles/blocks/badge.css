@@ -1,0 +1,43 @@
+/* =====================================================================
+   .badge — mono pill (metadata chips, verdict pills, status pills).
+   Size, tracking and casing vary per site and stay as utilities, except
+   the verdict pill, which two components share exactly.
+   ===================================================================== */
+
+.badge {
+  @apply rounded-pill font-mono font-bold;
+}
+
+/* --- Metadata tints (no border) ------------------------------------- */
+.badge--lime {
+  @apply bg-badge-lime text-badge-lime-ink;
+}
+
+.badge--blue {
+  @apply bg-badge-blue text-badge-blue-ink;
+}
+
+.badge--neutral {
+  @apply bg-badge-neutral text-badge-neutral-ink;
+}
+
+/* --- Verdict pill (fit report + ask summary counts) ----------------- */
+.badge--verdict {
+  @apply inline-flex items-center gap-1.5 border px-2.5 py-1 text-[11px] uppercase leading-none;
+}
+
+.badge--strong {
+  @apply border-transparent bg-badge-lime text-badge-lime-ink;
+}
+
+.badge--partial {
+  @apply border-transparent bg-badge-blue text-badge-blue-ink;
+}
+
+.badge--gap {
+  @apply border-control bg-surface text-ink;
+}
+
+.badge--not-assessed {
+  @apply border-hairline bg-panel-subtle text-muted;
+}

@@ -1,0 +1,9 @@
+/* =====================================================================
+   .fit-results — the report area under the fit checker.
+   ===================================================================== */
+
+/* "Show keyword scan", the summary of the disclosure that keeps the scan
+   once the Private-mode report has replaced it. */
+.fit-results__toggle {
+  @apply min-h-[44px] cursor-pointer content-center font-ui text-sm font-semibold text-ink;
+}

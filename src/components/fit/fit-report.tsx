@@ -33,19 +33,17 @@ export function evidenceHref(href: string): { href: string; external: boolean } 
 }
 
 /** Text label first, glyph second: the verdict never rests on color alone. */
-const VERDICT_STYLE: Readonly<Record<Verdict, { className: string; glyph: string }>> = {
-  strong: { className: 'border-transparent bg-badge-lime text-badge-lime-ink', glyph: '●' },
-  partial: { className: 'border-transparent bg-badge-blue text-badge-blue-ink', glyph: '◐' },
-  gap: { className: 'border-control bg-surface text-ink', glyph: '○' },
-  not_assessed: { className: 'border-hairline bg-panel-subtle text-muted', glyph: '–' },
+const VERDICT_STYLE: Readonly<Record<Verdict, { modifier: string; glyph: string }>> = {
+  strong: { modifier: 'badge--strong', glyph: '●' },
+  partial: { modifier: 'badge--partial', glyph: '◐' },
+  gap: { modifier: 'badge--gap', glyph: '○' },
+  not_assessed: { modifier: 'badge--not-assessed', glyph: '–' },
 };
 
 function VerdictBadge({ verdict }: { verdict: Verdict }) {
   const style = VERDICT_STYLE[verdict];
   return (
-    <span
-      className={`inline-flex shrink-0 items-center gap-1.5 rounded-pill border px-2.5 py-1 font-mono text-[11px] font-bold uppercase leading-none tracking-[0.08em] ${style.className}`}
-    >
+    <span className={`badge badge--verdict ${style.modifier} shrink-0 tracking-[0.08em]`}>
       <span aria-hidden="true">{style.glyph}</span>
       {VERDICT_LABELS[verdict]}
     </span>
@@ -61,7 +59,7 @@ function EvidenceChip({ evidence }: { evidence: Evidence }) {
         data-evidence-id={evidence.id}
         title={`${evidence.claim} Source: ${evidence.source.label}`}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        className="inline-flex min-h-[36px] items-center gap-1.5 rounded-pill border border-control bg-surface px-3 py-1.5 text-left font-ui text-[13px] font-semibold leading-snug text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel"
+        className="button button--pill button--secondary button--chip min-h-[36px] gap-1.5 px-3 py-1.5"
       >
         <span>
           {evidenceLabel(evidence)}
@@ -81,14 +79,14 @@ function EvidenceChip({ evidence }: { evidence: Evidence }) {
 function RequirementRow({ row }: { row: Requirement }) {
   const evidence = row.evidenceIds.map((id) => EVIDENCE_BY_ID.get(id)).filter((e): e is Evidence => !!e);
   return (
-    <li data-verdict={row.verdict} className="rounded-md border border-hairline bg-surface p-4 shadow-hairline sm:p-5">
+    <li data-verdict={row.verdict} className="card card--md card--hairline p-4 sm:p-5">
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:gap-3">
         <VerdictBadge verdict={row.verdict} />
-        <p className="min-w-0 font-ui text-[15px] font-semibold leading-snug text-ink [overflow-wrap:anywhere]">
+        <p className="fit-report__requirement">
           {row.text}
         </p>
       </div>
-      {row.note ? <p className="mt-2 font-ui text-sm leading-relaxed text-body">{row.note}</p> : null}
+      {row.note ? <p className="fit-report__note mt-2">{row.note}</p> : null}
       {evidence.length > 0 ? (
         <ul aria-label="Evidence" className="mt-3 flex flex-wrap gap-2">
           {evidence.map((e) => (
@@ -171,28 +169,28 @@ export function FitReportView({
         id={headingId}
         ref={headingRef}
         tabIndex={-1}
-        className={`mt-3 font-display leading-[1.05] text-ink [overflow-wrap:anywhere] ${level === 2 ? 'text-[28px] md:text-[40px]' : 'text-[22px] md:text-[28px]'}`}
+        className={`fit-report__title fit-report__title--h${level} mt-3`}
       >
         {report.role}
       </Heading>
 
       {report.coverage ? (
-        <p data-testid="fit-coverage" className="mt-3 font-ui text-lg font-semibold text-ink">
+        <p data-testid="fit-coverage" className="fit-report__coverage mt-3">
           {coverageLine(report.coverage)}
-          <span className="block font-ui text-sm font-medium text-muted">
+          <span className="fit-report__coverage-note">
             Strong counts 1, partial counts ½. Not-assessed rows are left out.
           </span>
         </p>
       ) : report.requirements.length > 0 && !pending ? (
-        <p data-testid="fit-coverage" className="mt-3 max-w-[64ch] font-ui text-sm font-semibold text-ink">
+        <p data-testid="fit-coverage" className="fit-report__coverage fit-report__coverage--empty mt-3">
           {NO_COVERAGE_LINE}
         </p>
       ) : null}
 
       {isScan ? (
-        <p className="mt-3 max-w-[64ch] font-ui text-sm leading-relaxed text-body">{SCAN_DISCLAIMER}</p>
+        <p className="fit-report__lede mt-3">{SCAN_DISCLAIMER}</p>
       ) : (
-        <p className="mt-3 max-w-[64ch] font-ui text-sm leading-relaxed text-body">
+        <p className="fit-report__lede mt-3">
           A small model on this device decided which lines are requirements. The verdicts and evidence are computed
           from my work, not generated.
         </p>
@@ -201,7 +199,7 @@ export function FitReportView({
       {actions}
 
       {groups.length === 0 && !pending ? (
-        <p className="mt-6 rounded-md border border-hairline bg-panel p-4 font-ui text-sm text-body">
+        <p className="card card--md card--panel mt-6 p-4 font-ui text-sm text-body">
           Nothing in this job description matched the skills I track, so there is nothing to show. That can mean the
           role is outside engineering, or it uses words my vocabulary doesn&rsquo;t know.
         </p>
@@ -214,7 +212,7 @@ export function FitReportView({
           <section key={group.key} aria-labelledby={groupHeadingId} className="mt-8">
             <GroupHeading
               id={groupHeadingId}
-              className="flex items-baseline gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.12em] text-muted"
+              className="label-mono flex items-baseline gap-2 text-[12px]"
               // globals.css styles h1–h3 outside any layer, so utilities can't
               // override the display font, tracking or ink on an h3.
               style={{

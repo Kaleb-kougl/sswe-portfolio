@@ -68,3 +68,6 @@ docs/*
 /evals/local/results/holdout/
 /evals/embed/results/holdout/
 /evals/chat/results/holdout/
+
+# BEM refactor computed-style baseline (large, local-only)
+/e2e/bem/__baseline__/computed/

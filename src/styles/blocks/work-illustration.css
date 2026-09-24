@@ -1,0 +1,24 @@
+/* =====================================================================
+   .work-illustration — the fixed 112px drawing panel at the top of each
+   work card. Its fill and padding differ per drawing and stay utilities
+   (the dark panel's #161310 is picture, not a token).
+
+   __pane / __code — the two side-by-side code panes of the roblox-css
+   drawing. The dark pane's raw-hex fill stays a utility.
+   ===================================================================== */
+
+.work-illustration {
+  @apply flex h-28 w-full items-center justify-center overflow-hidden rounded-md;
+}
+
+.work-illustration__pane {
+  @apply min-w-0 flex-1 self-stretch overflow-hidden rounded-xs px-2 py-0.5;
+}
+
+.work-illustration__pane--light {
+  @apply border border-hairline bg-surface shadow-hairline;
+}
+
+.work-illustration__code {
+  @apply block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px];
+}

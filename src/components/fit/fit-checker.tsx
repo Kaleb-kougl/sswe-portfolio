@@ -157,17 +157,17 @@ export function FitChecker() {
 
   return (
     <>
-      <form onSubmit={onSubmit} noValidate className="rounded-xl border border-hairline bg-surface p-5 shadow-raised sm:p-7">
+      <form onSubmit={onSubmit} noValidate className="card card--raised p-5 sm:p-7">
         <div className="flex items-baseline justify-between gap-3">
-          <label htmlFor={ids.field} className="font-ui text-sm font-semibold text-ink">
+          <label htmlFor={ids.field} className="field__label">
             Job description
           </label>
-          <span id={ids.count} className="font-mono text-[11px] font-bold tabular-nums tracking-[0.08em] text-muted">
+          <span id={ids.count} className="fit-checker__count">
             {jd.length.toLocaleString('en-US')} / {JD_LIMIT.toLocaleString('en-US')}
             <span className="sr-only"> characters</span>
           </span>
         </div>
-        <p id={ids.hint} className="mt-1 font-ui text-sm text-muted">
+        <p id={ids.hint} className="field__hint">
           Paste the whole posting. Headers like &ldquo;Requirements&rdquo; and &ldquo;Nice to have&rdquo; help.
           {atLimit ? ' That’s the limit; anything past it was cut off.' : ''}
         </p>
@@ -182,13 +182,10 @@ export function FitChecker() {
           spellCheck={false}
           aria-invalid={error ? true : undefined}
           aria-describedby={[ids.hint, ids.count, error ? ids.error : null].filter(Boolean).join(' ')}
-          className={
-            'mt-3 block w-full resize-y rounded-sm border border-control bg-paper px-3.5 py-3 font-ui text-base leading-relaxed text-ink shadow-hairline transition-colors placeholder:text-muted hover:border-ink/40 ' +
-            (error ? 'border-ink bg-panel-subtle' : '')
-          }
+          className={`field__control field__control--lg mt-3${error ? ' is-invalid' : ''}`}
         />
         {error ? (
-          <p id={ids.error} role="alert" className="mt-2 flex items-center gap-1.5 font-ui text-sm font-semibold text-ink">
+          <p id={ids.error} role="alert" className="field__error mt-2">
             <AlertCircle size={15} strokeWidth={2.5} aria-hidden="true" className="shrink-0" />
             {error}
           </p>
@@ -196,11 +193,11 @@ export function FitChecker() {
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
             type="submit"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-pill bg-cta px-6 py-3 font-ui text-base font-bold text-cta-ink shadow-cta transition-opacity hover:opacity-95"
+            className="button button--pill button--primary button--fade button--lg"
           >
             {loading ? 'Checking…' : 'Check fit'}
           </button>
-          <span className="font-ui text-sm text-muted">Instant, on this device.</span>
+          <span className="fit-checker__note">Instant, on this device.</span>
         </div>
       </form>
 

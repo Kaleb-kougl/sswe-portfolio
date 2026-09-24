@@ -1,0 +1,9 @@
+/* =====================================================================
+   .link — inline, link-blue, underlined text link (and link-styled
+   buttons). Weight, size and any inline-flex tap-target sizing vary per
+   site and stay as utilities.
+   ===================================================================== */
+
+.link {
+  @apply text-link underline decoration-1 underline-offset-2 hover:text-link-hover;
+}

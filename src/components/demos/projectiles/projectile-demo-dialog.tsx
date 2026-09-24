@@ -136,7 +136,7 @@ export function ProjectileDemoDialog({ onClose }: { onClose: () => void }) {
   return createPortal(
     <div
       onMouseDown={onOverlayMouseDown}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/70 p-4 sm:p-6"
+      className="demo-dialog"
     >
       <div
         ref={panelRef}
@@ -144,14 +144,14 @@ export function ProjectileDemoDialog({ onClose }: { onClose: () => void }) {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="w-full max-w-3xl rounded-lg border border-hairline bg-surface p-5 shadow-raised outline-none sm:p-6"
+        className="card card--lg card--raised card--padded w-full max-w-3xl outline-none"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <p className="eyebrow">Live demo</p>
             <h2
               id={titleId}
-              className="mt-2 font-display text-2xl tracking-display text-ink"
+              className="demo-dialog__title mt-2"
             >
               r3f-projectiles
             </h2>
@@ -160,7 +160,7 @@ export function ProjectileDemoDialog({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-sm border border-control bg-surface text-sm font-bold text-ink hover:bg-panel"
+            className="button button--rounded button--outline button--sm min-w-11 shrink-0 justify-center hover:bg-panel"
           >
             Close
           </button>
@@ -168,7 +168,7 @@ export function ProjectileDemoDialog({ onClose }: { onClose: () => void }) {
 
         <ProjectileDemo />
 
-        <p className="mt-4 border-t border-hairline pt-4 text-sm leading-relaxed text-body">
+        <p className="demo-dialog__note mt-4">
           Every projectile above is one instance of a single mesh, so the whole
           field is one draw call however many are in flight. The patterns are
           composed the same way the published package composes them — a

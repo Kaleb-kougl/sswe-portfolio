@@ -50,6 +50,12 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      # Classes that generate no CSS fail silently (retired tokens, typos,
+      # renamed BEM rules); this asks Tailwind which ones mean something and
+      # checks the BEM blocks. See scripts/check-css.mjs.
+      - name: Check CSS classes and BEM blocks
+        run: npm run css:check
+
       - name: Run Unit Tests
         run: npm run test:unit
 

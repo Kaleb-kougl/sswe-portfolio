@@ -1,0 +1,24 @@
+/* =====================================================================
+   Work cards (src/components/scroll/work-section.tsx).
+
+   The card surface itself is `.card card--lg card--elevated`; these are
+   its inner pieces. Margins and `grow` stay as utilities at the call site.
+   ===================================================================== */
+
+.work-card__title {
+  @apply font-display text-xl tracking-display text-ink;
+}
+
+.work-card__description {
+  @apply text-[0.9375rem] leading-relaxed text-body;
+}
+
+/* Links row under a hairline rule. */
+.work-card__footer {
+  @apply flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-1;
+}
+
+/* Stand-in for the links row when a project has none to show. */
+.work-card__note {
+  @apply flex min-h-11 items-center border-t border-hairline font-mono text-xs text-muted;
+}

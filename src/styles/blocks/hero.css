@@ -1,0 +1,58 @@
+/* =====================================================================
+   .hero — the first screen: headline, lead, stats row, scroll hint.
+   CTAs are `.button`s; stat terms are `.label-mono--tight`. Vertical
+   margins between pieces stay as utilities.
+
+   The <h1> is also matched by the unlayered `h1, h2, h3` rule in
+   globals.css, which still wins over this layer exactly as it beat the
+   utilities before.
+   ===================================================================== */
+
+.hero {
+  @apply relative flex flex-col justify-center px-6 pb-16 pt-[calc(var(--nav-height)+3rem)] min-[900px]:min-h-dvh min-[900px]:px-12 min-[900px]:pb-24;
+}
+
+.hero__title {
+  @apply text-balance font-display text-[40px] leading-[0.95] tracking-[-0.035em] text-ink min-[900px]:text-[82px];
+}
+
+.hero__lead {
+  @apply text-[17px] leading-relaxed text-body min-[900px]:text-[19px];
+}
+
+/* --- Stats row ------------------------------------------------------ */
+.hero__stats {
+  @apply grid grid-cols-1 border-t border-hairline min-[900px]:grid-cols-3;
+}
+
+/* Stacked below 900px (bottom rule each); three columns from 900px,
+   divided by a left rule, gutters only between columns. */
+.hero__stat {
+  @apply border-b border-hairline py-4 min-[900px]:border-b-0 min-[900px]:py-5;
+}
+
+.hero__stat:not(:first-child) {
+  @apply min-[900px]:border-l min-[900px]:border-hairline min-[900px]:pl-6;
+}
+
+.hero__stat:not(:last-child) {
+  @apply min-[900px]:pr-6;
+}
+
+.hero__stat-value {
+  @apply text-[15px] font-semibold text-ink;
+}
+
+/* --- Scroll hint (desktop only) ------------------------------------- */
+.hero__scroll-hint {
+  @apply absolute bottom-10 right-12 hidden items-center gap-3 min-[900px]:flex;
+}
+
+.hero__scroll-rule {
+  @apply h-px w-16 bg-ink;
+}
+
+/* Like .label-mono, but regular weight. */
+.hero__scroll-label {
+  @apply font-mono text-[11px] uppercase tracking-[0.12em] text-muted;
+}

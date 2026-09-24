@@ -22,12 +22,6 @@ import { openFullReport } from './open-report';
 
 export { answer } from '@/lib/chat/answer';
 
-const CHIP =
-  'inline-flex min-h-[40px] items-center rounded-pill border border-control bg-surface px-3.5 py-2 text-left font-ui text-[13px] font-semibold leading-snug text-ink shadow-hairline transition-colors hover:border-ink hover:bg-panel';
-
-/** Mono caption, like the fit report's group headings. */
-const CAPTION = 'font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted';
-
 function ExternalMark() {
   return (
     <>
@@ -75,14 +69,14 @@ function Card({ card, muted = false, showWhere = true }: { card: EvidenceCard; m
   return (
     <li
       data-evidence-card={card.id}
-      className={`rounded-md border px-3.5 py-3 shadow-hairline ${muted ? 'border-hairline bg-panel-subtle' : 'border-hairline bg-surface'}`}
+      className={`card card--md card--hairline px-3.5 py-3${muted ? ' card--subtle' : ''}`}
     >
-      <blockquote className="font-ui text-[15px] leading-snug text-ink [overflow-wrap:anywhere]">{card.claim}</blockquote>
+      <blockquote className="ask-thread__claim">{card.claim}</blockquote>
       {/* Inline text, not flex: it wraps like a sentence, and each "·" is held to
           the word before it by a no-break space, so no line starts with one. */}
-      <p data-card-meta className="mt-2 font-ui text-[12.5px] leading-relaxed text-muted">
+      <p data-card-meta className="ask-thread__meta mt-2">
         {card.metric ? (
-          <span className="inline-block rounded-pill bg-badge-neutral px-2 py-0.5 align-[1px] font-mono text-[10.5px] font-bold leading-tight tracking-[0.03em] text-badge-neutral-ink">
+          <span className="badge badge--neutral inline-block px-2 py-0.5 align-[1px] text-[10.5px] leading-tight tracking-[0.03em]">
             {card.metric}
           </span>
         ) : null}
@@ -94,7 +88,7 @@ function Card({ card, muted = false, showWhere = true }: { card: EvidenceCard; m
           data-evidence-id={card.id}
           aria-label={sourceName(card.source.short, card.source.label, card.source.external)}
           {...linkProps(card.source.external)}
-          className="inline-flex min-h-[24px] items-center gap-0.5 whitespace-nowrap align-middle font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover"
+          className="link inline-flex min-h-[24px] items-center gap-0.5 whitespace-nowrap align-middle font-semibold"
         >
           {card.source.short}
           {card.source.external ? <ArrowUpRight size={14} strokeWidth={2.5} aria-hidden="true" className="shrink-0" /> : null}
@@ -132,9 +126,9 @@ function Cards({
             aria-expanded={open}
             aria-controls={moreId}
             onClick={() => setOpen((v) => !v)}
-            className="mt-1 inline-flex min-h-[44px] items-center gap-2 font-ui text-sm font-semibold text-ink underline-offset-2 hover:underline"
+            className="button button--ghost mt-1 gap-2 text-ink"
           >
-            <span aria-hidden="true" className={`inline-block text-[10px] transition-transform ${open ? 'rotate-90' : ''}`}>
+            <span aria-hidden="true" className={`ask-thread__chevron${open ? ' ask-thread__chevron--open' : ''}`}>
               ▶
             </span>
             {open ? 'Show fewer' : `Show ${more.length} more`}
@@ -153,42 +147,42 @@ function Cards({
 function FindingView({ finding }: { finding: Finding }) {
   if (finding.status === 'found') {
     return (
-      <section data-finding="found" className="mt-5 first:mt-0">
+      <section data-finding="found" className="ask-thread__finding">
         {finding.skill ? (
-          <h3 className="flex items-center gap-2 text-[19px] leading-tight">
+          <h3 className="ask-thread__finding-title">
             <span
               aria-hidden="true"
-              className="inline-flex size-5 items-center justify-center rounded-pill bg-badge-lime text-[11px] text-badge-lime-ink"
+              className="ask-thread__glyph ask-thread__glyph--found"
             >
               ●
             </span>
             {finding.skill}
           </h3>
         ) : null}
-        <p className={`${finding.skill ? 'mt-1' : ''} font-ui text-[15px] font-semibold text-ink`}>{finding.lead}</p>
+        <p className={`ask-thread__lead${finding.skill ? ' mt-1' : ''}`}>{finding.lead}</p>
         <Cards cards={finding.cards} more={finding.more} />
       </section>
     );
   }
   return (
-    <section data-finding="none" className="mt-5 first:mt-0">
+    <section data-finding="none" className="ask-thread__finding">
       {/* A heading per asked skill, found or not, so "React and Go?" reads as two sections. */}
       {finding.skill ? (
-        <h3 className="flex items-center gap-2 text-[19px] leading-tight">
+        <h3 className="ask-thread__finding-title">
           <span
             aria-hidden="true"
-            className="inline-flex size-5 shrink-0 items-center justify-center rounded-pill border border-control bg-surface text-[11px]"
+            className="ask-thread__glyph ask-thread__glyph--none"
           >
             ○
           </span>
           {finding.skill}
         </h3>
       ) : null}
-      <p data-testid="no-evidence" className={`${finding.skill ? 'mt-1' : ''} font-ui text-[15px] font-semibold leading-snug text-ink`}>
+      <p data-testid="no-evidence" className={`ask-thread__lead ask-thread__lead--snug${finding.skill ? ' mt-1' : ''}`}>
         {finding.lead}
       </p>
       {finding.relatedLead ? (
-        <div data-testid="related" className="mt-2.5 rounded-md border border-dashed border-control p-3">
+        <div data-testid="related" className="ask-thread__related mt-2.5">
           <p className="font-ui text-sm text-body">{finding.relatedLead}</p>
           <Cards cards={finding.related} muted />
         </div>
@@ -199,11 +193,11 @@ function FindingView({ finding }: { finding: Finding }) {
 
 // ------------------------------------------------------------------ fit summary
 
-const COUNT_STYLE: readonly { verdict: Verdict; glyph: string; label: (n: number) => string; className: string }[] = [
-  { verdict: 'strong', glyph: '●', label: () => 'strong', className: 'bg-badge-lime text-badge-lime-ink border-transparent' },
-  { verdict: 'partial', glyph: '◐', label: () => 'partial', className: 'bg-badge-blue text-badge-blue-ink border-transparent' },
-  { verdict: 'gap', glyph: '○', label: (n) => (n === 1 ? 'gap' : 'gaps'), className: 'border-control bg-surface text-ink' },
-  { verdict: 'not_assessed', glyph: '–', label: () => 'not assessed', className: 'border-hairline bg-panel-subtle text-muted' },
+const COUNT_STYLE: readonly { verdict: Verdict; glyph: string; label: (n: number) => string; modifier: string }[] = [
+  { verdict: 'strong', glyph: '●', label: () => 'strong', modifier: 'badge--strong' },
+  { verdict: 'partial', glyph: '◐', label: () => 'partial', modifier: 'badge--partial' },
+  { verdict: 'gap', glyph: '○', label: (n) => (n === 1 ? 'gap' : 'gaps'), modifier: 'badge--gap' },
+  { verdict: 'not_assessed', glyph: '–', label: () => 'not assessed', modifier: 'badge--not-assessed' },
 ];
 
 /**
@@ -216,21 +210,21 @@ function FitSummaryCard({ summary, jd, turnId }: { summary: FitSummary; jd: stri
   const headingId = `ask-fit-${turnId}`;
   const noteId = `ask-fit-${turnId}-note`;
   return (
-    <section data-testid="fit-summary" aria-labelledby={headingId} className="rounded-md border border-hairline bg-panel-subtle p-4">
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">Keyword scan</p>
+    <section data-testid="fit-summary" aria-labelledby={headingId} className="card card--md card--subtle p-4">
+      <p className="label-mono">Keyword scan</p>
       <h3 id={headingId} className="mt-1.5 text-[20px] leading-tight [overflow-wrap:anywhere]">
         {summary.role}
       </h3>
-      <p data-testid="fit-summary-coverage" className="mt-1.5 font-ui text-[15px] font-semibold text-ink">
+      <p data-testid="fit-summary-coverage" className="ask-thread__lead mt-1.5">
         {summary.coverage}
       </p>
       <ul aria-label="Requirements by verdict" className="mt-3 flex flex-wrap gap-1.5">
-        {COUNT_STYLE.map(({ verdict, glyph, label, className }) => (
+        {COUNT_STYLE.map(({ verdict, glyph, label, modifier }) => (
           <li
             key={verdict}
             data-count-verdict={verdict}
             data-count={summary.counts[verdict]}
-            className={`inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1 font-mono text-[11px] font-bold uppercase leading-none tracking-[0.06em] ${className}`}
+            className={`badge badge--verdict ${modifier} tracking-[0.06em]`}
           >
             <span aria-hidden="true">{glyph}</span>
             {summary.counts[verdict]} {label(summary.counts[verdict])}
@@ -247,11 +241,11 @@ function FitSummaryCard({ summary, jd, turnId }: { summary: FitSummary; jd: stri
           type="button"
           onClick={() => openFullReport(jd)}
           aria-describedby={noteId}
-          className="inline-flex min-h-[44px] items-center justify-center rounded-pill bg-cta px-5 py-2.5 font-ui text-[15px] font-bold text-cta-ink shadow-cta transition-opacity hover:opacity-95"
+          className="button button--pill button--primary button--fade min-h-[44px] justify-center px-5 py-2.5 font-ui text-[15px] font-bold"
         >
           Open the full report
         </button>
-        <span id={noteId} className="font-ui text-[13px] text-muted">Every requirement and its evidence, in the checker above.</span>
+        <span id={noteId} className="ask-thread__aside">Every requirement and its evidence, in the checker above.</span>
       </div>
     </section>
   );
@@ -264,13 +258,13 @@ function DetailList({ details }: { details: ProfileDetail[] }) {
     <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-[max-content_1fr]">
       {details.map((d) => (
         <div key={d.label} className="contents">
-          <dt className={`${CAPTION} sm:pt-1`}>{d.label}</dt>
+          <dt className="label-mono sm:pt-1">{d.label}</dt>
           <dd className="-mt-2 font-ui text-[15px] text-ink [overflow-wrap:anywhere] sm:mt-0">
             {d.href ? (
               <a
                 href={d.href}
                 {...linkProps(!!d.external)}
-                className="inline-flex min-h-[32px] items-center gap-1 font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover"
+                className="link inline-flex min-h-[32px] items-center gap-1 font-semibold"
               >
                 {d.value}
                 {d.external ? <ExternalMark /> : null}
@@ -290,7 +284,7 @@ function Chips({ questions, onAsk, label }: { questions: string[]; onAsk: (q: st
     <ul aria-label={label} className="mt-4 flex flex-wrap gap-2">
       {questions.map((q) => (
         <li key={q}>
-          <button type="button" className={CHIP} onClick={() => onAsk(q)}>
+          <button type="button" className="button button--pill button--secondary button--chip" onClick={() => onAsk(q)}>
             {q}
           </button>
         </li>
@@ -305,19 +299,19 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
       return (
         <>
           {reply.lead ? (
-            <p data-testid="leading-note" className="mb-4 rounded-md bg-panel px-3 py-2.5 font-ui text-sm leading-relaxed text-body">
+            <p data-testid="leading-note" className="ask-thread__note mb-4">
               {reply.lead}
             </p>
           ) : null}
           {reply.figures.length > 0 ? (
-            <ul data-testid="figures" className="mb-4 space-y-1 font-ui text-[15px] font-semibold text-ink">
+            <ul data-testid="figures" className="ask-thread__lead mb-4 space-y-1">
               {reply.figures.map((f) => (
                 <li key={f}>{f}</li>
               ))}
             </ul>
           ) : null}
           {reply.figureNote ? (
-            <p data-testid="no-figure" className="mb-4 font-ui text-[15px] font-semibold text-ink">
+            <p data-testid="no-figure" className="ask-thread__lead mb-4">
               {reply.figureNote}
             </p>
           ) : null}
@@ -336,7 +330,7 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
     case 'profile':
       return (
         <>
-          <p className="font-ui text-[17px] font-semibold leading-snug text-ink [overflow-wrap:anywhere]">{reply.lead}</p>
+          <p className="ask-thread__lead ask-thread__lead--lg [overflow-wrap:anywhere]">{reply.lead}</p>
           <DetailList details={reply.details} />
         </>
       );
@@ -344,8 +338,8 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
       return (
         <>
           <h3 className="text-[22px] leading-tight [overflow-wrap:anywhere]">{reply.name}</h3>
-          <p className={`mt-2 ${CAPTION}`}>{reply.meta}</p>
-          <p className="mt-3 max-w-[64ch] font-ui text-[15px] leading-relaxed text-body">{reply.summary}</p>
+          <p className="label-mono mt-2">{reply.meta}</p>
+          <p className="ask-thread__text mt-3 max-w-[64ch]">{reply.summary}</p>
           {reply.links.length > 0 ? (
             <ul aria-label="Links" className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
               {reply.links.map((l) => (
@@ -353,7 +347,7 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
                   <a
                     href={l.href}
                     {...linkProps(l.external)}
-                    className="inline-flex min-h-[36px] items-center gap-1 font-ui text-sm font-semibold text-link underline decoration-1 underline-offset-2 hover:text-link-hover"
+                    className="link inline-flex min-h-[36px] items-center gap-1 font-ui text-sm font-semibold"
                   >
                     {l.label}
                     {l.external ? <ExternalMark /> : null}
@@ -364,23 +358,23 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
           ) : reply.linkNote ? (
             <p className="mt-3 font-ui text-sm text-muted">{reply.linkNote}</p>
           ) : null}
-          <p className={`mt-5 ${CAPTION}`}>Evidence</p>
+          <p className="label-mono mt-5">Evidence</p>
           <Cards cards={reply.cards} more={reply.more} showWhere={false} />
         </>
       );
     case 'projects':
       return (
         <>
-          <p className="font-ui text-[15px] font-semibold text-ink">{reply.lead}</p>
-          <ul className="mt-3 divide-y divide-hairline rounded-md border border-hairline bg-surface">
+          <p className="ask-thread__lead">{reply.lead}</p>
+          <ul className="card card--md mt-3 divide-y divide-hairline">
             {reply.items.map((item) => (
               <li key={item.id} className="flex flex-col gap-2 p-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <div className="min-w-0">
-                  <p className="font-ui text-[15px] font-semibold text-ink [overflow-wrap:anywhere]">{item.name}</p>
-                  <p className="font-ui text-[13px] text-muted">{[item.context, item.period].filter(Boolean).join(' · ')}</p>
+                  <p className="ask-thread__lead [overflow-wrap:anywhere]">{item.name}</p>
+                  <p className="ask-thread__aside">{[item.context, item.period].filter(Boolean).join(' · ')}</p>
                 </div>
                 {item.ask ? (
-                  <button type="button" className={`${CHIP} shrink-0 self-start sm:self-auto`} onClick={() => onAsk(item.ask!)}>
+                  <button type="button" className="button button--pill button--secondary button--chip shrink-0 self-start sm:self-auto" onClick={() => onAsk(item.ask!)}>
                     {item.ask}
                   </button>
                 ) : null}
@@ -393,18 +387,18 @@ function ReplyBody({ reply, turnId, onAsk }: { reply: ChatReply; turnId: number;
       return (
         <>
           {reply.note ? (
-            <p data-testid="injection-note" className="mb-3 font-ui text-[15px] font-semibold text-ink">
+            <p data-testid="injection-note" className="ask-thread__lead mb-3">
               {reply.note}
             </p>
           ) : null}
-          <p className="font-ui text-[15px] leading-relaxed text-body">{reply.lead}</p>
+          <p className="ask-thread__text">{reply.lead}</p>
           <Chips questions={reply.examples} onAsk={onAsk} label="Example questions" />
         </>
       );
     case 'unknown-skill':
       return (
         <>
-          <p className="font-ui text-[17px] font-semibold leading-snug text-ink">{reply.lead}</p>
+          <p className="ask-thread__lead ask-thread__lead--lg">{reply.lead}</p>
           <Chips questions={reply.suggestions} onAsk={onAsk} label="Suggested questions" />
         </>
       );
@@ -433,7 +427,7 @@ export function AskTurn({
   return (
     <article aria-label={`Question ${position}`}>
       <div className="flex justify-end">
-        <p className="max-w-[85%] rounded-lg rounded-br-xs bg-panel px-4 py-2.5 font-ui text-[15px] leading-snug text-ink [overflow-wrap:anywhere]">
+        <p className="ask-thread__bubble">
           <span className="sr-only">{pastedJd !== null ? `You pasted a job description: ${pastedJd}` : 'You asked: '}</span>
           {/* Clamped inside the padding, so a pasted JD's fourth line can't peek out. */}
           <span aria-hidden={pastedJd !== null ? true : undefined} className="line-clamp-3 whitespace-pre-line">
@@ -441,7 +435,7 @@ export function AskTurn({
           </span>
         </p>
       </div>
-      <div data-testid="ask-reply" className="mt-3 rounded-xl border border-hairline bg-surface p-4 shadow-card sm:p-6">
+      <div data-testid="ask-reply" className="card card--elevated mt-3 p-4 sm:p-6">
         <ReplyBody reply={reply} turnId={turnId} onAsk={onAsk} />
       </div>
     </article>

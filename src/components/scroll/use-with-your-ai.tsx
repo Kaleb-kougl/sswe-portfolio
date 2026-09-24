@@ -26,23 +26,13 @@ import { CopyButton } from './copy-button';
 
 const HEADING_ID = 'use-with-your-ai-heading';
 
-/** Inline code, for a file name inside a sentence. */
-const INLINE_CODE_CLASS =
-  'rounded-sm border border-hairline bg-surface px-1 py-px font-mono text-[13px] font-normal text-ink';
-
-/** A command or config to paste: its own block, selectable in one click, and
- *  wrapping anywhere so a long URL never makes the page wider than a phone. */
-const BLOCK_CODE_CLASS =
-  'mt-1.5 block rounded-sm border border-hairline bg-surface px-3 py-2 font-mono text-[13px] ' +
-  'font-normal leading-relaxed text-ink select-all [overflow-wrap:anywhere]';
-
 const CURSOR_CONFIG = JSON.stringify({ mcpServers: { kaleb: { url: MCP_URL } } });
 
 export function UseWithYourAi() {
   return (
     <section
       aria-labelledby={HEADING_ID}
-      className="mx-auto mt-10 w-full max-w-[640px] rounded-xl border border-hairline bg-panel p-5 text-left shadow-hairline sm:p-6"
+      className="card card--panel card--hairline card--padded mx-auto mt-10 w-full max-w-[640px] text-left"
     >
       <h3 id={HEADING_ID} className="font-display text-xl leading-tight text-ink">
         Use with your AI
@@ -52,13 +42,13 @@ export function UseWithYourAi() {
         sourced evidence from this site. It is read-only and needs no sign-in.
       </p>
 
-      <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+      <p className="label-mono mt-4">
         Server URL
       </p>
       <div className="mt-1.5 flex items-center gap-2">
         <code
           data-testid="mcp-url"
-          className="min-w-0 flex-1 rounded-sm border border-control bg-surface px-3 py-2.5 font-mono text-sm font-normal text-ink shadow-hairline select-all [overflow-wrap:anywhere]"
+          className="code code--field min-w-0 flex-1"
         >
           {MCP_URL}
         </code>
@@ -76,7 +66,7 @@ export function UseWithYourAi() {
         <div>
           <dt className="font-semibold text-ink">Claude Code</dt>
           <dd>
-            <code className={BLOCK_CODE_CLASS}>
+            <code className="code code--block mt-1.5">
               claude mcp add --transport http kaleb {MCP_URL}
             </code>
           </dd>
@@ -84,8 +74,8 @@ export function UseWithYourAi() {
         <div>
           <dt className="font-semibold text-ink">Cursor</dt>
           <dd className="mt-0.5">
-            Add this to <code className={INLINE_CODE_CLASS}>.cursor/mcp.json</code>
-            <code className={BLOCK_CODE_CLASS}>{CURSOR_CONFIG}</code>
+            Add this to <code className="code code--inline">.cursor/mcp.json</code>
+            <code className="code code--block mt-1.5">{CURSOR_CONFIG}</code>
           </dd>
         </div>
       </dl>

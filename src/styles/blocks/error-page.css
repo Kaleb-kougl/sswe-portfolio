@@ -1,0 +1,41 @@
+/* =====================================================================
+   .error-page — the legacy neo-brutalist error (app/error.tsx) and 404
+   (app/not-found.tsx) screens, which share this markup. Their buttons are
+   `.button--brutal`; the action column's flex/gap stays a utility.
+
+   The retired colour utilities these screens named (bg-bg-editor,
+   bg-bg-panel, border-border, text-text-primary, text-text-muted) have no
+   token and emit no CSS, so they are omitted. The offset shadow is
+   `--color-ink` (#161310), the same computed colour as the old raw hex.
+   ===================================================================== */
+
+.error-page {
+  @apply flex h-dvh w-full items-center justify-center p-4;
+}
+
+.error-page__panel {
+  @apply mx-auto max-w-md space-y-6 border-[3px] p-8 text-center shadow-[9px_9px_0_var(--color-ink)];
+}
+
+/* Inverted ink square behind the error glyph (error.tsx only). */
+.error-page__glyph {
+  @apply mx-auto flex h-12 w-12 items-center justify-center border-[3px] bg-ink text-paper;
+}
+
+/* The big "404" numeral (not-found.tsx only). */
+.error-page__code {
+  @apply font-display text-7xl font-black tracking-[-0.035em];
+}
+
+.error-page__title {
+  @apply font-display text-3xl font-black uppercase tracking-[-0.025em];
+}
+
+.error-page__message {
+  @apply font-mono text-sm;
+}
+
+/* Error digest line (error.tsx only). */
+.error-page__digest {
+  @apply font-mono text-xs;
+}

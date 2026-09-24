@@ -1,0 +1,47 @@
+/* =====================================================================
+   .card — hairline-bordered surface. Default: 18px radius, white fill,
+   no shadow, no padding.
+
+   Radius and fill modifiers OVERRIDE the base, so they must stay below
+   it in this file. Shadow and padding modifiers only add.
+   ===================================================================== */
+
+.card {
+  @apply rounded-xl border border-hairline bg-surface;
+}
+
+/* --- Radius (overrides base) ---------------------------------------- */
+.card--lg {
+  @apply rounded-lg;
+}
+
+.card--md {
+  @apply rounded-md;
+}
+
+/* --- Fill (overrides base) ------------------------------------------ */
+.card--panel {
+  @apply bg-panel;
+}
+
+.card--subtle {
+  @apply bg-panel-subtle;
+}
+
+/* --- Elevation ------------------------------------------------------ */
+.card--hairline {
+  @apply shadow-hairline;
+}
+
+.card--elevated {
+  @apply shadow-card;
+}
+
+.card--raised {
+  @apply shadow-raised;
+}
+
+/* --- Padding -------------------------------------------------------- */
+.card--padded {
+  @apply p-5 sm:p-6;
+}

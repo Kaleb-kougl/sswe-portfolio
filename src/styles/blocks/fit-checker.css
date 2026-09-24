@@ -1,0 +1,16 @@
+/* =====================================================================
+   .fit-checker — the job-description form on /fit. The form is a
+   `.card card--raised`; its label, hint, textarea and error are `.field`
+   elements and its submit is a `.button`. Only the pieces left over live
+   here.
+   ===================================================================== */
+
+/* "1,234 / 12,000" beside the label. */
+.fit-checker__count {
+  @apply font-mono text-[11px] font-bold tabular-nums tracking-[0.08em] text-muted;
+}
+
+/* "Instant, on this device." beside the submit button. */
+.fit-checker__note {
+  @apply font-ui text-sm text-muted;
+}
