@@ -234,6 +234,22 @@ With numbered items, the best model reached 29/70. Letting the model decide only
 - **Guard:** the fixtures' pinned baseline must not regress.
 - **Rule:** a change ships if it improves dev without hurting fixtures, and the one-time test score is reported as is, good or bad.
 
+**Code-improvement result (2026-09-24).** Rules were changed on the dev half only. The test half was scored once afterwards by someone who didn't change the rules, before vs after:
+
+| | Dev before → after | **Test before → after** | Fixtures before → after |
+|---|---|---|---|
+| Rows matching labels | 36/70 → 60/70 | **41/73 → 46/73** | 55/70 → 57/70 |
+| Keep/drop correct | 73% → 98% | **77% → 80%** | 76/81 → 78/81 |
+| Spurious rows | 33 → 3 | **28 → 22** | 0 → 0 |
+| Labelled rows kept | 55 → 70 of 70 | **60 → 62 of 73** | 65 → 67 of 70 |
+| Verdicts matching | 43 → 64 of 70 | **48 → 55 of 73** | – |
+| Skill precision / recall | 21/21, 21/38 → 32/32, 32/42 | **28/28, 28/45 → 36/36, 36/48** | 48/48 → 54/54 |
+| Priority on kept labelled rows | 49/54 → 69/70 | **56/60 → 56/62** | – |
+
+- **Reading:** a real improvement on unseen postings (+5 rows, −6 spurious, +8 correct skills with precision still 100%). It's about a fifth of the dev gain, so much of the dev jump was fitting to those 6.
+- **The test half is now spent:** its numbers have been seen. Any further rule work needs fresh postings for a new test set.
+- **What remains on test:** 22 spurious rows, and 11 labelled requirements that code drops.
+
 ## Phase 3: eval gates
 
 **Golden set (`evals/cases/`, about 28):** the same groups as before: strong (6), partial/poor (6), non-engineering (2), injection (6), MCP read tools (8). Each fit case is labeled with its requirements (text, priority, skills) and expected verdicts for 3–5 key ones.
