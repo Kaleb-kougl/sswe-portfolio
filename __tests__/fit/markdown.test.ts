@@ -53,13 +53,16 @@ describe('reportToMarkdown', () => {
 
       **1 of 2 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
+      Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
+
       ## Must-have
 
       - **Strong**: Accessibility
-        Evidence: WCAG across 20+ React components (Indeed).
+        Evidence: WCAG across 20+ React components (Indeed), Cross-browser Playwright with axe scans (This portfolio site).
         - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+        - Cross-browser Playwright with axe scans (This portfolio site): [sswe-portfolio on GitHub](https://github.com/Kaleb-kougl/sswe-portfolio)
       - **Gap**: Kafka
-        Not in my work yet.
+        Not in my work yet. Closest data work: GolfTV API, PostgreSQL tuned for launch (IBM).
 
       ## Nice-to-have
 

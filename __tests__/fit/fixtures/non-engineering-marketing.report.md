@@ -4,11 +4,15 @@ Checked against Kaleb Kougl's portfolio. A model picked the requirements from th
 
 No coverage score: the must-haves couldn't be identified, or most of them are outside what my portfolio can show either way.
 
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
+
 ## Must-have
 
 - **Partial**: SEO strategy and keyword research
   Evidence: IBM Developer rebuild for SEO and vitals (IBM).
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+- **Gap**: Google Analytics and campaign reporting
+  Not in my work yet.
 
 ## Nice-to-have
 
@@ -21,8 +25,6 @@ No coverage score: the must-haves couldn't be identified, or most of them are ou
 - **Not assessed**: 5+ years in B2B content marketing
   Not something my portfolio shows either way.
 - **Not assessed**: HubSpot
-  Not something my portfolio shows either way.
-- **Not assessed**: Google Analytics and campaign reporting
   Not something my portfolio shows either way.
 - **Not assessed**: A/B testing landing pages
   Not something my portfolio shows either way.

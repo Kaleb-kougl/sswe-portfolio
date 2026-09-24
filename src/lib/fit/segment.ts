@@ -50,7 +50,9 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           '(?:what )?(?:would )?(?:set|sets) you apart',
           "(?:what )?(?:would )?make[s]? you stand out",
           'you might also have',
+          '(?:strong |great |ideal )?candidates (?:may|might|will) also have(?: experience(?: with| in)?)?',
           'ideally(?:,? you (?:have|bring|also have))?',
+          '(?:suggested|recommended) (?:skills?|qualifications?|experience)',
         ].join('|') +
         ')$',
     ),
@@ -65,14 +67,15 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           'required',
           'must[- ]haves?',
           '(?:education|education (?:and|&) experience)',
-          "what you(?:'ll| will)? (?:bring|need|have)(?: to (?:succeed|be successful))?",
+          "what you(?:'ll| will)? (?:bring|need|have)(?: to (?:succeed|be successful|the (?:team|table)|our team))?",
+          '(?:the )?essentials',
           "what (?:we'?re|we are) (?:looking|hoping) for(?: in you)?",
           'what we look for',
           'what we need(?: from you)?',
           'who (?:you are|we are looking for|we\'?re looking for)',
           'about you',
           "you(?:'ll)? (?:have|bring|need|are)",
-          'your (?:background|experience|skills|profile|qualifications|toolkit)',
+          'your (?:background|experience|skills|profile|qualifications|toolkit)(?: (?:and|&) (?:experience|skills|qualifications|background))?',
           '(?:the )?ideal candidate(?: (?:will )?(?:have|has|is))?',
           'is (?:this|that) you',
           "to be successful(?: in this role)?(?:,? you(?:'ll| will) (?:need|have))?",
@@ -82,7 +85,7 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           "what you should (?:have|bring|know)",
           "(?:the )?(?:skill ?sets?|skills?|experience|qualifications|background) you(?:'ll| will| should)? (?:bring|need|have)",
           "you(?:'ll| will)? (?:might |may )?(?:thrive|excel|succeed|do well)(?: in this (?:role|position|job)| here| with us)?(?: if(?: you(?:'re| are| have)?)?)?",
-          "(?:you'?re|you are|you may be|you might be) (?:a )?(?:great |good |strong )?(?:fit|match)(?: for (?:this|the) (?:role|position|job))?(?: if(?: you)?)?",
+          "(?:you'?re|you are|you may be|you might be) (?:a )?(?:great |good |strong )?(?:fit|match)(?: for (?:this|the) (?:role|position|job))?(?: if(?: you(?: have| are|'re)?)?)?",
           "this (?:role|job|position) (?:is|might be|may be) (?:for you|a (?:great |good )?fit)(?: if(?: you)?)?",
         ].join('|') +
         ')$',
@@ -94,7 +97,7 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
       '^(?:' +
         [
           '(?:key |main |core |primary |your |job |role )?(?:responsibilities|duties)',
-          "what you(?:'ll| will) (?:do|be doing|work on|own|build|accomplish|achieve)",
+          "what you(?:'ll| will) (?:do|be doing|work on|own|build|accomplish|achieve)(?: here| with us)?",
           "(?:in )?(?:this|the) role(?:,? you(?:'ll| will))?",
           'your role',
           '(?:the )?(?:role|job|position) (?:overview|description|summary)',
@@ -115,10 +118,10 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
     new RegExp(
       '^(?:' +
         [
-          '(?:our )?(?:benefits|perks)(?: (?:and|&) (?:perks|benefits))?',
+          '(?:our |company |employee )?(?:benefits|perks)(?: (?:and|&) (?:perks|benefits))?',
           'compensation(?: (?:and|&) benefits)?(?: range)?',
           '(?:base )?(?:salary|pay)(?: range| transparency| and benefits)?',
-          'total rewards',
+          '(?:total )?rewards',
           'what we offer(?: you)?',
           'we offer',
           "what'?s in it for you",
@@ -133,6 +136,7 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           '(?:the )?(?:application|interview|hiring) process',
           'next steps',
           'privacy(?: notice| policy)?',
+          "(?:you(?:'ll| will) )?benefit from (?:our|the) [a-z ]{1,30}",
         ].join('|') +
         ')$',
     ),
@@ -158,6 +162,7 @@ export const HEADER_LEXICON: readonly (readonly [Section, RegExp])[] = [
           // "Why Acme?", "Why this role": the pitch, not a requirement ("why
           // join us" and "why you'll love it here" are benefits, checked first).
           "why (?!you\\b)[a-z0-9&.' -]{1,40}",
+          "why you should (?:join|work)(?: [a-z0-9&.' -]{1,40})?",
           "(?:engineering|working|culture|careers?|the team) at [a-z0-9&.' -]{1,40}",
           // A tech-environment list ("Technologies we use:")
           // describes the employer's stack; the requirements say which of it
@@ -185,14 +190,39 @@ export function normalizeHeader(text: string): string {
     .toLowerCase();
 }
 
+/**
+ * A header prefixed with the job title: "Software Engineer, Product
+ * Responsibilities", "Senior Engineer Minimum Qualifications". Only Title
+ * Case words that include a job noun (TITLE_ROLE) before the section word,
+ * so a sentence fragment ("Ability to translate business requirements") or
+ * a Title Case duty ("Translate Product Requirements") never matches.
+ */
+const TITLED_HEADER =
+  /^(?:[A-Z][\w&/.'’+-]*,?\s+){1,6}((?:(?:Key|Main|Core|Minimum|Basic|Required|Preferred|Desired|Job)\s+)?(?:Responsibilities|Qualifications|Requirements|Duties))$/;
+
+const TITLE_ROLE =
+  /\b(?:engineer|developer|programmer|architect|scientist|analyst|designer|manager|director|intern|sre|consultant|specialist)s?\b/i;
+
 /** The section a header names, or undefined when it isn't one in the lexicon. */
 export function classifyHeader(text: string): Section | undefined {
   const header = normalizeHeader(text);
+  // "You may be a good fit if you have (Must-have qualifications)": the
+  // bracketed part names the section when the rest doesn't.
+  const bracket = /^(.{3,80}?)\s*\(([^()]{3,60})\)$/.exec(header);
+  if (bracket && bracket[1].split(' ').length <= 10) {
+    const inner = classifyHeader(bracket[2]) ?? classifyHeader(bracket[1]);
+    if (inner) return inner;
+  }
   if (!header || header.split(' ').length > 10) return undefined;
   for (const [section, pattern] of HEADER_LEXICON) {
     if (pattern.test(header)) return section;
   }
-  return undefined;
+  const titled = TITLED_HEADER.exec(
+    text.replace(/[*_#`]+/g, '').replace(/^[^\p{L}\p{N}]+/u, '').replace(/[\s:]+$/, '').trim(),
+  );
+  // The prefix must read as a job title ("Software Engineer, Product").
+  const prefix = titled ? titled[0].slice(0, -titled[1].length) : '';
+  return titled && TITLE_ROLE.test(prefix) ? classifyHeader(titled[1]) : undefined;
 }
 
 // --- Priority cues ----------------------------------------------------------
@@ -444,7 +474,7 @@ export function splitSentences(text: string): string[] {
  * "$150,000–$180,000 + equity" into a requirement.
  */
 export const BOILERPLATE =
-  /\b(?:equal (?:employment )?opportunity|EEO|affirmative action|(?:regardless of|on the basis of) (?:race|gender|sex|age|religion|colou?r|national origin)|discriminat(?:e|ion) (?:on the basis|based on)|without regard to|reasonable accommodations?|protected (?:veteran|characteristic|status)|salary range|pay range|base (?:salary|pay)|compensation (?:range|package)|total compensation|401\s?\(?k\)?|health(?:,| and) dental|paid time off|parental leave|pay transparency|E-Verify)\b|\$\s?\d{2,3}(?:,\d{3}|k)|\b(?:USD|EUR|GBP|CAD)\s?\d{2,3}(?:,\d{3}|k)/i;
+  /\b(?:equal (?:employment )?opportunity|EEO|affirmative action|(?:regardless of|on the basis of) (?:race|gender|sex|age|religion|colou?r|national origin)|discriminat(?:e|ion) (?:on the basis|based on)|without regard to|reasonable accommodations?|protected (?:veteran|characteristic|status)|salary range|pay range|base (?:salary|pay)|compensation (?:range|package)|total compensation|401\s?\(?k\)?|health(?:,| and) dental|paid time off|parental leave|pay transparency|E-Verify|total rewards|cash compensation|equity grants?|restricted stock|on target earnings|(?:your |the )?(?:exact )?offer (?:may|will) vary)\b|^#[A-Za-z][\w-]*$|\$\s?\d{2,3}(?:,\d{3}|k)|\b(?:USD|EUR|GBP|CAD)\s?\d{2,3}(?:,\d{3}|k)/i;
 
 /**
  * Where and on what terms the job is done, not a skill: office attendance,

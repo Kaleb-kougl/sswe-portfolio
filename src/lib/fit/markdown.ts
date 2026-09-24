@@ -2,6 +2,7 @@ import { CORPUS, type Corpus, type Evidence } from '@/data/corpus';
 
 import type { FitReport, Requirement, Verdict } from './contract';
 import { entryLabel, evidenceLabel } from './labels';
+import { levelLine } from './level';
 import { SCAN_DISCLAIMER } from './scan';
 
 /**
@@ -81,6 +82,8 @@ export function reportToMarkdown(report: FitReport, corpus: Corpus = CORPUS): st
       : NO_COVERAGE_LINE,
     '',
   );
+  const level = levelLine(report.role);
+  if (level) lines.push(escapeMarkdown(level), '');
   const assessed = rows.filter((r) => r.verdict !== 'not_assessed');
   lines.push(
     ...section('Must-have', assessed.filter((r) => r.priority === 'must'), byId),

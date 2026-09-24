@@ -77,6 +77,7 @@ const R3F_NPM = { label: '@k9kbdev/r3f-projectiles on npm', href: cardLink('r3f-
 const ROBLOX_CSS_SOURCE = { label: 'roblox-css on GitHub', href: cardLink('roblox-css', 'Source') };
 const ROBLOX_CSS_NPM = { label: '@k9kbdev/roblox-css on npm', href: cardLink('roblox-css', 'npm') };
 const VIDEO_PIPELINE_SOURCE = { label: 'video-pipeline on GitHub', href: cardLink('video-pipeline', 'Source') };
+const PORTFOLIO_SOURCE = { label: 'sswe-portfolio on GitHub', href: bulletUrl('portfolio-site', 'github.com') };
 const BONKBALL = { label: 'BonkBall on Roblox', href: bulletUrl('hammerball', 'roblox.com') };
 const EXTENSION = { label: 'Work: Indeed Analytics Extension (internal, no public link)', href: WORK_ANCHOR };
 
@@ -123,6 +124,14 @@ export const EVIDENCE: readonly Evidence[] = [
     skills: ['mentoring', 'tech-leadership'],
     metric: '~12 engineers mentored',
   }),
+  career('indeed-sr-swe', 'redux', {
+    claim: 'I built React features with Redux for application state.',
+    skills: ['redux', 'state-management', 'react'],
+  }),
+  career('indeed-sr-swe', 'agile', {
+    claim: 'I delivered work in Agile teams, following Agile principles: sprint planning, standups and retrospectives.',
+    skills: ['agile'],
+  }),
   career('indeed-sr-swe', 'frontend-slos', {
     claim: 'I operationalized frontend SLOs with SRE and Product, reducing customer-facing incidents for consumer features.',
     skills: ['slos', 'cross-functional-collaboration'],
@@ -139,6 +148,14 @@ export const EVIDENCE: readonly Evidence[] = [
     claim: 'I led the effort to implement WCAG accessibility standards across 20+ reusable React components consumed by 5 teams.',
     skills: ['wcag', 'react', 'component-libraries', 'design-systems'],
     metric: '20+ components used by 5 teams',
+  }),
+  career('indeed-swe-ii', 'redux', {
+    claim: 'I built React features with Redux for application state.',
+    skills: ['redux', 'state-management', 'react'],
+  }),
+  career('indeed-swe-ii', 'agile', {
+    claim: 'I delivered work in Agile teams, following Agile principles: sprint planning, standups and retrospectives.',
+    skills: ['agile'],
   }),
 
   // --- IBM, Software Engineer II -----------------------------------------
@@ -170,6 +187,10 @@ export const EVIDENCE: readonly Evidence[] = [
   career('ibm-swe', 'golftv-graphql', {
     claim: 'I improved data reliability for client integrations through the GolfTV Graph API, built with Apollo GraphQL on AWS.',
     skills: ['graphql', 'apollo-graphql', 'aws', 'api-design'],
+  }),
+  career('ibm-swe', 'golftv-postgresql', {
+    claim: 'I built the GolfTV Apollo GraphQL API on AWS for worldwide launch, tuning its PostgreSQL queries for launch traffic.',
+    skills: ['postgresql', 'sql', 'relational-databases', 'apollo-graphql', 'graphql', 'aws'],
   }),
 
   // --- J.B. Hunt, intern -------------------------------------------------
@@ -280,6 +301,23 @@ export const EVIDENCE: readonly Evidence[] = [
     claim: 'I designed a unified ICombatant interface so hit detection and objective mechanics work the same for human players and AI agents.',
     skills: ['api-design', 'typescript', 'game-development'],
   }, BONKBALL),
+
+  // --- This portfolio site -------------------------------------------------
+  // Its stack and pipeline, read off the public repository; no metrics.
+  project('portfolio-site', 'stack', {
+    claim: 'I built this portfolio site with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4.',
+    // Not tagged react/typescript: the work-history records carry those with
+    // metrics, and this record would outrank them on overlap alone.
+    skills: ['nextjs', 'tailwind-css'],
+  }, PORTFOLIO_SOURCE),
+  project('portfolio-site', 'ci-pipeline', {
+    claim: 'Every pull request to this site runs a GitHub Actions CI/CD pipeline: ESLint, Vitest and React Testing Library unit tests, a production build, a homepage JavaScript budget and Playwright end-to-end tests.',
+    skills: ['github-actions', 'ci-cd', 'automated-testing', 'vitest', 'react-testing-library', 'playwright'],
+  }, PORTFOLIO_SOURCE),
+  project('portfolio-site', 'cross-browser-a11y', {
+    claim: 'I run this site’s end-to-end suite in Chromium, WebKit and Firefox with Playwright, including axe-core scans against WCAG 2.1 AA.',
+    skills: ['playwright', 'accessibility-testing', 'wcag', 'automated-testing'],
+  }, PORTFOLIO_SOURCE),
 
   // --- Peer-reviewed paper -----------------------------------------------
   project('acs-microdialysis', 'paper', {

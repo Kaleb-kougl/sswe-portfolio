@@ -2,7 +2,7 @@
 
 Checked against Kaleb Kougl's portfolio. A model picked the requirements from the job description's lines; the verdicts are computed from the evidence below, not generated.
 
-**1 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**1.5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
 ## Must-have
 
@@ -16,9 +16,10 @@ Checked against Kaleb Kougl's portfolio. A model picked the requirements from th
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Gap**: Kafka or another event streaming platform
-  Not in my work yet.
-- **Gap**: PostgreSQL
-  Not in my work yet.
+  Not in my work yet. Closest data work: GolfTV API, PostgreSQL tuned for launch (IBM).
+- **Partial**: PostgreSQL
+  Evidence: GolfTV API, PostgreSQL tuned for launch (IBM).
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 
 ## Nice-to-have
 

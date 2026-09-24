@@ -49,7 +49,7 @@ describe('search_evidence', () => {
   });
 
   it('understands accessibility aliases', () => {
-    expect(ids(search({ skills: ['a11y'] }))).toEqual(['indeed-swe-ii.wcag-components']);
+    expect(ids(search({ skills: ['a11y'] }))).toEqual(['indeed-swe-ii.wcag-components', 'portfolio-site.cross-browser-a11y']);
   });
 
   it('reports unknown skills and returns nothing for them', () => {

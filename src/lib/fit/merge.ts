@@ -32,13 +32,22 @@ export const COMPANY_VOICE = /^(?:(?:we|we're|we’re|we've|we’ve|we'll|we’l
 /**
  * A segment that isn't a requirement by itself: a lead-in that ends in ":"
  * ("You'll need:"), company voice ("We don't expect you to tick every box"),
- * or a whole paragraph (over 300 characters) rather than an item.
+ * a pitch ("you will have the opportunity to…", see `PITCH`), or a whole
+ * paragraph (over 300 characters) rather than an item.
  */
 export function isBlurb(text: string): boolean {
   const t = text.trim();
   const companyVoice = COMPANY_VOICE.test(t) && !REQUIREMENT_VOICE.test(straightQuotes(t));
-  return /:$/.test(t) || companyVoice || isDescription(t) || text.length > 300;
+  return /:$/.test(t) || companyVoice || PITCH.test(straightQuotes(t)) || isDescription(t) || text.length > 300;
 }
+
+/**
+ * The role pitched to the reader: "As a member of our team, you will have
+ * the opportunity to work on…", "we encourage you to apply". What the job
+ * offers, not what it asks.
+ */
+export const PITCH =
+  /\byou(?:'ll| will) (?:have|get) (?:the |an |a )?(?:opportunity|chance)\b|^as a member of (?:our|the) team\b|\bwe encourage you to apply\b/i;
 
 /**
  * A name introduced as the subject: "Acme is a platform for…", "Acme Health

@@ -166,9 +166,9 @@ describe('answer: evidence', () => {
   });
 
   it('a canonical tag with no records is a gap too', () => {
-    const f = as(answer('Is he any good with PostgreSQL?'), 'evidence').findings[0];
+    const f = as(answer('Is he any good with Datadog?'), 'evidence').findings[0];
     expect(f.status).toBe('none');
-    expect(f.lead).toBe('No evidence of PostgreSQL in my work.');
+    expect(f.lead).toBe('No evidence of Datadog in my work.');
   });
 
   it(`shows at most ${CARDS_SHOWN} cards per skill, ranked metric first then newest; the rest go behind "Show N more"`, () => {

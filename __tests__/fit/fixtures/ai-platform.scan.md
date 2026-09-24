@@ -4,6 +4,8 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 
 **5 of 6 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
+
 ## Must-have
 
 - **Strong**: 5+ years of software engineering

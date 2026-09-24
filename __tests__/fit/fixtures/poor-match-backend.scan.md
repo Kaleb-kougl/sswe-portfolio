@@ -2,7 +2,7 @@
 
 Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-**0.5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**1 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
 ## Must-have
 
@@ -14,9 +14,10 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   Evidence: Stateless bridge to microservices (Indeed Analytics Extension).
   - Stateless bridge to microservices (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
 - **Gap**: Kafka or another event streaming platform
-  Not in my work yet.
-- **Gap**: PostgreSQL
-  Not in my work yet.
+  Not in my work yet. Closest data work: GolfTV API, PostgreSQL tuned for launch (IBM).
+- **Partial**: PostgreSQL
+  Evidence: GolfTV API, PostgreSQL tuned for launch (IBM).
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 
 ## Nice-to-have
 

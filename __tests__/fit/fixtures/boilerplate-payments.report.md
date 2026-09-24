@@ -2,16 +2,21 @@
 
 Checked against Kaleb Kougl's portfolio. A model picked the requirements from the job description's lines; the verdicts are computed from the evidence below, not generated.
 
-**1 of 3 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**2.5 of 4 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
 
 ## Must-have
 
+- **Strong**: Bachelor's degree in Computer Science or equivalent experience
+  B.S. in Biological Sciences (University of Arkansas, 2017) and a Full-Stack Web Development certificate (Northwestern University, 2019). The ask allows equivalent experience.
 - **Strong**: 5–8 years of backend engineering experience
   8 years in software since 2018, including an internship (2026 − 2018), meets the 5 asked.
 - **Gap**: Proficiency in Java or Kotlin
   Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM).
-- **Gap**: Experience with SQL databases and Kafka
-  Not in my work yet.
+- **Partial**: Experience with SQL databases and Kafka
+  Evidence: GolfTV API, PostgreSQL tuned for launch (IBM). Nothing for Kafka.
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 
 ## Nice-to-have
 
@@ -28,14 +33,13 @@ Checked against Kaleb Kougl's portfolio. A model picked the requirements from th
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Familiarity with GraphQL
-  Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM).
+  Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM), GolfTV API, PostgreSQL tuned for launch (IBM).
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 
 ## Not assessed
 
-- **Not assessed**: Bachelor's degree in Computer Science or equivalent experience
-  Not something my portfolio shows either way.
 - **Not assessed**: Excellent communication skills
   Not something my portfolio shows either way.
 - **Not assessed**: Experience in fintech or payments

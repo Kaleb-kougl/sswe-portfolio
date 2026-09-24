@@ -64,6 +64,7 @@ docs/*
 /evals/cases/holdout/*.txt
 /evals/cases/holdout/*.labels.json
 /evals/cases/holdout-test/
+/evals/cases/dev/
 # Eval results on the held-out JDs quote their text: keep them local too.
 /evals/local/results/holdout/
 /evals/embed/results/holdout/

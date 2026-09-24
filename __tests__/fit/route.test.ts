@@ -80,15 +80,19 @@ describe('routeReasons: one rule each', () => {
 });
 
 describe('uncertainSegments on the fixtures', () => {
-  /** How many of each fixture's candidates reach the requirement question. */
+  /**
+   * How many of each fixture's candidates reach the requirement question.
+   * Three dropped by one when Next.js, GitHub Actions and the wider gap
+   * vocabulary (Google Analytics, Nx) let code name the skill itself.
+   */
   const ROUTED: Record<string, [routed: number, candidates: number]> = {
-    'frontend-senior': [3, 11],
+    'frontend-senior': [2, 11],
     'fullstack-senior': [2, 10],
     'ai-platform': [3, 11],
     'poor-match-backend': [2, 9],
-    'non-engineering-marketing': [6, 8],
+    'non-engineering-marketing': [5, 8],
     'prose-only-startup': [10, 10],
-    'responsibilities-tech': [5, 11],
+    'responsibilities-tech': [4, 11],
     'boilerplate-payments': [7, 11],
   };
 

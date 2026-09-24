@@ -9,9 +9,8 @@ import type { Skill } from './schema';
  * deliberately not an alias of core-web-vitals, because the evidence measures
  * TTI and FCP and a match on LCP would claim work that wasn't done.
  *
- * A few tags have no evidence behind them yet (postgresql, datadog,
- * web-applications). They are here because `SKILLS` in resumeData.ts — the
- * JSON-LD `knowsAbout` list — names them, and the corpus test holds every
+ * A few tags have no evidence behind them yet (datadog, web-applications).
+ * They are here because `SKILLS` in resumeData.ts — the JSON-LD `knowsAbout` list — names them, and the corpus test holds every
  * `SKILLS` string to a canonical tag so the two lists can't drift. A tag with
  * no evidence reads as a gap to the fit checker, which is the honest answer.
  *
@@ -31,6 +30,8 @@ export const SKILLS_TABLE: readonly Skill[] = [
   // Frontend
   { id: 'react', label: 'React', aliases: ['reactjs'] },
   { id: 'react-native', label: 'React Native', aliases: [] },
+  { id: 'nextjs', label: 'Next.js', aliases: ['next.js app router'] },
+  { id: 'tailwind-css', label: 'Tailwind CSS', aliases: ['tailwind', 'tailwindcss'] },
   { id: 'web-applications', label: 'Web applications', aliases: ['web apps'] },
   { id: 'component-libraries', label: 'Component libraries', aliases: ['shared components', 'ui libraries'] },
   { id: 'design-systems', label: 'Design systems', aliases: ['component-driven development'] },
@@ -38,6 +39,7 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'storybook', label: 'Storybook', aliases: ['react storybook'] },
   { id: 'wcag', label: 'Accessibility (WCAG)', aliases: ['a11y', 'accessibility', 'web accessibility'] },
   { id: 'state-management', label: 'State management', aliases: [] },
+  { id: 'redux', label: 'Redux', aliases: ['redux toolkit', 'rtk query'] },
   { id: 'animation', label: 'UI animation', aliases: ['motion'] },
   { id: 'chrome-extensions', label: 'Chrome extensions', aliases: ['browser extensions', 'manifest v3', 'mv3'] },
   { id: 'frontend-security', label: 'Frontend security', aliases: ['xss', 'xss prevention', 'input sanitization', 'web security'] },
@@ -48,6 +50,7 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'micro-frontends', label: 'Micro-frontends', aliases: ['microfrontends', 'microfrontend architecture'] },
   { id: 'build-systems', label: 'Build systems', aliases: ['build tooling', 'bundlers'] },
   { id: 'ci-cd', label: 'CI/CD', aliases: ['continuous integration', 'continuous delivery'] },
+  { id: 'github-actions', label: 'GitHub Actions', aliases: [] },
   { id: 'web-performance', label: 'Web performance', aliases: ['performance optimization', 'frontend performance', 'bundle size'] },
   { id: 'core-web-vitals', label: 'Core Web Vitals', aliases: ['cwv', 'performance optimization (core web vitals)', 'tti', 'fcp', 'time to interactive'] },
   { id: 'seo', label: 'SEO', aliases: ['search engine optimization'] },
@@ -60,17 +63,23 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'graphql', label: 'GraphQL', aliases: ['gql'] },
   { id: 'apollo-graphql', label: 'Apollo GraphQL', aliases: ['apollo', 'apollo client', 'apollo server'] },
   { id: 'postgresql', label: 'PostgreSQL', aliases: ['postgres'] },
-  { id: 'aws', label: 'AWS', aliases: ['amazon web services'] },
+  { id: 'sql', label: 'SQL', aliases: [] },
+  // The category, not a product: any record for a relational database (PostgreSQL
+  // today) carries this tag too, so "relational databases" and "RDBMS" asks find it.
+  { id: 'relational-databases', label: 'Relational databases', aliases: ['relational database', 'rdbms', 'sql databases', 'relational data stores'] },
+  // A cloud ask ("modern cloud architectures", "cloud platforms") is met by
+  // AWS work; a named rival (GCP, Azure) stays its own gap term.
+  { id: 'aws', label: 'AWS', aliases: ['amazon web services', 'cloud architecture', 'cloud architectures', 'cloud platform', 'cloud infrastructure', 'cloud services', 'cloud computing', 'public cloud'] },
   { id: 'microservices', label: 'Microservices', aliases: [] },
   { id: 'full-stack', label: 'Full-stack development', aliases: ['fullstack', 'entire stack', 'whole stack', 'across the stack'] },
   { id: 'system-design', label: 'System design', aliases: ['software architecture', 'architecture'] },
   { id: 'api-design', label: 'API and interface design', aliases: ['interface design', 'api', 'apis', 'restful', 'api development', 'api contracts'] },
 
   // AI
-  { id: 'genai', label: 'Generative AI', aliases: ['gen ai', 'llm', 'llms', 'large language models'] },
+  { id: 'genai', label: 'Generative AI', aliases: ['gen ai', 'llm', 'llms', 'large language models', 'ai applications', 'ai application'] },
   { id: 'ai-assisted-development', label: 'AI-assisted development', aliases: ['ai-assisted code generation', 'ai coding', 'model-assisted workflows', 'ai tooling', 'ai-assisted engineering', 'ai-supported engineering', 'ai-enhanced engineering', 'ai dev tools', 'ai dev tooling', 'ai development tools', 'agentic development', 'agentic coding', 'claude code', 'github copilot', 'copilot'] },
   { id: 'ai-platform', label: 'AI platform integration', aliases: ['ai gateway', 'ai infrastructure'] },
-  { id: 'agentic-workflows', label: 'Agentic workflows', aliases: ['agents', 'ai agents', 'agentic ai', 'multi-agent systems', 'agentic systems', 'agentic tooling', 'agentic tools', 'agentic applications'] },
+  { id: 'agentic-workflows', label: 'Agentic workflows', aliases: ['agents', 'ai agents', 'agentic ai', 'multi-agent systems', 'agentic systems', 'agentic tooling', 'agentic tools', 'agentic applications', 'agent-building', 'building agents', 'ai agent'] },
   { id: 'gemini', label: 'Google Gemini', aliases: [] },
   { id: 'langchain', label: 'LangChain', aliases: [] },
   { id: 'pydantic', label: 'Pydantic', aliases: [] },
@@ -80,12 +89,17 @@ export const SKILLS_TABLE: readonly Skill[] = [
   // Testing
   { id: 'automated-testing', label: 'Automated testing', aliases: ['testing', 'unit testing', 'test automation', 'testing strategy', 'test strategy', 'unit tests', 'integration tests', 'end-to-end tests', 'e2e tests', 'automated tests'] },
   { id: 'jest', label: 'Jest', aliases: [] },
+  { id: 'vitest', label: 'Vitest', aliases: [] },
+  { id: 'react-testing-library', label: 'React Testing Library', aliases: [] },
+  { id: 'playwright', label: 'Playwright', aliases: [] },
+  { id: 'accessibility-testing', label: 'Accessibility testing', aliases: ['axe-core', 'automated accessibility testing', 'accessibility audits'] },
   { id: 'appium', label: 'Appium', aliases: [] },
 
   // Leadership
-  { id: 'tech-leadership', label: 'Technical leadership', aliases: ['tech lead', 'team lead', 'technical lead', 'leading projects', 'lead projects', 'technical direction'] },
+  { id: 'tech-leadership', label: 'Technical leadership', aliases: ['tech lead', 'team lead', 'technical lead', 'technical leader', 'leading projects', 'lead projects', 'technical direction'] },
   { id: 'mentoring', label: 'Mentoring', aliases: ['mentorship', 'coaching', 'mentor', 'mentored'] },
   { id: 'cross-functional-collaboration', label: 'Cross-functional collaboration', aliases: ['stakeholder management', 'cross-functional', 'cross-team collaboration'] },
+  { id: 'agile', label: 'Agile', aliases: ['agile principles', 'agile methodology', 'agile methodologies', 'agile development', 'agile teams', 'agile environment', 'agile processes', 'agile process', 'agile practices'] },
 
   // 3D, games, open source
   { id: 'react-three-fiber', label: 'React Three Fiber', aliases: ['r3f'] },
@@ -151,6 +165,7 @@ export const SKILL_CATEGORIES = {
   'graphics-games': '3D and games',
   practice: 'engineering practice',
   research: 'research',
+  embedded: 'embedded and hardware',
 } as const;
 export type SkillCategory = keyof typeof SKILL_CATEGORIES;
 
@@ -167,9 +182,13 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   storybook: 'frontend',
   wcag: 'frontend',
   'state-management': 'frontend',
+  redux: 'frontend',
   animation: 'frontend',
   'chrome-extensions': 'frontend',
   'frontend-security': 'frontend',
+
+  nextjs: 'frontend',
+  'tailwind-css': 'frontend',
 
   'react-native': 'mobile',
 
@@ -184,6 +203,7 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   'codebase-migrations': 'platform',
 
   'ci-cd': 'cloud-infra',
+  'github-actions': 'cloud-infra',
   aws: 'cloud-infra',
   slos: 'cloud-infra',
   datadog: 'cloud-infra',
@@ -198,6 +218,8 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   'api-design': 'backend',
 
   postgresql: 'data',
+  sql: 'data',
+  'relational-databases': 'data',
 
   genai: 'ai',
   'ai-assisted-development': 'ai',
@@ -211,11 +233,16 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
 
   'automated-testing': 'testing',
   jest: 'testing',
+  vitest: 'testing',
+  'react-testing-library': 'testing',
+  playwright: 'testing',
+  'accessibility-testing': 'testing',
   appium: 'testing',
 
   'tech-leadership': 'leadership',
   mentoring: 'leadership',
   'cross-functional-collaboration': 'leadership',
+  agile: 'practice',
 
   'react-three-fiber': 'graphics-games',
   threejs: 'graphics-games',
@@ -251,10 +278,19 @@ export interface GapTerm {
  * work". The fit tests hold every term here to `normalizeSkill` returning
  * nothing, so a term can't be listed as a gap and claimed at once.
  *
- * Deliberately absent: things this portfolio is built with but the corpus
- * has no record of (Next.js, Tailwind, Playwright, Vitest). Calling those
- * gaps would be false; claiming them needs a record first. Also absent:
- * iOS and Android, which React Native JDs name as platforms, not skills.
+ * Deliberately absent: things Kaleb has used that the corpus has no record
+ * of yet (Figma, Docker Compose, OpenAI, Anthropic, Hugging Face, Vercel,
+ * Core Web Vitals' individual metrics such as LCP, which this site's own CI
+ * measures). Calling those gaps would be false; claiming them needs a record
+ * first. The site's own stack (Next.js, Tailwind, Vitest, Playwright,
+ * GitHub Actions) has records now, under `portfolio-site`, so it moved to
+ * `SKILLS_TABLE`. Also absent: iOS and Android, which React Native JDs name
+ * as platforms, not skills.
+ *
+ * The long tail below the original entries (UI kits, build tools, ORMs,
+ * observability vendors, …) is what the scan needs to say "mentioned, not
+ * in my work" instead of skipping a line. No half credit: a sibling tool
+ * never counts for another, it only feeds the "Closest … work" line.
  *
  * Matching quirks (case-sensitive "Go", "Swift", "Spark"; no bare "Spring")
  * live in `src/lib/fit/scan.ts`, next to the code that applies them.
@@ -299,7 +335,6 @@ export const GAP_VOCABULARY: readonly GapTerm[] = [
   { id: 'grafana', label: 'Grafana', aliases: [], category: 'cloud-infra' },
 
   // Data
-  { id: 'sql', label: 'SQL', aliases: [], category: 'data' },
   { id: 'nosql', label: 'NoSQL', aliases: [], category: 'data' },
   { id: 'mysql', label: 'MySQL', aliases: [], category: 'data' },
   { id: 'mongodb', label: 'MongoDB', aliases: ['mongo'], category: 'data' },
@@ -323,6 +358,186 @@ export const GAP_VOCABULARY: readonly GapTerm[] = [
   { id: 'cypress', label: 'Cypress', aliases: [], category: 'testing' },
   { id: 'selenium', label: 'Selenium', aliases: [], category: 'testing' },
   { id: 'unreal-engine', label: 'Unreal Engine', aliases: ['unreal'], category: 'graphics-games' },
+
+  // Frontend frameworks, libraries and styling
+  { id: 'nuxt', label: 'Nuxt', aliases: ['nuxt.js'], category: 'frontend' },
+  { id: 'remix', label: 'Remix', aliases: ['remix run'], category: 'frontend' },
+  { id: 'gatsby', label: 'Gatsby', aliases: ['gatsbyjs'], category: 'frontend' },
+  { id: 'astro', label: 'Astro', aliases: ['astro.js'], category: 'frontend' },
+  { id: 'solidjs', label: 'SolidJS', aliases: [], category: 'frontend' },
+  { id: 'qwik', label: 'Qwik', aliases: [], category: 'frontend' },
+  { id: 'preact', label: 'Preact', aliases: [], category: 'frontend' },
+  { id: 'ember', label: 'Ember.js', aliases: [], category: 'frontend' },
+  { id: 'backbone', label: 'Backbone.js', aliases: [], category: 'frontend' },
+  { id: 'jquery', label: 'jQuery', aliases: [], category: 'frontend' },
+  { id: 'htmx', label: 'htmx', aliases: [], category: 'frontend' },
+  { id: 'web-components', label: 'Web Components', aliases: ['custom elements', 'shadow dom', 'lit element'], category: 'frontend' },
+  { id: 'react-router', label: 'React Router', aliases: [], category: 'frontend' },
+  { id: 'react-query', label: 'React Query', aliases: ['tanstack query'], category: 'frontend' },
+  { id: 'swr', label: 'SWR', aliases: [], category: 'frontend' },
+  { id: 'urql', label: 'urql', aliases: [], category: 'frontend' },
+  { id: 'mobx', label: 'MobX', aliases: [], category: 'frontend' },
+  { id: 'zustand', label: 'Zustand', aliases: [], category: 'frontend' },
+  { id: 'jotai', label: 'Jotai', aliases: [], category: 'frontend' },
+  { id: 'xstate', label: 'XState', aliases: [], category: 'frontend' },
+  { id: 'react-hook-form', label: 'React Hook Form', aliases: [], category: 'frontend' },
+  { id: 'formik', label: 'Formik', aliases: [], category: 'frontend' },
+  { id: 'sass', label: 'Sass', aliases: ['scss'], category: 'frontend' },
+  { id: 'postcss', label: 'PostCSS', aliases: [], category: 'frontend' },
+  { id: 'styled-components', label: 'styled-components', aliases: [], category: 'frontend' },
+  { id: 'emotion', label: 'Emotion', aliases: ['@emotion/react'], category: 'frontend' },
+  { id: 'css-modules', label: 'CSS Modules', aliases: [], category: 'frontend' },
+  { id: 'css-in-js', label: 'CSS-in-JS', aliases: [], category: 'frontend' },
+  { id: 'material-ui', label: 'Material UI', aliases: ['mui'], category: 'frontend' },
+  { id: 'chakra-ui', label: 'Chakra UI', aliases: [], category: 'frontend' },
+  { id: 'ant-design', label: 'Ant Design', aliases: ['antd'], category: 'frontend' },
+  { id: 'bootstrap', label: 'Bootstrap', aliases: [], category: 'frontend' },
+  { id: 'radix-ui', label: 'Radix UI', aliases: [], category: 'frontend' },
+  { id: 'shadcn-ui', label: 'shadcn/ui', aliases: ['shadcn'], category: 'frontend' },
+  { id: 'mantine', label: 'Mantine', aliases: [], category: 'frontend' },
+  { id: 'i18n', label: 'Internationalization', aliases: ['i18n', 'i18next', 'react-intl', 'localization'], category: 'frontend' },
+  { id: 'd3', label: 'D3.js', aliases: ['d3'], category: 'frontend' },
+  { id: 'charting-libraries', label: 'Charting libraries', aliases: ['recharts', 'chart.js', 'highcharts', 'echarts', 'visx'], category: 'frontend' },
+  { id: 'mapbox', label: 'Mapbox', aliases: [], category: 'frontend' },
+  { id: 'leaflet', label: 'Leaflet', aliases: ['leaflet.js'], category: 'frontend' },
+
+  // Native, cross-platform and desktop apps
+  { id: 'expo', label: 'Expo', aliases: [], category: 'mobile' },
+  { id: 'ionic', label: 'Ionic', aliases: [], category: 'mobile' },
+  { id: 'capacitor', label: 'Capacitor', aliases: [], category: 'mobile' },
+  { id: 'cordova', label: 'Cordova', aliases: ['phonegap'], category: 'mobile' },
+  { id: 'jetpack-compose', label: 'Jetpack Compose', aliases: [], category: 'mobile' },
+  { id: 'electron', label: 'Electron', aliases: [], category: 'frontend' },
+  { id: 'tauri', label: 'Tauri', aliases: [], category: 'frontend' },
+
+  // Build tooling and monorepos
+  { id: 'vite', label: 'Vite', aliases: [], category: 'platform' },
+  { id: 'rollup', label: 'Rollup', aliases: [], category: 'platform' },
+  { id: 'esbuild', label: 'esbuild', aliases: [], category: 'platform' },
+  { id: 'parcel', label: 'Parcel', aliases: [], category: 'platform' },
+  { id: 'turbopack', label: 'Turbopack', aliases: [], category: 'platform' },
+  { id: 'rspack', label: 'Rspack', aliases: [], category: 'platform' },
+  { id: 'swc', label: 'SWC', aliases: [], category: 'platform' },
+  { id: 'babel', label: 'Babel', aliases: [], category: 'platform' },
+  { id: 'bazel', label: 'Bazel', aliases: [], category: 'platform' },
+  { id: 'nx', label: 'Nx', aliases: ['nx monorepo'], category: 'platform' },
+  { id: 'turborepo', label: 'Turborepo', aliases: [], category: 'platform' },
+  { id: 'lerna', label: 'Lerna', aliases: [], category: 'platform' },
+  { id: 'pnpm', label: 'pnpm', aliases: ['pnpm workspaces'], category: 'platform' },
+  { id: 'yarn', label: 'Yarn', aliases: ['yarn workspaces'], category: 'platform' },
+
+  // Testing tools
+  { id: 'mocha', label: 'Mocha', aliases: [], category: 'testing' },
+  { id: 'junit', label: 'JUnit', aliases: [], category: 'testing' },
+  { id: 'jasmine', label: 'Jasmine', aliases: [], category: 'testing' },
+  { id: 'enzyme', label: 'Enzyme', aliases: [], category: 'testing' },
+  { id: 'puppeteer', label: 'Puppeteer', aliases: [], category: 'testing' },
+  { id: 'webdriverio', label: 'WebdriverIO', aliases: [], category: 'testing' },
+  { id: 'testcafe', label: 'TestCafe', aliases: [], category: 'testing' },
+  { id: 'chromatic', label: 'Chromatic', aliases: [], category: 'testing' },
+  { id: 'percy', label: 'Percy', aliases: [], category: 'testing' },
+  { id: 'visual-regression-testing', label: 'Visual regression testing', aliases: [], category: 'testing' },
+
+  // Backend frameworks, runtimes and APIs
+  { id: 'express', label: 'Express', aliases: ['express.js'], category: 'backend' },
+  { id: 'nestjs', label: 'NestJS', aliases: [], category: 'backend' },
+  { id: 'fastify', label: 'Fastify', aliases: [], category: 'backend' },
+  { id: 'koa', label: 'Koa', aliases: [], category: 'backend' },
+  { id: 'deno', label: 'Deno', aliases: [], category: 'backend' },
+  { id: 'bun', label: 'Bun', aliases: [], category: 'backend' },
+  { id: 'laravel', label: 'Laravel', aliases: [], category: 'backend' },
+  { id: 'symfony', label: 'Symfony', aliases: [], category: 'backend' },
+  { id: 'trpc', label: 'tRPC', aliases: [], category: 'backend' },
+  { id: 'hasura', label: 'Hasura', aliases: [], category: 'backend' },
+  { id: 'prisma', label: 'Prisma', aliases: [], category: 'backend' },
+  { id: 'typeorm', label: 'TypeORM', aliases: [], category: 'backend' },
+  { id: 'sequelize', label: 'Sequelize', aliases: [], category: 'backend' },
+  { id: 'drizzle', label: 'Drizzle ORM', aliases: [], category: 'backend' },
+  { id: 'sqlalchemy', label: 'SQLAlchemy', aliases: [], category: 'backend' },
+  { id: 'knex', label: 'Knex', aliases: ['knex.js'], category: 'backend' },
+  { id: 'stripe', label: 'Stripe', aliases: [], category: 'backend' },
+
+  // Data stores, search, queues and warehouses
+  { id: 'sqlite', label: 'SQLite', aliases: [], category: 'data' },
+  { id: 'mssql', label: 'SQL Server', aliases: ['mssql'], category: 'data' },
+  { id: 'cassandra', label: 'Cassandra', aliases: ['apache cassandra'], category: 'data' },
+  { id: 'cockroachdb', label: 'CockroachDB', aliases: [], category: 'data' },
+  { id: 'firestore', label: 'Firestore', aliases: [], category: 'data' },
+  { id: 'firebase', label: 'Firebase', aliases: [], category: 'backend' },
+  { id: 'supabase', label: 'Supabase', aliases: [], category: 'data' },
+  { id: 'opensearch', label: 'OpenSearch', aliases: [], category: 'data' },
+  { id: 'algolia', label: 'Algolia', aliases: [], category: 'data' },
+  { id: 'solr', label: 'Solr', aliases: ['apache solr'], category: 'data' },
+  { id: 'rabbitmq', label: 'RabbitMQ', aliases: [], category: 'data' },
+  { id: 'kinesis', label: 'Kinesis', aliases: ['aws kinesis', 'amazon kinesis'], category: 'data' },
+  { id: 'sqs', label: 'Amazon SQS', aliases: ['aws sqs', 'sqs'], category: 'data' },
+  { id: 'bigquery', label: 'BigQuery', aliases: [], category: 'data' },
+  { id: 'redshift', label: 'Redshift', aliases: ['amazon redshift'], category: 'data' },
+  { id: 'databricks', label: 'Databricks', aliases: [], category: 'data' },
+  { id: 'dbt', label: 'dbt', aliases: [], category: 'data' },
+
+  // Cloud, infrastructure and observability vendors
+  { id: 'netlify', label: 'Netlify', aliases: [], category: 'cloud-infra' },
+  { id: 'cloudflare-workers', label: 'Cloudflare Workers', aliases: [], category: 'cloud-infra' },
+  { id: 'heroku', label: 'Heroku', aliases: [], category: 'cloud-infra' },
+  { id: 'pulumi', label: 'Pulumi', aliases: [], category: 'cloud-infra' },
+  { id: 'cloudformation', label: 'CloudFormation', aliases: ['aws cloudformation'], category: 'cloud-infra' },
+  { id: 'aws-cdk', label: 'AWS CDK', aliases: [], category: 'cloud-infra' },
+  { id: 'ansible', label: 'Ansible', aliases: [], category: 'cloud-infra' },
+  { id: 'helm', label: 'Helm', aliases: ['helm charts'], category: 'cloud-infra' },
+  { id: 'aws-lambda', label: 'AWS Lambda', aliases: ['amazon lambda'], category: 'cloud-infra' },
+  { id: 'aws-ecs', label: 'Amazon ECS', aliases: ['aws ecs', 'aws fargate', 'fargate'], category: 'cloud-infra' },
+  { id: 'aws-eks', label: 'Amazon EKS', aliases: ['aws eks', 'eks'], category: 'cloud-infra' },
+  { id: 'gitlab-ci', label: 'GitLab CI', aliases: ['gitlab ci/cd'], category: 'cloud-infra' },
+  { id: 'jenkins', label: 'Jenkins', aliases: [], category: 'cloud-infra' },
+  { id: 'circleci', label: 'CircleCI', aliases: [], category: 'cloud-infra' },
+  { id: 'buildkite', label: 'Buildkite', aliases: [], category: 'cloud-infra' },
+  { id: 'argo-cd', label: 'Argo CD', aliases: [], category: 'cloud-infra' },
+  { id: 'sentry', label: 'Sentry', aliases: [], category: 'cloud-infra' },
+  { id: 'new-relic', label: 'New Relic', aliases: [], category: 'cloud-infra' },
+  { id: 'honeycomb', label: 'Honeycomb', aliases: [], category: 'cloud-infra' },
+  { id: 'splunk', label: 'Splunk', aliases: [], category: 'cloud-infra' },
+  { id: 'opentelemetry', label: 'OpenTelemetry', aliases: [], category: 'cloud-infra' },
+  { id: 'logrocket', label: 'LogRocket', aliases: [], category: 'cloud-infra' },
+  { id: 'fastly', label: 'Fastly', aliases: [], category: 'cloud-infra' },
+
+  // Product analytics, experimentation and content
+  { id: 'launchdarkly', label: 'LaunchDarkly', aliases: [], category: 'practice' },
+  { id: 'optimizely', label: 'Optimizely', aliases: [], category: 'practice' },
+  { id: 'statsig', label: 'Statsig', aliases: [], category: 'practice' },
+  { id: 'amplitude', label: 'Amplitude', aliases: [], category: 'practice' },
+  { id: 'mixpanel', label: 'Mixpanel', aliases: [], category: 'practice' },
+  { id: 'google-analytics', label: 'Google Analytics', aliases: ['ga4'], category: 'practice' },
+  { id: 'contentful', label: 'Contentful', aliases: [], category: 'backend' },
+  { id: 'strapi', label: 'Strapi', aliases: [], category: 'backend' },
+  { id: 'wordpress', label: 'WordPress', aliases: [], category: 'backend' },
+
+  // AI and ML tooling beyond the corpus
+  { id: 'llamaindex', label: 'LlamaIndex', aliases: [], category: 'ai' },
+  { id: 'pinecone', label: 'Pinecone', aliases: [], category: 'ai' },
+  { id: 'weaviate', label: 'Weaviate', aliases: [], category: 'ai' },
+  { id: 'pgvector', label: 'pgvector', aliases: [], category: 'ai' },
+  { id: 'qdrant', label: 'Qdrant', aliases: [], category: 'ai' },
+  { id: 'milvus', label: 'Milvus', aliases: [], category: 'ai' },
+  { id: 'scikit-learn', label: 'scikit-learn', aliases: ['sklearn'], category: 'ai' },
+  { id: 'amazon-bedrock', label: 'Amazon Bedrock', aliases: ['aws bedrock'], category: 'ai' },
+  { id: 'vertex-ai', label: 'Vertex AI', aliases: [], category: 'ai' },
+  { id: 'dspy', label: 'DSPy', aliases: [], category: 'ai' },
+
+  // 3D and graphics
+  { id: 'babylonjs', label: 'Babylon.js', aliases: [], category: 'graphics-games' },
+  { id: 'pixijs', label: 'PixiJS', aliases: [], category: 'graphics-games' },
+  { id: 'webgpu', label: 'WebGPU', aliases: [], category: 'graphics-games' },
+  { id: 'unity', label: 'Unity', aliases: ['unity3d'], category: 'graphics-games' },
+
+  // Embedded and hardware: no records, so a gap row gets no "Closest" line
+  { id: 'embedded-systems', label: 'Embedded systems', aliases: ['embedded software', 'embedded development', 'embedded linux', 'embedded c'], category: 'embedded' },
+  { id: 'firmware', label: 'Firmware', aliases: [], category: 'embedded' },
+  { id: 'rtos', label: 'RTOS', aliases: ['real-time operating system', 'real-time operating systems', 'freertos'], category: 'embedded' },
+  { id: 'dsp', label: 'DSP', aliases: ['digital signal processing'], category: 'embedded' },
+  { id: 'jtag', label: 'JTAG', aliases: [], category: 'embedded' },
+  { id: 'alsa', label: 'ALSA', aliases: [], category: 'embedded' },
+  { id: 'board-bring-up', label: 'Board bring-up', aliases: ['hardware bring-up'], category: 'embedded' },
 ];
 
 const GAP_LOOKUP: ReadonlyMap<string, GapTerm> = new Map(

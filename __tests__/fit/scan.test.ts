@@ -55,6 +55,28 @@ describe('detectSkills: true positives', () => {
     ['Apollo Client', 'apollo-graphql'],
     ['software architecture', 'system-design'],
     ['Entity Component System', 'ecs'],
+    // The site's own stack (portfolio-site records) and the wider gap vocabulary.
+    ['Next.js App Router', 'nextjs'],
+    ['Tailwind CSS', 'tailwind-css'],
+    ['React Testing Library', 'react-testing-library'],
+    ['GitHub Actions workflows', 'github-actions'],
+    ['Playwright or Cypress', 'playwright'],
+    ['axe-core audits', 'accessibility-testing'],
+    ['Node.js/Express', 'express'],
+    ['Express.js APIs', 'express'],
+    ['Webpack, Vite or Rollup', 'rollup'],
+    ['Bootstrap or Material UI', 'bootstrap'],
+    ['React Query or SWR', 'react-query'],
+    ['Nx or Turborepo', 'nx'],
+    ['Deploy with Helm charts', 'helm'],
+    ['Pinecone or pgvector', 'pinecone'],
+    ['Agile methodologies', 'agile'],
+    ['Agile, Scrum', 'agile'],
+    ['working in agile teams', 'agile'],
+    ['Redux Toolkit', 'redux'],
+    ['strong SQL', 'sql'],
+    ['relational databases such as PostgreSQL', 'relational-databases'],
+    ['an RDBMS', 'relational-databases'],
   ])('%s → %s', (text, id) => {
     expect(ids(text)).toContain(id);
   });
@@ -115,6 +137,17 @@ describe('detectSkills: false positives', () => {
     ['ScalaTest', 'scala'],
     ['example.net', 'dotnet'],
     ['React Testing Library', 'react'],
+    ['Next.js', 'react'],
+    ['bootstrap a new team', 'bootstrap'],
+    ['parcel delivery', 'parcel'],
+    ['a weekly data rollup', 'rollup'],
+    ['emotional intelligence and empathy', 'emotion'],
+    ['team unity', 'unity'],
+    ['Express interest in the role', 'express'],
+    ['at the helm of a small team', 'helm'],
+    ['a career expo', 'expo'],
+    ['an agile, fast-moving startup', 'agile'],
+    ['stay agile as we grow', 'agile'],
   ])('%s ↛ %s', (text, id) => {
     expect(ids(text)).not.toContain(id);
   });

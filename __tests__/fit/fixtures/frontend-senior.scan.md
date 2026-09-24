@@ -2,7 +2,9 @@
 
 Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-**4.5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**5 of 5 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
 
 ## Must-have
 
@@ -12,8 +14,9 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
 - **Strong**: Deep knowledge of web accessibility (WCAG 2.1 AA)
-  Evidence: WCAG across 20+ React components (Indeed).
+  Evidence: WCAG across 20+ React components (Indeed), Cross-browser Playwright with axe scans (This portfolio site).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - Cross-browser Playwright with axe scans (This portfolio site): [sswe-portfolio on GitHub](https://github.com/Kaleb-kougl/sswe-portfolio)
 - **Strong**: Experience improving Core Web Vitals and frontend performance
   Evidence: 15% faster TTI for 680M+ users (Indeed), IBM Developer rebuild for SEO and vitals (IBM), Bundle cut from 6 MB to 300 KB (IBM).
   - 15% faster TTI for 680M+ users (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
@@ -22,9 +25,10 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 - **Strong**: Built or maintained a design system or shared component library
   Evidence: WCAG across 20+ React components (Indeed).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
-- **Partial**: Strong testing habits (Jest, React Testing Library)
-  Evidence: React Native features with Jest and Appium (J.B. Hunt).
+- **Strong**: Strong testing habits (Jest, React Testing Library)
+  Evidence: React Native features with Jest and Appium (J.B. Hunt), GitHub Actions CI with Vitest and Playwright (This portfolio site).
   - React Native features with Jest and Appium (J.B. Hunt): [Résumé: Application Development Intern, J.B. Hunt](https://kalebkougl-portfolio.vercel.app/#career)
+  - GitHub Actions CI with Vitest and Playwright (This portfolio site): [sswe-portfolio on GitHub](https://github.com/Kaleb-kougl/sswe-portfolio)
 
 ## Nice-to-have
 
@@ -32,10 +36,14 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   Evidence: Co-architected OneHost, led 6 engineers (Indeed), Led the OneHost micro-frontend migration (Indeed).
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+- **Partial**: Next.js and server-side rendering
+  Evidence: This site on Next.js App Router (This portfolio site).
+  - This site on Next.js App Router (This portfolio site): [sswe-portfolio on GitHub](https://github.com/Kaleb-kougl/sswe-portfolio)
 - **Strong**: GraphQL
-  Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM).
+  Evidence: Co-architected OneHost, led 6 engineers (Indeed), GolfTV GraphQL API on AWS (IBM), GolfTV API, PostgreSQL tuned for launch (IBM).
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Mentoring other engineers
   Evidence: Mentored ~12 engineers (Indeed).
   - Mentored ~12 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
@@ -43,8 +51,6 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 ## Not assessed
 
 - **Not assessed**: Excellent written communication
-  Not something my portfolio shows either way.
-- **Not assessed**: Next.js and server-side rendering
   Not something my portfolio shows either way.
 
 Generated by the fit checker at https://kalebkougl-portfolio.vercel.app/fit

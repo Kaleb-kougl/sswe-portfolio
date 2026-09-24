@@ -1,5 +1,5 @@
 import { CORPUS, normalizeSkill, skillKey, type Corpus, type Evidence } from '@/data/corpus';
-import { SKILL_CATEGORIES, SKILL_CATEGORY, gapTerm, type SkillCategory } from '@/data/corpus/skills';
+import { GAP_VOCABULARY, SKILL_CATEGORIES, SKILL_CATEGORY, gapTerm, type SkillCategory } from '@/data/corpus/skills';
 import { CAREER_START_YEAR, RESUME_DATA } from '@/data/resumeData';
 
 import {
@@ -11,8 +11,10 @@ import {
   type Requirement,
   type Verdict,
 } from './contract';
+import { judgeDegree, judgeDegreePaths, parseDegreeAsk, parseDegreePaths } from './degree';
 import { entryLabel, evidenceLabel } from './labels';
 import { missingParts, uncoveredQualifiers } from './qualifiers';
+import { detectSkills } from './scan';
 
 /**
  * DETERMINISTIC JUDGING — Phase 2b of docs/plans/2026-09-23-ai-features.md.
@@ -147,7 +149,17 @@ export function prepareExtraction(raw: Extraction): Extraction {
 export function rankEvidence(skills: readonly string[], corpus: Corpus = CORPUS): Evidence[] {
   if (skills.length === 0) return [];
   const wanted = new Set(skills);
-  return corpus.evidence
+  // The same sentence and tags under two roles (Redux, Agile at Indeed) is one
+  // piece of evidence: the first in corpus order stands for both, so it is never cited
+  // twice or counted twice toward the strong bar.
+  const seen = new Set<string>();
+  const distinct = corpus.evidence.filter((e) => {
+    const key = JSON.stringify([e.claim, [...e.skills].sort()]);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return distinct
     .map((evidence, order) => ({
       evidence,
       order,
@@ -206,7 +218,54 @@ export interface SkillAssessment {
   matches: Evidence[];
   /** Named skills with no record, as display names, in the order named. */
   uncovered: string[];
+  /** Named skills left out of `uncovered` because another example in their list has a record. */
+  excused: string[];
 }
+
+const GAP_LABELS: ReadonlyMap<string, string> = new Map(GAP_VOCABULARY.map((t) => [t.id, t.label]));
+
+/**
+ * Where a list of examples starts: "languages such as Python, Java, or
+ * Ruby", "(e.g., React, Vue)", "one of Go, Rust". Not "including", which as
+ * often means "all of these".
+ */
+const EXAMPLES = /\b(?:such as|e\.g\.,?|for example,?|for instance,?|one or more of|at least one of|one of|any of|either)\s+/gi;
+/** Where such a list stops: a clause break, a closing bracket, or the next list. */
+const LIST_END = /[;)]|\.(?:\s|$)|\bsuch as\b|\be\.g\./i;
+
+/**
+ * The example lists in a requirement's text, each as the canonical skill
+ * ids and gap labels it names: after "such as" / "e.g." / "one of", or a
+ * comma list of three or more with "or" before the last. A list is satisfied when one of its
+ * canonical skills has a record: "4+ years in languages such as Python,
+ * Java, or Ruby" asks for one such language, not all of them.
+ */
+export function exampleLists(text: string): { skills: string[]; others: string[] }[] {
+  const lists: { skills: string[]; others: string[] }[] = [];
+  EXAMPLES.lastIndex = 0;
+  for (let m = EXAMPLES.exec(text); m; m = EXAMPLES.exec(text)) {
+    const rest = text.slice(m.index + m[0].length);
+    const end = LIST_END.exec(rest);
+    const span = end ? rest.slice(0, end.index) : rest;
+    const found = detectSkills(span);
+    if (found.length < 2) continue;
+    lists.push(toList(found));
+  }
+  // "Ruby, Go, TypeScript, or React": three or more named skills, comma
+  // separated, with "or" before the last. A bare "X or Y" stays "both".
+  for (const clause of text.split(/;|\.(?:\s|$)/)) {
+    if (EXAMPLES_IN.test(clause) || !/,\s*(?:or|and\/or)\s+\S/i.test(clause) || /,\s*and\s+\S/i.test(clause)) continue;
+    const found = detectSkills(clause);
+    if (found.length >= 3) lists.push(toList(found));
+  }
+  return lists;
+}
+
+const EXAMPLES_IN = /\b(?:such as|e\.g\.|for example|for instance|one or more of|at least one of|one of|any of|either)\b/i;
+const toList = (found: readonly { id: string; gap: boolean }[]) => ({
+  skills: found.filter((f) => !f.gap).map((f) => f.id),
+  others: found.filter((f) => f.gap).map((f) => GAP_LABELS.get(f.id) ?? f.id),
+});
 
 /**
  * Per-skill coverage. A requirement's named skills are `skills` ∪
@@ -219,25 +278,34 @@ export interface SkillAssessment {
  *   other named skills have none.
  * - gap: no named skill has a record.
  *
- * "X or Y" requirements are understated by this ("React or Vue" is partial,
- * because Vue has no record). The extraction doesn't carry and/or, and
- * reading every list as "and" can only understate; reading it as "or" would
- * let one matched skill vouch for skills with no evidence. Understating is
- * the acceptable failure.
+ * A bare "X or Y" is understated by this ("React or Vue" is partial,
+ * because Vue has no record): reading every "or" as "any one" would let one
+ * matched skill vouch for skills with no evidence. Only an explicit list of
+ * examples ("such as", "e.g.", "one of") or a list of three or more ending
+ * "…, or X" (see `exampleLists`) is read as "any one": when one of its
+ * skills has a record, the rest of that list are `excused`, not `uncovered`.
  */
 export function assessSkills(
-  req: Pick<ExtractedRequirement, 'skills' | 'otherSkills'>,
+  req: Pick<ExtractedRequirement, 'skills' | 'otherSkills'> & { text?: string },
   corpus: Corpus = CORPUS,
 ): SkillAssessment {
   const labels = new Map(corpus.skills.map((s) => [s.id, s.label]));
   const matches = rankEvidence(req.skills, corpus);
-  const uncovered = [
-    ...req.skills.filter((s) => !matches.some((e) => e.skills.includes(s))).map((s) => labels.get(s) ?? s),
-    ...req.otherSkills,
-  ];
+  const covered = (s: string) => matches.some((e) => e.skills.includes(s));
+  const satisfied = (req.text ? exampleLists(req.text) : []).filter((list) => list.skills.some(covered));
+  const inSatisfied = (id: string | null, label: string) =>
+    satisfied.some((list) => (id !== null && list.skills.includes(id)) || list.others.includes(label));
+  const uncovered: string[] = [];
+  const excused: string[] = [];
+  for (const s of req.skills) {
+    if (covered(s)) continue;
+    const label = labels.get(s) ?? s;
+    (inSatisfied(s, label) ? excused : uncovered).push(label);
+  }
+  for (const label of req.otherSkills) (inSatisfied(null, label) ? excused : uncovered).push(label);
   const verdict =
     matches.length === 0 ? 'gap' : uncovered.length === 0 && meetsStrongBar(matches) ? 'strong' : 'partial';
-  return { verdict, matches, uncovered };
+  return { verdict, matches, uncovered, excused };
 }
 
 // --- Years ----------------------------------------------------------------
@@ -366,6 +434,12 @@ function fit(lead: string, items: string[], tail: string[]): string {
  *
  * The requirement's text can only lower a verdict (through a qualifier),
  * never raise one.
+ * - names no skills but asks for a degree ("Bachelor's in CS or equivalent
+ *   experience"): judged against the site's education (`degree.ts`), the
+ *   lower of that and the years verdict when the row also states years.
+ *   Degree-and-years paths ("BS and 8+ years, MS and 7+ years, or PhD and
+ *   4+ years") are met when any one path is; a line with a no-degree path
+ *   ("8+ years OR 4+ years with a PhD") is judged on its years alone.
  * - names neither: not_assessed, excluded from coverage.
  */
 export function judgeRequirement(
@@ -379,6 +453,20 @@ export function judgeRequirement(
   const yearsShort = req.minYears !== null && careerYears(now) < req.minYears;
 
   if (!namesSkills) {
+    const paths = parseDegreePaths(req.text);
+    if (paths) {
+      const judged = judgeDegreePaths(paths, careerYears(now), (n) => yearsSentence(n, now, false));
+      return { ...req, verdict: judged.verdict, evidenceIds: [], note: fit('', [], [judged.note]) };
+    }
+    const degreeAsk = parseDegreeAsk(req.text);
+    if (degreeAsk) {
+      const degree = judgeDegree(degreeAsk);
+      if (req.minYears === null) return { ...req, verdict: degree.verdict, evidenceIds: [], note: fit('', [], [degree.note]) };
+      const order: Record<string, number> = { gap: 0, partial: 1, strong: 2 };
+      const yearsVerdict = yearsShort ? 'gap' : 'strong';
+      const verdict = order[yearsVerdict] < order[degree.verdict] ? yearsVerdict : degree.verdict;
+      return { ...req, verdict, evidenceIds: [], note: fit('', [], [degree.note, years]) };
+    }
     if (req.minYears === null) {
       return { ...req, verdict: 'not_assessed', evidenceIds: [], note: NOT_ASSESSED_NOTE };
     }
@@ -391,7 +479,7 @@ export function judgeRequirement(
     return { ...req, verdict: capped ? 'partial' : 'strong', evidenceIds: [], note: fit('', [], [years, nothing, ...missing.sentences]) };
   }
 
-  const { verdict: skillVerdict, uncovered } = assessSkills(req, corpus);
+  const { verdict: skillVerdict, uncovered, excused } = assessSkills(req, corpus);
 
   if (skillVerdict === 'gap') {
     const closest = closestRelated(req, corpus);
@@ -409,11 +497,12 @@ export function judgeRequirement(
   const verdict: Verdict = skillVerdict === 'strong' && (yearsShort || qualifierShort) ? 'partial' : skillVerdict;
   const missingNames = [...uncovered, ...missing.nothingFor];
   const nothingFor = missingNames.length ? `Nothing for ${missingNames.join(', ')}.` : '';
+  const examples = excused.length ? 'Any one example counts.' : '';
   return {
     ...req,
     verdict,
     evidenceIds: evidence.map((e) => e.id),
-    note: fit('Evidence: ', evidence.map(cite), [nothingFor, ...missing.sentences, years]),
+    note: fit('Evidence: ', evidence.map(cite), [nothingFor, examples, ...missing.sentences, years]),
   };
 }
 

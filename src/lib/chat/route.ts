@@ -86,6 +86,7 @@ export const PROJECT_ALIASES: readonly { id: string; names: readonly string[] }[
   { id: 'hammerball', names: ['bonkball', 'bonk ball', 'hammerball', 'roblox game'] },
   { id: 'video-pipeline', names: ['video-pipeline', 'video pipeline', 'video creator', 'agentic ai video creator'] },
   { id: 'analytics-extension', names: ['analytics extension', 'chrome extension project', 'indeed analytics extension'] },
+  { id: 'portfolio-site', names: ['this portfolio site', 'portfolio site', 'sswe-portfolio', 'this site', 'this website'] },
   { id: 'acs-microdialysis', names: ['microdialysis', 'his paper', 'the paper', 'research paper', 'publication', 'analytical chemistry paper'] },
   { id: 'indeed-sr-swe', names: ['onehost', 'one host', 'indeed'] },
   { id: 'ibm-staff-swe', names: ['ibm'] },

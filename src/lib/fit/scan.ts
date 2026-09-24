@@ -48,6 +48,32 @@ const CASE_SENSITIVE: Readonly<Record<string, readonly string[]>> = {
   spark: ['Spark'],
   rails: ['Rails'],
   'unreal-engine': ['Unreal'],
+  // Tool names that are also ordinary words: "remix the brief", "bootstrap a
+  // team", "parcel delivery", "a data rollup", "at the helm", "emotional
+  // intelligence", "team unity", "a career expo", "ionic bonds".
+  remix: ['Remix'],
+  astro: ['Astro'],
+  emotion: ['Emotion'],
+  bootstrap: ['Bootstrap'],
+  parcel: ['Parcel'],
+  rollup: ['Rollup'],
+  mocha: ['Mocha'],
+  jasmine: ['Jasmine'],
+  enzyme: ['Enzyme'],
+  percy: ['Percy'],
+  capacitor: ['Capacitor'],
+  ionic: ['Ionic'],
+  electron: ['Electron'],
+  expo: ['Expo'],
+  express: ['Express'],
+  bun: ['Bun'],
+  helm: ['Helm'],
+  unity: ['Unity'],
+  amplitude: ['Amplitude'],
+  splunk: ['Splunk'],
+  // The methodology is capitalised; "an agile startup" is an adjective. The
+  // multi-word aliases ("agile principles", "agile teams") match in any case.
+  agile: ['Agile'],
 };
 
 /**
@@ -99,8 +125,20 @@ function migrationInContext(text: string, start: number, end: number): boolean {
   return !new RegExp(`^\\s+(?:of\\s+|the\\s+|our\\s+|all\\s+|existing\\s+)*${records.source}`, 'i').test(after);
 }
 
+/**
+ * "Express" and "Bun" as bare words are a framework and a runtime only in a
+ * tech context ("Node.js/Express", "with Bun"); "Express interest in…" is
+ * not. The spelled-out forms ("Express.js", "ExpressJS") always count.
+ */
+function toolWordInContext(text: string, start: number, end: number): boolean {
+  if (!/^(?:express|bun)$/i.test(text.slice(start, end))) return true;
+  return goInContext(text, start, end);
+}
+
 const ACCEPT: Readonly<Record<string, (text: string, start: number, end: number) => boolean>> = {
   go: goInContext,
+  express: toolWordInContext,
+  bun: toolWordInContext,
   'api-design': apiInContext,
   'codebase-migrations': migrationInContext,
 };
@@ -171,7 +209,8 @@ function compile(id: string, gap: boolean, terms: readonly string[]): ScanTerm[]
  * Compiled once per module load. Canonical skills match on id, label and
  * aliases. Gap terms match on label and aliases only: their ids are
  * internal keys, and some ("go", "rails", "spark") are ordinary words. A
- * word listed in CASE_SENSITIVE replaces any case-insensitive spelling of it.
+ * word listed in CASE_SENSITIVE replaces any case-insensitive spelling of it,
+ * for canonical skills ("Agile") as well as gap terms.
  */
 function gapTerms(id: string, terms: readonly string[]): string[] {
   const sensitive = CASE_SENSITIVE[id] ?? [];
@@ -180,10 +219,14 @@ function gapTerms(id: string, terms: readonly string[]): string[] {
 }
 
 /**
- * Names that contain a vocabulary word but aren't that skill, and that this
- * scan neither claims nor lists as a gap: "Next.js" is not a mention of
- * JavaScript ("JS"). They take part in the longest-match rule so the shorter
- * word inside them doesn't count, then produce no row.
+ * Names that contain a vocabulary word but aren't that skill: "Next.js" is
+ * not a mention of JavaScript ("JS"). They take part in the longest-match
+ * rule so the shorter word inside them doesn't count, then produce no row.
+ * Several are now vocabulary terms themselves (Next.js and React Testing
+ * Library are claimed; Nuxt, Express, D3 and the rest are gap terms); where
+ * the two match the same span the vocabulary term wins, because it is
+ * compiled first. `route.ts` still reads this list to keep them out of
+ * model proposals.
  */
 export const SCAN_SHADOW_TERMS: readonly string[] = [
   'Next.js',
@@ -199,7 +242,7 @@ export const SCAN_SHADOW_TERMS: readonly string[] = [
 const SHADOW = '';
 
 const SCAN_TERMS: readonly ScanTerm[] = [
-  ...SKILLS_TABLE.flatMap((s) => compile(s.id, false, [s.id, s.label, ...s.aliases])),
+  ...SKILLS_TABLE.flatMap((s) => compile(s.id, false, gapTerms(s.id, [s.id, s.label, ...s.aliases]))),
   ...GAP_VOCABULARY.flatMap((t) => compile(t.id, true, gapTerms(t.id, [t.label, ...t.aliases]))),
   ...compile(SHADOW, false, SCAN_SHADOW_TERMS),
 ];

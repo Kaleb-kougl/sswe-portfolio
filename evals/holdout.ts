@@ -11,6 +11,7 @@ import { FIXTURES, type Fixture, type Label } from '../__tests__/fit/fixtures';
  *
  * - `fixtures`: the 8 JDs in __tests__/fit/fixtures. The rules and these
  *   labels were written together: development data, never the bar.
+ * - `dev`: third-party postings the rules were tuned on (see `devSet`).
  * - `holdout`: `<name>.txt` + `<name>.labels.json` in a directory (default
  *   evals/cases/holdout, or FIT_HOLDOUT_DIR). Third-party postings,
  *   gitignored, labelled independently. Results that quote them belong
@@ -34,6 +35,18 @@ export const HOLDOUT_DIR = path.resolve(
 
 export function fixtureSet(): Fixture[] {
   return [...FIXTURES];
+}
+
+/**
+ * `dev`: third-party postings (evals/cases/dev, gitignored) that rules WERE
+ * tuned on, 2026-09-24: LinkedIn, Meta, Capgemini, Nextdoor, Mintlify,
+ * Build AI, Braze, CHAI, OneSchema. Development data like the fixtures,
+ * never the bar; kept out of the public repo because they're verbatim
+ * postings.
+ */
+export const DEV_DIR = path.resolve(__dirname, 'cases/dev');
+export function devSet(): Fixture[] {
+  return loadHoldout(DEV_DIR).labelled;
 }
 
 /** Every `<name>.txt` in `dir`; those with a labels file are scored, the rest only counted. */

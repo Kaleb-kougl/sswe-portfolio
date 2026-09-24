@@ -5,6 +5,7 @@ import { CORPUS, type Evidence } from '@/data/corpus';
 import { SITE_URL } from '@/data/site';
 import type { FitReport, Requirement, Verdict } from '@/lib/fit/contract';
 import { entryLabel, evidenceLabel } from '@/lib/fit/labels';
+import { levelLine } from '@/lib/fit/level';
 import { coverageLine, NO_COVERAGE_LINE, VERDICT_LABELS } from '@/lib/fit/markdown';
 import { SCAN_DISCLAIMER } from '@/lib/fit/scan';
 
@@ -159,6 +160,8 @@ export function FitReportView({
     headingRef?: Ref<HTMLHeadingElement>;
 }) {
   const groups = groupRows(report);
+  // Informational: the posting's stated level next to my latest title. Never a verdict.
+  const level_ = levelLine(report.role);
   const Heading = level === 2 ? 'h2' : 'h3';
   const isScan = report.mode === 'scan';
 
@@ -184,6 +187,12 @@ export function FitReportView({
       ) : report.requirements.length > 0 && !pending ? (
         <p data-testid="fit-coverage" className="fit-report__coverage fit-report__coverage--empty mt-3">
           {NO_COVERAGE_LINE}
+        </p>
+      ) : null}
+
+      {level_ ? (
+        <p data-testid="fit-level" className="fit-report__level mt-2">
+          {level_}
         </p>
       ) : null}
 

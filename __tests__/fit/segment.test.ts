@@ -198,6 +198,20 @@ describe('header lexicon', () => {
     ['Your background', 'requirements'],
     ['The ideal candidate', 'requirements'],
     ['Is this you?', 'requirements'],
+    ['Your Skills and Experience', 'requirements'],
+    ['Suggested Skills', 'preferred'],
+    ['You will Benefit from our Culture', 'benefits'],
+    ['Software Engineer, Product Responsibilities', 'responsibilities'],
+    ['Senior Engineer Minimum Qualifications', 'requirements'],
+    ["What You'll Bring to The Team", 'requirements'],
+    ['What you bring to the table', 'requirements'],
+    ['Essentials', 'requirements'],
+    ["What you'll work on here", 'responsibilities'],
+    ['Company Benefits', 'benefits'],
+    ['Why you should join our engineering team', 'about'],
+    ['You may be a good fit if you have (Must-have qualifications)', 'requirements'],
+    ['Strong candidates may also have experience with (Nice-to-have qualifications)', 'preferred'],
+    ['Rewards', 'benefits'],
     ['To be successful in this role, you will need', 'requirements'],
     ['Education and experience', 'requirements'],
     ['Preferred qualifications', 'preferred'],
@@ -280,7 +294,7 @@ describe('header lexicon', () => {
   });
 
   it('does not treat ordinary lines as headers', () => {
-    for (const line of ['Python', 'Kubernetes', 'Experience with Go', 'We build payments', 'Strong communication', 'Tech stack']) {
+    for (const line of ['Python', 'Kubernetes', 'Experience with Go', 'We build payments', 'Strong communication', 'Tech stack', 'Ability to translate business requirements', 'Translate Product Requirements']) {
       expect(classifyHeader(line), line).toBeUndefined();
     }
   });
@@ -631,6 +645,21 @@ describe('defaultDecision', () => {
     expect(keep({ section: 'requirements', text: "You'll need:" })).toBe(false);
     expect(keep({ section: 'requirements', text: "We don't expect you to tick every box." })).toBe(false);
     expect(keep({ section: 'requirements', text: 'x'.repeat(301) })).toBe(false);
+  });
+
+  it('keeps pay terms and tracking tags out of the requirements', () => {
+    const s = segmentJd(
+      'Requirements\n- 5+ years of React\n\nYour exact offer may vary depending on location. This role qualifies for a Total Rewards package with equity grants.\n#LI-Hybrid',
+    );
+    const requirements = s.segments.filter((x) => x.section === 'requirements').map((x) => x.text);
+    expect(requirements).toEqual(['5+ years of React']);
+  });
+
+  it('drops the role pitched to the reader', () => {
+    const pitch = 'As a member of our team, you will have the opportunity to work on web applications.';
+    expect(keep({ section: 'unknown', text: pitch, skills: ['web-applications'] })).toBe(false);
+    expect(keep({ section: 'requirements', text: "You'll have the chance to mentor engineers" })).toBe(false);
+    expect(keep({ section: 'requirements', text: 'You will have 5+ years of React', skills: ['react'], minYears: 5 })).toBe(true);
   });
 
   it('responsibilities: kept only if it names a skill, as nice', () => {

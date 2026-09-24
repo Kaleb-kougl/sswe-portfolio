@@ -220,7 +220,15 @@ function contentStems(text: string): string[] {
 interface Term {
   skill: CanonicalSkillId;
   stems: string[];
+  /**
+   * The term is itself one of the scan's shadow names ("React Testing
+   * Library", "Next.js"). Those names are blanked out of the text before
+   * matching, so their words never count as already accounted for.
+   */
+  shadowed: boolean;
 }
+
+const SHADOW_KEYS: ReadonlySet<string> = new Set(SCAN_SHADOW_TERMS.map((t) => t.toLowerCase().replace(/[^a-z0-9]+/g, '')));
 
 /**
  * Label (a parenthetical is its own term), aliases and id, as stem sets.
@@ -231,7 +239,11 @@ const TERMS: readonly Term[] = SKILLS_TABLE.flatMap((skill) => {
   const texts = [skill.label.replace(/\s*\(.*\)\s*/g, ' '), ...(/\((.+)\)/.exec(skill.label)?.slice(1) ?? []), ...skill.aliases, skill.id];
   return texts
     .filter((t) => !SCAN_STOP_TERMS.has(t.toLowerCase()))
-    .map((t) => ({ skill: skill.id as CanonicalSkillId, stems: [...new Set(contentStems(t.replace(/-/g, ' ')))] }))
+    .map((t) => ({
+      skill: skill.id as CanonicalSkillId,
+      stems: [...new Set(contentStems(t.replace(/-/g, ' ')))],
+      shadowed: SHADOW_KEYS.has(t.toLowerCase().replace(/[^a-z0-9]+/g, '')),
+    }))
     .filter((t) => t.stems.length > 0);
 });
 
@@ -251,7 +263,7 @@ const weight = (s: string) => (GENERIC_STEMS.has(s) ? 0.25 : 1) / (DOC_FREQ.get(
 
 /** Every stem of every term of these skills: words the alias scan already accounted for. */
 function stemsOf(skills: readonly string[]): Set<string> {
-  return new Set(TERMS.filter((t) => skills.includes(t.skill)).flatMap((t) => t.stems));
+  return new Set(TERMS.filter((t) => skills.includes(t.skill) && !t.shadowed).flatMap((t) => t.stems));
 }
 
 const HINTS: readonly { skill: CanonicalSkillId; stems: string[] }[] = Object.entries(PROPOSAL_HINTS).flatMap(([skill, phrases]) =>

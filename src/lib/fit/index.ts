@@ -20,6 +20,7 @@ export {
   closestRelated,
   coverageOf,
   assessSkills,
+  exampleLists,
   meetsStrongBar,
   NO_CLOSEST_CATEGORIES,
   selectEvidence,
@@ -58,7 +59,7 @@ export {
   selectCandidates,
   splitSentences,
 } from './segment';
-export { capRequirements, COMPANY_VOICE, defaultDecision, DESCRIPTION, isBlurb, mergeDecisions, mergeOne } from './merge';
+export { capRequirements, COMPANY_VOICE, defaultDecision, DESCRIPTION, isBlurb, mergeDecisions, mergeOne, PITCH } from './merge';
 export { analyzeWithDecisions, analyzeWithoutModel, reportCoverage } from './analyze';
 export {
   MAX_PROPOSALS,
@@ -76,3 +77,7 @@ export { pYesFrom, QUESTION_SYSTEM_PROMPT, questionMessages, QUESTIONS, SECTION_
 export type { Question, TopLogprob } from './questions';
 export { coverageLine, escapeMarkdown, NO_COVERAGE_LINE, reportToMarkdown, VERDICT_LABELS } from './markdown';
 export { entryLabel, EVIDENCE_LABELS, evidenceLabel } from './labels';
+export { degreeOptional, judgeDegree, judgeDegreePaths, parseDegreeAsk, parseDegreePaths } from './degree';
+export type { DegreeAsk, DegreeLevel, DegreePath } from './degree';
+export { levelLine, levelOf } from './level';
+export type { Level } from './level';

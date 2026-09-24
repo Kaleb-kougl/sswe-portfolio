@@ -86,16 +86,33 @@ export interface Testimonial {
  * linkedin.com/in/kaleb-kougl/details/recommendations (visibility: all
  * LinkedIn members).
  *
- * TWO OF FIVE, chosen because they corroborate claims this site already makes
- * rather than because they are the warmest. Alvaro managed the IBM work and
- * describes the React platform transformation and the mentoring; Thai worked
- * alongside it and names an artifact — the org-wide open-source clearance
- * tool — that appears nowhere else on this site or on the résumé.
+ * THREE OF SIX, chosen because they corroborate claims this site already makes
+ * rather than because they are the warmest. Caleb worked on the same Indeed
+ * team and is the only outside voice for the Indeed roles the summary leads
+ * with — planning through implementation, scoping, full-stack. Alvaro managed
+ * the IBM work and describes the React platform transformation and the
+ * mentoring; Thai worked alongside it and names an artifact — the org-wide
+ * open-source clearance tool — that appears nowhere else on this site or on
+ * the résumé.
+ *
+ * Newest first. CareerSection gives the first entry the full row, so the
+ * remaining two pair up in the two-column grid.
  *
  * Do not edit the quotes to read better. Trim them at sentence boundaries or
- * leave them alone.
+ * leave them alone. ONE EXCEPTION, made at Kaleb's request: two typos in
+ * Caleb's original are corrected here — "he was a effective communicator"
+ * reads "an", and "At indeed" is capitalized. Nothing else in that quote is
+ * changed.
  */
 export const TESTIMONIALS: readonly Testimonial[] = [
+  {
+    quote:
+      'He helped take these projects from planning to implementation. Kaleb did a great job in helping propose designs, scoping the work, and distributing the tasks in such a way that the team could efficiently tackle the features - delivering them within the deadlines based on scope. At Indeed we are expected to be full-stack and Kaleb demonstrated this in all the projects we worked on together. In addition, he was an effective communicator - no tasks ever got stale or stuck.',
+    name: 'Caleb Cheatham',
+    title: 'Engineer, Indeed',
+    relationship: 'worked with Kaleb on the same team',
+    date: 'September 2026',
+  },
   {
     quote:
       'His React knowledge and the way he drove the effort of transforming our platform into a React app allowed for much more flexibility and reliability than we had seen previously. \u2026 He assisted many others on our team in getting up to speed on new technologies and codebase.',
@@ -124,6 +141,8 @@ export const SKILLS = [
   'HTML5',
   'CSS3',
   'PostgreSQL',
+  'Redux',
+  'Agile',
   'Web Applications',
   'Component libraries',
   'Datadog',
@@ -232,6 +251,13 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Drove the successful execution of the migration to the Luxon library for standardized timezone handling, a strategic move that unblocked critical integration with the Horizon platform.',
       'Mentored ~12 engineers as team/project lead, resulting in promotions and improved onboarding.',
       'Operationalized Frontend SLOs with SRE and Product, reducing customer\u2011facing incidents for consumer features.',
+      /*
+       * Stated by Kaleb, 2026-09-24 ("I used it at Indeed"). Not on the one-page
+       * résumé; bullets aren't rendered by CareerSection, so these feed the
+       * corpus (/fit, llms.txt, MCP) without changing the career cards.
+       */
+      'Built React features with Redux for application state.',
+      'Delivered work in Agile teams, following Agile principles (sprint planning, standups, retrospectives).',
     ],
     controls: ['isModuleFederationEnabled', 'isSloIncidentSimulated'],
   },
@@ -249,6 +275,13 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Cut ad campaign troubleshooting time 20% for Customer Support by shipping a TypeScript/Python Manifest V3 GenAI analytics Chrome extension.',
       'Cut Time to Interactive 15% in the apply flow, serving 680M+ users.',
       'Spearheaded efforts to implement (WCAG) web accessibility standards across 20+ reusable React components consumed by 5 teams.',
+      /*
+       * Stated by Kaleb, 2026-09-24 ("I used it at Indeed"). Not on the one-page
+       * résumé; bullets aren't rendered by CareerSection, so these feed the
+       * corpus (/fit, llms.txt, MCP) without changing the career cards.
+       */
+      'Built React features with Redux for application state.',
+      'Delivered work in Agile teams, following Agile principles (sprint planning, standups, retrospectives).',
     ],
   },
   'ibm-staff-swe': {
@@ -287,6 +320,11 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     bullets: [
       'Delivered a modernized customer service agent portal (30% faster API response).',
       'Improved data reliability for client integrations through GolfTV Graph API (Apollo GraphQL) on AWS.',
+      /*
+       * The current résumé's own bullet (2026 PDF). The line above predates it
+       * and leaves out the database; this one is the corpus's PostgreSQL record.
+       */
+      'Built the GolfTV Apollo GraphQL API on AWS for worldwide launch, tuning its PostgreSQL queries for launch traffic.',
     ],
   },
   'jbhunt-intern': {
@@ -476,6 +514,29 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
     ],
     controls: ['githubLink', 'combatSystemPattern', 'combatSystemFireRate', 'combatSystemBloom', 'combatSystemPoolSize'],
     skills: ['React Three Fiber', 'Three.js', 'WebGL', 'TypeScript'],
+  },
+  'portfolio-site': {
+    fileId: 'portfolio-site',
+    title: 'This portfolio site',
+    company: 'Open Source \u00b7 sswe-portfolio',
+    dates: '',
+    type: 'project',
+    headline: 'The site you are reading, with CI that gates it.',
+    summary:
+      'This site: Next.js App Router and React, tested with Vitest and Playwright, and gated by a GitHub Actions pipeline on every pull request.',
+    /*
+     * SOURCING. Read off the repository, which is public: package.json for the
+     * stack and versions, .github/workflows/ci.yml for the pipeline, and
+     * e2e/axe.spec.ts plus playwright.config.ts for the browser and
+     * accessibility runs. Nothing here is a result or a metric, so there is
+     * nothing to go stale beyond the version numbers.
+     */
+    bullets: [
+      'Built this site with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS v4. Source: https://github.com/Kaleb-kougl/sswe-portfolio',
+      'Every pull request runs a GitHub Actions CI/CD pipeline: ESLint, Vitest and React Testing Library unit tests, a production Next.js build, a homepage JavaScript budget, and Playwright end-to-end tests.',
+      'Playwright runs the end-to-end suite in Chromium, WebKit and Firefox, with axe-core scans against WCAG 2.1 AA on the homepage and the fit checker.',
+    ],
+    skills: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Vitest', 'Playwright', 'GitHub Actions'],
   },
   'acs-microdialysis': {
     fileId: 'acs-microdialysis',

@@ -5,6 +5,7 @@ import { CORPUS, type Corpus, type Evidence } from '@/data/corpus';
 import { CAREER_START_YEAR } from '@/data/resumeData';
 import { FitReport, MAX_REQUIREMENTS, type ExtractedRequirement, type Extraction, type Requirement } from '@/lib/fit/contract';
 import {
+  exampleLists,
   careerYears,
   closestRelated,
   coverageOf,
@@ -156,6 +157,51 @@ describe('verdict rules', () => {
     const row = judgeOne({ text: 'React or Vue', skills: ['react'], otherSkills: ['Vue'] });
     expect(row.verdict).toBe('partial');
     expect(row.note).toContain('Nothing for Vue.');
+  });
+});
+
+describe('example lists', () => {
+  it('reads "such as … or …" as any one of the examples', () => {
+    const row = judgeOne({
+      text: 'Programming experience in languages such as Python, Java, or Ruby.',
+      skills: ['python'],
+      otherSkills: ['Java', 'Ruby'],
+    });
+    expect(row.verdict).toBe('strong');
+    expect(row.note).not.toMatch(/Nothing for/);
+    expect(row.note).toMatch(/Any one example counts\./);
+  });
+
+  it('holds each list to its own examples', () => {
+    const row = judgeOne({
+      text: 'Languages such as C++, Java, or Kotlin, and scripting languages such as Python or Ruby',
+      skills: ['python'],
+      otherSkills: ['C++', 'Java', 'Kotlin', 'Ruby'],
+    });
+    expect(row.verdict).toBe('partial');
+    expect(row.note).toMatch(/Nothing for C\+\+, Java, Kotlin\./);
+  });
+
+  it('reads a comma list of three or more ending "or X" as any one', () => {
+    const row = judgeOne({
+      text: 'Experience with Ruby, Java, TypeScript, or Python',
+      skills: ['typescript', 'python'],
+      otherSkills: ['Ruby', 'Java'],
+    });
+    expect(row.verdict, row.note).toBe('strong');
+    expect(exampleLists('Experience with Ruby, Go, and Python')).toEqual([]);
+  });
+
+  it('still reads a bare "X or Y" as both', () => {
+    const row = judgeOne({ text: 'Python or Java', skills: ['python'], otherSkills: ['Java'] });
+    expect(row.verdict).toBe('partial');
+  });
+
+  it('finds the lists and the skills in each', () => {
+    expect(exampleLists('Languages such as Python, Java, or Ruby; strong SQL')).toEqual([
+      { skills: ['python'], others: ['Java', 'Ruby'] },
+    ]);
+    expect(exampleLists('Experience including React and Redux')).toEqual([]);
   });
 });
 
@@ -445,8 +491,8 @@ describe('notes', () => {
       expect(closest.evidence.skills.some((s) => SKILL_CATEGORY[s] === closest.category), name).toBe(true);
       expect(NO_CLOSEST_CATEGORIES.has(closest.category)).toBe(false);
     }
-    // Data work has no records, so Kafka gets no Closest line.
-    expect(closestRelated({ skills: [], otherSkills: ['Kafka'] }, CORPUS)).toBeUndefined();
+    // Data work's one record is the GolfTV PostgreSQL tuning, so that is Kafka's Closest line.
+    expect(closestRelated({ skills: [], otherSkills: ['Kafka'] }, CORPUS)?.evidence.id).toBe('ibm-swe.golftv-postgresql');
   });
 
   it('uses a broad category only through a narrower one the requirement also names', () => {
@@ -469,7 +515,7 @@ describe('notes', () => {
 
   it('reads plainly against the real corpus', () => {
     const notes = (r: Partial<ExtractedRequirement>) => judgeRequirement(req(r), CORPUS, NOW).note;
-    expect(notes({ skills: ['wcag'] })).toMatchInlineSnapshot(`"Evidence: WCAG across 20+ React components (Indeed)."`);
+    expect(notes({ skills: ['wcag'] })).toMatchInlineSnapshot(`"Evidence: WCAG across 20+ React components (Indeed), Cross-browser Playwright with axe scans (This portfolio site)."`);
     expect(notes({ skills: ['module-federation'] })).toMatchInlineSnapshot(
       `"Evidence: Co-architected OneHost, led 6 engineers (Indeed), Led the OneHost micro-frontend migration (Indeed)."`,
     );
@@ -477,12 +523,12 @@ describe('notes', () => {
     expect(notes({ otherSkills: ['Go'] })).toMatchInlineSnapshot(
       `"Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM)."`,
     );
-    expect(notes({ otherSkills: ['Kafka'] })).toMatchInlineSnapshot(`"Not in my work yet."`);
+    expect(notes({ otherSkills: ['Kafka'] })).toMatchInlineSnapshot(`"Not in my work yet. Closest data work: GolfTV API, PostgreSQL tuned for launch (IBM)."`);
     expect(notes({ minYears: 10 })).toMatchInlineSnapshot(
       `"8 years in software since 2018, including an internship (2026 − 2018), short of the 10 asked."`,
     );
     expect(notes({ skills: ['node-js', 'typescript'] })).toMatchInlineSnapshot(`"Evidence: GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), Node.js video upload pipeline (IBM), Pattern system of pure functions (r3f-projectiles)."`);
-    expect(notes({ skills: ['react', 'typescript'], otherSkills: ['Next.js'], minYears: 12 })).toMatchInlineSnapshot(`"Evidence: Hand-written CSS value parsers (roblox-css). Nothing for Next.js. Years: 8 years in software since 2018, including an internship (2026 − 2018), under the 12 asked, so at most partial."`);
+    expect(notes({ skills: ['react', 'typescript'], otherSkills: ['Next.js'], minYears: 12 })).toMatchInlineSnapshot(`"Evidence: Hand-written CSS value parsers (roblox-css). Years: 8 years in software since 2018, including an internship (2026 − 2018), under the 12 asked, so at most partial."`);
     expect(notes({ otherSkills: ['Kubernetes'] })).toMatchInlineSnapshot(`"Not in my work yet."`);
   });
 });

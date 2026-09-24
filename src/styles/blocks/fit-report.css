@@ -36,6 +36,11 @@
   @apply block font-ui text-sm font-medium text-muted;
 }
 
+/* The posting's stated level next to my latest title (level.ts). */
+.fit-report__level {
+  @apply max-w-[64ch] font-ui text-sm font-medium text-body;
+}
+
 /* The scan disclaimer / model explanation under the heading. */
 .fit-report__lede {
   @apply max-w-[64ch] font-ui text-sm leading-relaxed text-body;

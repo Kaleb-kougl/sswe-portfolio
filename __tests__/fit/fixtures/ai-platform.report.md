@@ -4,6 +4,8 @@ Checked against Kaleb Kougl's portfolio. A model picked the requirements from th
 
 **5.5 of 7 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
 
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
+
 ## Must-have
 
 - **Strong**: 5+ years of software engineering

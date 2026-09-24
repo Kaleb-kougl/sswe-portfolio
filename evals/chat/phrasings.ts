@@ -207,7 +207,8 @@ export const PHRASINGS: readonly Phrasing[] = [
   { message: "He's the principal architect of OneHost, isn't he?", expect: 'project', project: 'indeed-sr-swe', split: 'holdout2' },
   { message: 'How big were the teams he led?', expect: 'evidence', split: 'holdout2' },
   { message: 'Does he know Clojure?', expect: 'unknown-skill', split: 'holdout2' },
-  { message: 'Any Next.js?', expect: 'unknown-skill', split: 'holdout2' },
+  // Was 'unknown-skill' until the site's own stack got records (portfolio-site).
+  { message: 'Any Next.js?', expect: 'evidence', skills: ['nextjs'], split: 'holdout2' },
   { message: 'can I email him', expect: 'profile', topic: 'contact', split: 'holdout2' },
   { message: 'What city is he in?', expect: 'profile', topic: 'location', split: 'holdout2' },
   { message: 'is kaleb currently employed or available', expect: 'profile', topic: 'availability', split: 'holdout2' },

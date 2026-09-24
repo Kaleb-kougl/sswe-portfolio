@@ -2,7 +2,9 @@
 
 Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are the job description's own lines. Must-have and nice-to-have come only from its section headers, so a JD without them gets no coverage score, and skills are matched from engineering terms only. The verdicts are computed from the evidence below.
 
-**5 of 6 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+**5.5 of 6 must-haves covered** (strong counts 1, partial counts ½; not-assessed rows are left out)
+
+Level: Senior, the same as my most recent title (Senior Software Engineer, Indeed).
 
 ## Must-have
 
@@ -14,29 +16,31 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
 - **Strong**: React on the frontend
-  Evidence: WCAG across 20+ React components (Indeed), IBM Developer rebuild for SEO and vitals (IBM), Full-stack single-click workflow (Indeed Analytics Extension).
+  Evidence: WCAG across 20+ React components (Indeed), React features with Redux (Indeed), IBM Developer rebuild for SEO and vitals (IBM).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - React features with Redux (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-  - Full-stack single-click workflow (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
-- **Gap**: PostgreSQL schema design and query tuning
-  Not in my work yet.
+- **Partial**: PostgreSQL schema design and query tuning
+  Evidence: GolfTV API, PostgreSQL tuned for launch (IBM).
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Designing REST and GraphQL APIs
   Evidence: GolfTV GraphQL API on AWS (IBM), Co-architected OneHost, led 6 engineers (Indeed), Pattern system of pure functions (r3f-projectiles).
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Co-architected OneHost, led 6 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
 - **Strong**: Shipping on AWS with CI/CD
-  Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM).
+  Evidence: Led the OneHost micro-frontend migration (Indeed), GolfTV GraphQL API on AWS (IBM), GolfTV API, PostgreSQL tuned for launch (IBM).
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - GolfTV API, PostgreSQL tuned for launch (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
 
 ## Nice-to-have
 
 - **Strong**: You'll build features end to end across our Node.js services and React frontend.
-  Evidence: WCAG across 20+ React components (Indeed), Node.js video upload pipeline (IBM), IBM Developer rebuild for SEO and vitals (IBM).
+  Evidence: WCAG across 20+ React components (Indeed), Node.js video upload pipeline (IBM), React features with Redux (Indeed).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - Node.js video upload pipeline (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
-  - IBM Developer rebuild for SEO and vitals (IBM): [Résumé: Software Engineer II, IBM](https://kalebkougl-portfolio.vercel.app/#career)
+  - React features with Redux (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
 - **Partial**: Microservices at scale
   Evidence: Stateless bridge to microservices (Indeed Analytics Extension). No evidence at that scale.
   - Stateless bridge to microservices (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
