@@ -13,7 +13,7 @@ import {
 } from './contract';
 import { judgeDegree, judgeDegreePaths, parseDegreeAsk, parseDegreePaths } from './degree';
 import { entryLabel, evidenceLabel } from './labels';
-import { missingParts, uncoveredQualifiers } from './qualifiers';
+import { fromEmployment, missingParts, uncoveredQualifiers } from './qualifiers';
 import { detectSkills } from './scan';
 
 /**
@@ -176,31 +176,44 @@ export function rankEvidence(skills: readonly string[], corpus: Corpus = CORPUS)
  * record gets one in the list when there's room, so "Node.js and TypeScript"
  * shows the Node.js record rather than two TypeScript ones.
  *
- * Greedy: each pick is the record covering the most still-unrepresented
- * skills, ties going to `rankEvidence` order (more named skills overall,
- * then a metric, then corpus order). Once every covered skill is
- * represented, the remaining slots follow `rankEvidence` order.
+ * Work from a job comes first (`fromEmployment`: Indeed, IBM, J.B. Hunt and
+ * the internal Indeed tool): a reader weighs a role before a side project,
+ * so a side project is cited only for a skill no job record covers, or to
+ * fill a slot no job record is left for. "React and TypeScript" cites the
+ * Indeed WCAG components and the Analytics Extension, not the roblox-css
+ * parsers, even though the parsers are the one record tagged with both.
+ *
+ * Greedy, in two passes (job records, then all): each pick is the record
+ * covering the most still-unrepresented skills, ties going to `rankEvidence`
+ * order (more named skills overall, then a metric, then corpus order). The
+ * remaining slots take job records, then the rest, in `rankEvidence` order.
  */
 export function selectEvidence(skills: readonly string[], corpus: Corpus = CORPUS): Evidence[] {
   const ranked = rankEvidence(skills, corpus);
+  const jobs = ranked.filter(fromEmployment);
+  const ordered = [...jobs, ...ranked.filter((e) => !fromEmployment(e))];
   const picked: Evidence[] = [];
   const unrepresented = new Set(skills.filter((s) => ranked.some((e) => e.skills.includes(s))));
-  while (picked.length < MAX_EVIDENCE && unrepresented.size > 0) {
-    let best: Evidence | undefined;
-    let bestGain = 0;
-    for (const e of ranked) {
-      if (picked.includes(e)) continue;
-      const gain = e.skills.filter((s) => unrepresented.has(s)).length;
-      if (gain > bestGain) {
-        best = e;
-        bestGain = gain;
+  const cover = (pool: readonly Evidence[]) => {
+    while (picked.length < MAX_EVIDENCE && unrepresented.size > 0) {
+      let best: Evidence | undefined;
+      let bestGain = 0;
+      for (const e of pool) {
+        if (picked.includes(e)) continue;
+        const gain = e.skills.filter((s) => unrepresented.has(s)).length;
+        if (gain > bestGain) {
+          best = e;
+          bestGain = gain;
+        }
       }
+      if (!best) return;
+      picked.push(best);
+      best.skills.forEach((s) => unrepresented.delete(s));
     }
-    if (!best) break;
-    picked.push(best);
-    best.skills.forEach((s) => unrepresented.delete(s));
-  }
-  for (const e of ranked) {
+  };
+  cover(jobs);
+  cover(ranked);
+  for (const e of ordered) {
     if (picked.length >= MAX_EVIDENCE) break;
     if (!picked.includes(e)) picked.push(e);
   }

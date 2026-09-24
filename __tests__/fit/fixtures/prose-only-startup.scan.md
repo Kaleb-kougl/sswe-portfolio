@@ -11,10 +11,10 @@ No coverage score: the must-haves couldn't be identified, or most of them are ou
   - Agent portal, 30% faster API response (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Full-stack single-click workflow (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
 - **Strong**: You write TypeScript every day and know React well.
-  Evidence: Hand-written CSS value parsers (roblox-css), WCAG across 20+ React components (Indeed), GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension).
-  - Hand-written CSS value parsers (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)
+  Evidence: WCAG across 20+ React components (Indeed), GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension), React features with Redux (Indeed).
   - WCAG across 20+ React components (Indeed): [Résumé: Software Engineer II, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
   - GenAI Chrome extension, 20% faster troubleshooting (Indeed Analytics Extension): [Work: Indeed Analytics Extension (internal, no public link)](https://kalebkougl-portfolio.vercel.app/#work)
+  - React features with Redux (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
 - **Strong**: Ideally you have also run a small team or mentored junior engineers.
   Evidence: Mentored ~12 engineers (Indeed).
   - Mentored ~12 engineers (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
