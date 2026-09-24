@@ -209,6 +209,31 @@ With numbered items, the best model reached 29/70. Letting the model decide only
 6. **Alternative for synonyms:** a tiny embedding model (about 25 MB, transformers.js) matches phrases to the vocabulary above a strict similarity threshold. It's deterministic and small enough to consider for everyone; it could also back better "Closest" links.
 7. **Rules:** each variant is scored against code on the holdout set. The flag turns on only if one variant wins by a margin larger than the noise, and after re-checking the gate, bench and watchdog on real devices.
 
+### 2g. Held-out result and the code-improvement loop
+
+**Held-out rematch (2026-09-24):** 12 real postings, labelled independently (143 labels) by an agent that never saw the rules. Postings, labels and per-case results stay local and gitignored.
+
+| | Download | Rows matching labels | Keep/drop correct | Spurious rows |
+|---|---|---|---|---|
+| Code only | 0 | **77/143** | **285/380** | 61 |
+| v1 (one JSON answer), best | 695 MB | 67 | 180–225 | 127 |
+| v2 routed yes/no, τ=0.9 | 278–869 MB | 77–78 | 282–286 | 61–64 |
+| v2, fixture-tuned τ | 278–869 MB | 80–81 | 248–371 | up to 90 |
+| Embedding matcher (skills) | 24 MB | – | – | 45 wrong additions (26% precision) |
+
+- **Decision:** no model ships. Private mode stays off and the embedding matcher is unused by any page (commits `feat(fit): routed yes/no…`, `feat(fit): embedding…`).
+- **What it showed:** code is much weaker on unseen postings (54% rows vs 79% on fixtures). Segmentation missed none of the 143 labels, so the losses come from keep/drop and priority. The gains are in code.
+
+**Code-improvement loop, with the split declared before looking at per-JD results:**
+- **Dev (6):** adobe, chalk, discord, sift, point-predictive, chai. These live in `evals/cases/holdout/` and may be read and tuned on.
+- **Test (6):** conduit, upstart, linkedin, openai, ironclad, nvidia. These live in `evals/cases/holdout-test/`, **must not be read** by whoever changes the rules, and are scored once at the end by someone else.
+- **Targets:**
+  - fewer spurious rows (duty lines, intros, "what success looks like")
+  - priority on ambiguous headings ("You might thrive if…")
+  - plain word-form aliases ("mentored", "APIs", "Migrate")
+- **Guard:** the fixtures' pinned baseline must not regress.
+- **Rule:** a change ships if it improves dev without hurting fixtures, and the one-time test score is reported as is, good or bad.
+
 ## Phase 3: eval gates
 
 **Golden set (`evals/cases/`, about 28):** the same groups as before: strong (6), partial/poor (6), non-engineering (2), injection (6), MCP read tools (8). Each fit case is labeled with its requirements (text, priority, skills) and expected verdicts for 3–5 key ones.
