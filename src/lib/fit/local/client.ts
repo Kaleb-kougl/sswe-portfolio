@@ -12,7 +12,7 @@ import {
   type PrivateModeOffer,
   type StorageCheck,
 } from './gate';
-import { LOCAL_MODEL } from './model';
+import { LOCAL_MODEL, type LocalModelId } from './model';
 import {
   INITIAL_SESSION,
   reduceSession,
@@ -46,7 +46,8 @@ import {
  *   session.run()            step 6: the worker's watchdog; too slow → latch
  */
 
-export { LOCAL_MODEL, LOCAL_MODEL_ID, formatBytes } from './model';
+export { LOCAL_MODEL, LOCAL_MODEL_ID, LOCAL_MODELS, formatBytes } from './model';
+export type { LocalModelId } from './model';
 export type { BenchResult, LoadProgress, RunStats, SessionState, ProbeResult, PrivateModeOffer, StorageCheck, BenchVerdict };
 
 export type WorkerFactory = () => Worker;
@@ -206,8 +207,14 @@ interface Pending {
   onMessage?: (msg: FromWorker) => void;
 }
 
-/** Created when the visitor presses the button; the worker starts on first use. */
-export function createLocalFitSession(opts: { createWorker?: WorkerFactory; storage?: Storage } = {}): LocalFitSession {
+/**
+ * Created when the visitor presses the button; the worker starts on first use.
+ * `modelId` is for the dev harness and the model comparison (evals/local);
+ * the /fit page leaves it out and gets `LOCAL_MODEL_ID`.
+ */
+export function createLocalFitSession(
+  opts: { createWorker?: WorkerFactory; storage?: Storage; modelId?: LocalModelId } = {},
+): LocalFitSession {
   const createWorker = opts.createWorker ?? defaultRuntimeWorker;
   let worker: Worker | null = null;
   let disposed = false;
@@ -304,7 +311,7 @@ export function createLocalFitSession(opts: { createWorker?: WorkerFactory; stor
     },
     async load(onProgress) {
       const msg = await request<FromWorker & { type: 'loaded' }>(
-        (id) => ({ type: 'load', id }),
+        (id) => (opts.modelId ? { type: 'load', id, modelId: opts.modelId } : { type: 'load', id }),
         (m) => {
           if (m.type === 'progress') onProgress?.(m.progress);
         },

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import type { Requirement } from '@/lib/fit/contract';
-import type { LocalFitSession, ProbeOutcome } from '@/lib/fit/local/client';
+import type { FitReport, Requirement, SegmentDecision } from '@/lib/fit/contract';
+import type { LocalFitSession, LocalModelId, ProbeOutcome, RunStats } from '@/lib/fit/local/client';
 
 type ClientModule = typeof import('@/lib/fit/local/client');
 
@@ -21,6 +21,38 @@ Requirements:
 - Accessibility (WCAG 2.1 AA) experience
 - Experience with Go or Kubernetes is a plus
 - Excellent communication skills`;
+
+/** One model run, as the model comparison (evals/local) records it. */
+export interface EvalRun {
+  report: FitReport;
+  stats: RunStats | null;
+  decisions: SegmentDecision[] | null;
+  rows: { index: number; atMs: number; row: Requirement }[];
+  wallMs: number;
+}
+
+/**
+ * `window.__fitEval`: a scripting hook for evals/local/compare.eval.ts, so
+ * Playwright can drive real model runs without clicking. Dev-only, like the
+ * page itself (the route 404s in production builds).
+ */
+export interface FitEvalHook {
+  load(modelId?: LocalModelId): Promise<{ fromCache: boolean; elapsedMs: number; modelId: string }>;
+  run(jd: string): Promise<EvalRun>;
+  dispose(): void;
+}
+
+declare global {
+  interface Window {
+    __fitEval?: FitEvalHook;
+  }
+}
+
+/** `?model=<id>` picks a model from LOCAL_MODELS for the buttons below. */
+function modelFromUrl(): LocalModelId | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return (new URLSearchParams(window.location.search).get('model') as LocalModelId | null) ?? undefined;
+}
 
 export function Harness() {
   const [jd, setJd] = useState(SAMPLE_JD);
@@ -50,9 +82,47 @@ export function Harness() {
     };
   }, []);
 
+  useEffect(() => {
+    let evalSession: LocalFitSession | null = null;
+    let evalModel: LocalModelId | undefined;
+    window.__fitEval = {
+      async load(modelId) {
+        const c = await loadClient();
+        if (!evalSession || evalModel !== modelId) {
+          evalSession?.dispose();
+          evalSession = c.createLocalFitSession({ modelId });
+          evalModel = modelId;
+        }
+        const r = await evalSession.load();
+        return { ...r, modelId: modelId ?? c.LOCAL_MODEL_ID };
+      },
+      async run(jd) {
+        if (!evalSession) throw new Error('load() first');
+        const rows: EvalRun['rows'] = [];
+        const t0 = performance.now();
+        const report = await evalSession.run(jd, (row, index) => rows.push({ index, atMs: performance.now() - t0, row }));
+        return {
+          report,
+          stats: evalSession.state.stats,
+          decisions: evalSession.state.decisions ?? null,
+          rows,
+          wallMs: performance.now() - t0,
+        };
+      },
+      dispose() {
+        evalSession?.dispose();
+        evalSession = null;
+      },
+    };
+    return () => {
+      evalSession?.dispose();
+      delete window.__fitEval;
+    };
+  }, []);
+
   const getSession = async () => {
     const c = await loadClient();
-    session.current ??= c.createLocalFitSession();
+    session.current ??= c.createLocalFitSession({ modelId: modelFromUrl() });
     return session.current;
   };
 

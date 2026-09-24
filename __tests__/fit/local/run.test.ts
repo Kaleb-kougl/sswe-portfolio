@@ -1,26 +1,59 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import type { ExtractedRequirement } from '@/lib/fit/contract';
-import { judge, judgeRequirement } from '@/lib/fit/judge';
+import type { Segment, SegmentDecision, SegmentedJd } from '@/lib/fit/contract';
+import { judge, judgeRequirement, prepareExtraction } from '@/lib/fit/judge';
+import { reportCoverage } from '@/lib/fit/analyze';
+import { defaultDecision, mergeDecisions, mergeOne } from '@/lib/fit/merge';
+import { decisionsMaxTokens } from '@/lib/fit/local/grammar';
 import type { FromWorker } from '@/lib/fit/local/protocol';
 import { classifyError, runExtraction, type RunDeps, type RunEngine, type StreamChunk } from '@/lib/fit/local/run';
 
 /**
- * The worker's run logic with a scripted engine: the real stream splitting,
- * contract parsing, row posting, watchdog and final judging, minus WebGPU.
+ * The worker's run logic with a scripted engine and a small, hand-built
+ * segmentation: the real merge, stream splitting, decision parsing, row
+ * posting, fallback, watchdog and final judging, minus WebGPU. The same
+ * logic over real JDs (segmentJd) is in run-pipeline.test.ts.
  */
 
-const REQS: ExtractedRequirement[] = [
-  { text: 'Five years of React', priority: 'must', skills: [], otherSkills: ['Elm'], minYears: 5 },
-  { text: 'Kubernetes', priority: 'nice', skills: [], otherSkills: ['Kubernetes'], minYears: null },
-];
-const DOC = JSON.stringify({ role: 'Frontend Engineer', requirements: REQS });
+const seg = (index: number, text: string, extra: Partial<Segment> = {}): Segment => ({
+  index,
+  text,
+  section: 'requirements',
+  priority: 'must',
+  skills: [],
+  otherSkills: [],
+  minYears: null,
+  ...extra,
+});
+
+const SEG: SegmentedJd = {
+  role: 'Frontend Engineer',
+  segments: [
+    seg(0, 'About us: we sell shoes', { section: 'about', priority: null }),
+    seg(1, 'Five years of React', { skills: ['react'], minYears: 5 }),
+    seg(2, 'You will attend standups', { section: 'responsibilities', priority: null }),
+    seg(3, 'Kubernetes is a plus', { section: 'unknown', priority: null, otherSkills: ['Kubernetes'] }),
+  ],
+  candidates: [1, 2, 3],
+};
+
+const D = (requirement: boolean, priority: 'must' | 'nice' = 'must', addSkills: string[] = []): SegmentDecision => ({
+  requirement,
+  priority,
+  addSkills,
+});
+
+/** The model's decisions for SEG: keep 1 (+typescript), drop 2, keep 3 as nice. */
+const DECISIONS = [D(true, 'must', ['typescript']), D(false), D(true, 'nice')];
+const DOC = JSON.stringify({ decisions: DECISIONS });
 
 /** Streams `text` in chunks of `size`, awaiting `gate` before each chunk if given. */
 function scriptedEngine(text: string, size = 7, opts: { gate?: () => Promise<void>; throwAt?: number } = {}) {
   let interrupted = false;
-  const engine: RunEngine & { interrupted: () => boolean } = {
-    async *stream() {
+  const calls: { grammar: string; maxTokens: number }[] = [];
+  const engine: RunEngine & { interrupted: () => boolean; calls: typeof calls } = {
+    async *stream(_messages, o) {
+      calls.push(o);
       for (let i = 0; i < text.length; i += size) {
         if (opts.gate) await opts.gate();
         if (interrupted) return;
@@ -28,12 +61,13 @@ function scriptedEngine(text: string, size = 7, opts: { gate?: () => Promise<voi
         const chunk: StreamChunk = { delta: text.slice(i, i + size) };
         yield chunk;
       }
-      yield { delta: '', usage: { prompt_tokens: 900, completion_tokens: 120, extra: { decode_tokens_per_s: 42 } } };
+      yield { delta: '', usage: { prompt_tokens: 900, completion_tokens: 60, extra: { decode_tokens_per_s: 42 } } };
     },
     interrupt: () => {
       interrupted = true;
     },
     interrupted: () => interrupted,
+    calls,
   };
   return engine;
 }
@@ -45,42 +79,71 @@ function deps(engine: RunEngine, extra: Partial<RunDeps> = {}) {
     engine,
     post: (m) => posted.push(m),
     validateJd: (jd) => (jd.trim() ? { ok: true, jd } : { ok: false, message: 'Paste a job description first.' }),
-    buildMessages: (jd) => [{ role: 'user', content: jd }],
+    segmentJd: () => SEG,
+    buildMessages: () => [{ role: 'user', content: 'decide' }],
+    defaultDecision,
+    mergeOne,
+    mergeDecisions,
     // The real judging code, as the worker runs it.
+    prepareExtraction,
     judgeRequirement: (req) => judgeRequirement(req),
     judge: (x) => judge(x),
+    reportCoverage,
     now: () => (t += 10),
     ...extra,
   };
   return { d, posted };
 }
 
+const rowsOf = (posted: FromWorker[]) => posted.flatMap((m) => (m.type === 'row' ? [m] : []));
+const doneOf = (posted: FromWorker[]) => {
+  const last = posted.at(-1)!;
+  if (last.type !== 'done') throw new Error(`expected done, got ${JSON.stringify(last)}`);
+  return last;
+};
+
 afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('runExtraction', () => {
-  it.each([1, 3, 7, 50, 10_000])('posts one row per requirement, then done (chunk size %i)', async (size) => {
-    const { d, posted } = deps(scriptedEngine(DOC, size));
+describe('runExtraction (v4: one decision per candidate)', () => {
+  it.each([1, 3, 7, 50, 10_000])('posts one row per kept candidate, then done (chunk size %i)', async (size) => {
+    const engine = scriptedEngine(DOC, size);
+    const { d, posted } = deps(engine);
     await runExtraction(7, 'a JD', d).done;
-    const rows = posted.filter((m) => m.type === 'row');
-    expect(rows.map((m) => m.type === 'row' && [m.index, m.row.text])).toEqual([
-      [0, 'Five years of React'],
-      [1, 'Kubernetes'],
+    expect(rowsOf(posted).map((m) => [m.index, m.row.text, m.row.priority, m.row.skills])).toEqual([
+      [0, 'Five years of React', 'must', ['react', 'typescript']],
+      [1, 'Kubernetes is a plus', 'nice', []],
     ]);
-    const last = posted.at(-1)!;
-    expect(last.type).toBe('done');
-    if (last.type !== 'done') return;
-    expect(last.id).toBe(7);
-    expect(last.report.role).toBe('Frontend Engineer');
-    expect(last.report.requirements).toHaveLength(2);
-    expect(last.stats).toMatchObject({ promptTokens: 900, completionTokens: 120, tokensPerSecond: 42 });
-    expect(last.stats.firstRowMs).not.toBeNull();
+    const done = doneOf(posted);
+    expect(done.id).toBe(7);
+    expect(done.report.mode).toBe('model');
+    expect(done.report.role).toBe('Frontend Engineer');
+    expect(done.report.requirements).toEqual(rowsOf(posted).map((m) => m.row));
+    expect(done.decisions).toEqual(DECISIONS);
+    expect(done.stats).toMatchObject({
+      promptTokens: 900,
+      completionTokens: 60,
+      tokensPerSecond: 42,
+      candidates: 3,
+      decidedByModel: 3,
+    });
+    expect(done.stats.firstRowMs).not.toBeNull();
+    expect(done.stats.firstDecisionMs).not.toBeNull();
   });
 
-  it('posts a row BEFORE the rest of the document has streamed', async () => {
+  it('asks for exactly n decisions, with max_tokens sized from n', async () => {
+    const engine = scriptedEngine(DOC);
+    const { d } = deps(engine);
+    await runExtraction(1, 'jd', d).done;
+    expect(engine.calls).toHaveLength(1);
+    const { grammar, maxTokens } = engine.calls[0];
+    expect(maxTokens).toBe(decisionsMaxTokens(3));
+    expect(grammar.split('\n')[0].match(/\bitem\b/g)).toHaveLength(3);
+  });
+
+  it('posts a row as soon as its decision closes, before the rest has streamed', async () => {
     const firstEnd = DOC.indexOf('},') + 1;
-    const posted: FromWorker[] = [];
     let seenWhenFirstRow = -1;
     let fed = 0;
     const engine: RunEngine = {
@@ -95,7 +158,6 @@ describe('runExtraction', () => {
     const { d } = deps(engine, {
       post: (m) => {
         if (m.type === 'row' && seenWhenFirstRow < 0) seenWhenFirstRow = fed;
-        posted.push(m);
       },
     });
     await runExtraction(1, 'jd', d).done;
@@ -111,42 +173,82 @@ describe('runExtraction', () => {
     expect(posted).toEqual([{ type: 'error', id: 1, code: 'invalid_jd', message: 'Paste a job description first.' }]);
   });
 
-  it('clips over-long strings (the grammar leaves lengths open) instead of dropping the row', async () => {
-    const long = { ...REQS[1], text: 'x'.repeat(500), otherSkills: ['y'.repeat(90)] };
-    const doc = JSON.stringify({ role: 'r'.repeat(300), requirements: [long] });
-    const { d, posted } = deps(scriptedEngine(doc, 11));
+  it('no candidates → never runs the model; the code-only report, mode model', async () => {
+    const engine = scriptedEngine(DOC);
+    const stream = vi.spyOn(engine, 'stream');
+    const empty: SegmentedJd = { ...SEG, candidates: [] };
+    const { d, posted } = deps(engine, { segmentJd: () => empty });
     await runExtraction(1, 'jd', d).done;
-    const rows = posted.filter((m) => m.type === 'row');
-    expect(rows).toHaveLength(1);
-    const last = posted.at(-1)!;
-    expect(last.type).toBe('done');
-    if (last.type !== 'done') return;
-    expect(last.report.role.length).toBeLessThanOrEqual(120);
-    expect(last.report.requirements[0].text.length).toBeLessThanOrEqual(200);
+    expect(stream).not.toHaveBeenCalled();
+    expect(posted).toHaveLength(1);
+    const done = doneOf(posted);
+    expect(done.report).toEqual({ ...judge(mergeDecisions(empty, [])), mode: 'model', coverage: null });
+    expect(done.stats).toMatchObject({ candidates: 0, decidedByModel: 0, firstRowMs: null });
   });
 
-  it('skips items that fail the contract, and dedupes identical rows while streaming', async () => {
-    const doc = JSON.stringify({
+  it('truncated output (max_tokens) → defaultDecision for the undecided rest, not an error', async () => {
+    // Cut inside the third decision: two decided by the model.
+    const cut = DOC.lastIndexOf('{"requirement"') + 5;
+    const { d, posted } = deps(scriptedEngine(DOC.slice(0, cut)));
+    await runExtraction(1, 'jd', d).done;
+    const done = doneOf(posted);
+    expect(done.stats).toMatchObject({ candidates: 3, decidedByModel: 2 });
+    // Candidate 3 fell back to code's rule: it names Kubernetes → kept as nice.
+    expect(done.decisions).toEqual([DECISIONS[0], DECISIONS[1], defaultDecision(SEG.segments[3])]);
+    expect(done.report.requirements.map((r) => r.text)).toEqual(['Five years of React', 'Kubernetes is a plus']);
+    // The fallback rows are streamed too, so rows still equal the report.
+    expect(rowsOf(posted).map((m) => m.row)).toEqual(done.report.requirements);
+  });
+
+  it('a malformed item → defaultDecision for that candidate only', async () => {
+    const doc = `{"decisions":[${JSON.stringify(DECISIONS[0])},{"requirement":"maybe","priority":"nice","addSkills":[]},${JSON.stringify(D(false))}]}`;
+    const { d, posted } = deps(scriptedEngine(doc, 5));
+    await runExtraction(1, 'jd', d).done;
+    const done = doneOf(posted);
+    expect(done.stats).toMatchObject({ candidates: 3, decidedByModel: 2 });
+    expect(done.decisions).toEqual([DECISIONS[0], defaultDecision(SEG.segments[2]), D(false)]);
+  });
+
+  it('extra items beyond n are ignored', async () => {
+    const doc = JSON.stringify({ decisions: [...DECISIONS, D(true), D(true)] });
+    const { d, posted } = deps(scriptedEngine(doc));
+    await runExtraction(1, 'jd', d).done;
+    expect(doneOf(posted).decisions).toEqual(DECISIONS);
+  });
+
+  it('streamed rows go through prepareExtraction: clipped, deduped, first position kept', async () => {
+    const dup: SegmentedJd = {
+      role: 'r'.repeat(300),
+      segments: [seg(0, 'x'.repeat(500)), seg(1, 'React'), seg(2, 'react', { skills: [] })],
+      candidates: [0, 1, 2],
+    };
+    const doc = JSON.stringify({ decisions: [D(true), D(true), D(true)] });
+    const { d, posted } = deps(scriptedEngine(doc, 9), { segmentJd: () => dup });
+    await runExtraction(1, 'jd', d).done;
+    const done = doneOf(posted);
+    expect(done.report.role.length).toBeLessThanOrEqual(120);
+    expect(rowsOf(posted).map((m) => m.row)).toEqual(done.report.requirements);
+    expect(done.report.requirements).toHaveLength(2);
+    expect(done.report.requirements[0].text.length).toBeLessThanOrEqual(200);
+  });
+
+  it('documented exception: a later must-have duplicate upgrades the final row, not the streamed one', async () => {
+    const dup: SegmentedJd = {
       role: 'r',
-      requirements: [REQS[0], { text: 'bad', priority: 'maybe', skills: [], otherSkills: [], minYears: null }, REQS[0], REQS[1]],
-    });
-    const { d, posted } = deps(scriptedEngine(doc, 5), {
-      // The final document is invalid (priority "maybe"), so it ends in an error.
-    });
+      segments: [
+        seg(0, 'React', { section: 'unknown', priority: null, skills: ['react'] }),
+        seg(1, 'React', { skills: ['react'] }),
+      ],
+      candidates: [0, 1],
+    };
+    const doc = JSON.stringify({ decisions: [D(true, 'nice'), D(true)] });
+    const { d, posted } = deps(scriptedEngine(doc), { segmentJd: () => dup });
     await runExtraction(1, 'jd', d).done;
-    const rows = posted.filter((m) => m.type === 'row');
-    expect(rows).toHaveLength(2);
-    expect(posted.at(-1)).toMatchObject({ type: 'error', code: 'invalid_output' });
+    expect(rowsOf(posted).map((m) => m.row.priority)).toEqual(['nice']);
+    expect(doneOf(posted).report.requirements.map((r) => r.priority)).toEqual(['must']);
   });
 
-  it('reports invalid_output when the stream ends mid-document (e.g. max_tokens)', async () => {
-    const { d, posted } = deps(scriptedEngine(DOC.slice(0, DOC.length - 20)));
-    await runExtraction(1, 'jd', d).done;
-    expect(posted.filter((m) => m.type === 'row')).toHaveLength(1);
-    expect(posted.at(-1)).toMatchObject({ type: 'error', code: 'invalid_output' });
-  });
-
-  it('watchdog: no first row within the budget → interrupt + too_slow, then silence', async () => {
+  it('watchdog: no first decision within the budget → interrupt + too_slow, then silence', async () => {
     vi.useFakeTimers();
     let release!: () => void;
     const stalled = new Promise<void>((r) => (release = r));
@@ -164,17 +266,16 @@ describe('runExtraction', () => {
     expect(posted).toHaveLength(1); // nothing after too_slow
   });
 
-  it('watchdog is disarmed once the first row lands', async () => {
+  it('watchdog is disarmed by the first decision, even one that posts no row', async () => {
     vi.useFakeTimers();
-    let step = 0;
+    // First candidate dropped by the model: progress, but no row yet.
+    const doc = JSON.stringify({ decisions: [D(false), D(true), D(true)] });
+    const cut = doc.indexOf('},') + 2;
     const engine: RunEngine = {
       async *stream() {
-        const cut = DOC.indexOf('},') + 2;
-        yield { delta: DOC.slice(0, cut) };
-        // The rest arrives much later than the first-row budget.
+        yield { delta: doc.slice(0, cut) };
         await new Promise((r) => setTimeout(r, 60_000));
-        step++;
-        yield { delta: DOC.slice(cut) };
+        yield { delta: doc.slice(cut) };
       },
       interrupt: vi.fn(),
     };
@@ -182,9 +283,9 @@ describe('runExtraction', () => {
     const handle = runExtraction(1, 'jd', d);
     await vi.advanceTimersByTimeAsync(61_000);
     await handle.done;
-    expect(step).toBe(1);
     expect(engine.interrupt).not.toHaveBeenCalled();
     expect(posted.at(-1)?.type).toBe('done');
+    expect(rowsOf(posted)).toHaveLength(2);
   });
 
   it('cancel interrupts, posts cancelled once, and drops later output', async () => {
@@ -203,7 +304,7 @@ describe('runExtraction', () => {
     expect(posted).toEqual([{ type: 'cancelled', id: 9 }]);
   });
 
-  it('maps an engine failure to a typed error', async () => {
+  it('maps an engine failure to a typed error (no fallback for a lost device)', async () => {
     const { d, posted } = deps(scriptedEngine(DOC, 7, { throwAt: 14 }));
     await runExtraction(1, 'jd', d).done;
     expect(posted.at(-1)).toMatchObject({ type: 'error', code: 'device_lost' });

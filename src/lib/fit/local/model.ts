@@ -97,8 +97,17 @@ export const LOCAL_MODELS = {
 export type LocalModelId = keyof typeof LOCAL_MODELS;
 
 /**
- * THE model. One constant, so the evals can swap it in one line. Smallest of
- * the shortlist: 695 MB download, 879 MB VRAM.
+ * THE model. One constant, so the evals can swap it in one line.
+ *
+ * Model comparison, 2026-09-23 (evals/local/results/2026-09-23-summary.md,
+ * 8 labelled JDs, M-series Mac GPU): NO model beats the no-model path. Row
+ * agreement with the ideal report: no model 55/70; Llama-3.2-1B 22/70,
+ * Qwen2.5-1.5B 25/70, Qwen3-1.7B 2/70 (addSkills precision 0% for all
+ * three). The recommendation is "no model" (Private mode not offered) until
+ * a model clears that bar. Llama-3.2-1B stays the id because if Private
+ * mode is offered anyway it is the cheapest: smallest download (695 MB,
+ * 879 MB VRAM), first row 1.0 s and whole run 2.7 s (median), vs 1.8 s /
+ * 5.2 s for Qwen3-1.7B (968 MB) and 1.9 s / 7.7 s for Qwen2.5-1.5B (869 MB).
  */
 export const LOCAL_MODEL_ID: LocalModelId = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
 
@@ -114,3 +123,13 @@ export function formatBytes(bytes: number): string {
   if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`;
   return `${Math.round(bytes / 1e6)} MB`;
 }
+
+/**
+ * Private mode ships switched OFF. On 2026-09-23 no on-device model beat the
+ * no-model path on the labelled JDs (evals/local/results/2026-09-23-summary.md),
+ * and the plan's rule is that a model ships only if it does. With the flag off
+ * the probe never runs, the client module is never fetched, and the panel
+ * renders nothing; the runtime stays in the repo for the next comparison.
+ * Build with NEXT_PUBLIC_FIT_PRIVATE_MODE=1 to turn it on.
+ */
+export const PRIVATE_MODE_ENABLED = process.env.NEXT_PUBLIC_FIT_PRIVATE_MODE === '1';
