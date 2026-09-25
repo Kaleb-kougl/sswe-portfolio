@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Manrope, Space_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { CAREER_START_YEAR } from '@/data/resumeData';
 import { SITE_URL } from '@/data/site';
 import './globals.css';
@@ -84,7 +85,10 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${display.variable} ${body.variable} ${label.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
