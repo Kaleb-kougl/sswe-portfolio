@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Manrope, Space_Mono } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
+import { LazyAnalytics } from '@/components/lazy-analytics';
 import { CAREER_START_YEAR } from '@/data/resumeData';
 import { SITE_URL } from '@/data/site';
 import './globals.css';
@@ -87,7 +87,7 @@ export default function RootLayout({
     >
       <body>
         {children}
-        <Analytics />
+        <LazyAnalytics />
       </body>
     </html>
   );
