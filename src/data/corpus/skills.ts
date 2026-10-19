@@ -43,6 +43,21 @@ export const SKILLS_TABLE: readonly Skill[] = [
   { id: 'animation', label: 'UI animation', aliases: ['motion'] },
   { id: 'chrome-extensions', label: 'Chrome extensions', aliases: ['browser extensions', 'manifest v3', 'mv3'] },
   { id: 'frontend-security', label: 'Frontend security', aliases: ['xss', 'xss prevention', 'input sanitization', 'web security'] },
+  // Glassgrid's stack (see the `glassgrid` records in evidence.ts).
+  //
+  // Seven tags, with few aliases, because every tag is a line in the
+  // on-device model's prompt and that prompt has a size budget
+  // (__tests__/fit/prompt.test.ts, 3,600 chars). Left out for that reason,
+  // though Glassgrid's résumé entry names them: Web Workers, Apache Arrow and
+  // property-based testing (fast-check). Also left out: "charts" and
+  // "charting" as aliases — "org chart" and "charting a course" aren't data
+  // viz. Canvas is `html-canvas`, never bare "canvas": "a blank canvas" isn't.
+  { id: 'data-visualization', label: 'Data visualization', aliases: ['data viz'] },
+  { id: 'd3', label: 'D3.js', aliases: [] },
+  { id: 'html-canvas', label: 'HTML Canvas', aliases: [] },
+  { id: 'electron', label: 'Electron', aliases: ['electron.js'] },
+  { id: 'webassembly', label: 'WebAssembly', aliases: ['wasm'] },
+  { id: 'zod', label: 'Zod', aliases: [] },
 
   // Build, platform, performance
   { id: 'webpack', label: 'Webpack', aliases: ['webpack 5'] },
@@ -67,6 +82,8 @@ export const SKILLS_TABLE: readonly Skill[] = [
   // The category, not a product: any record for a relational database (PostgreSQL
   // today) carries this tag too, so "relational databases" and "RDBMS" asks find it.
   { id: 'relational-databases', label: 'Relational databases', aliases: ['relational database', 'rdbms', 'sql databases', 'relational data stores'] },
+  // Embedded and analytical, not a server: not tagged relational-databases.
+  { id: 'duckdb', label: 'DuckDB', aliases: ['duckdb-wasm'] },
   // A cloud ask ("modern cloud architectures", "cloud platforms") is met by
   // AWS work; a named rival (GCP, Azure) stays its own gap term.
   { id: 'aws', label: 'AWS', aliases: ['amazon web services', 'cloud architecture', 'cloud architectures', 'cloud platform', 'cloud infrastructure', 'cloud services', 'cloud computing', 'public cloud'] },
@@ -150,7 +167,9 @@ export function normalizeSkill(term: string): string | undefined {
  * families, so Go's closest work is backend work (whatever it was written in)
  * rather than a TypeScript game. Kept apart from `SKILLS_TABLE` so the corpus
  * that agents read (and its token budget) doesn't change; the fit tests hold
- * every canonical tag to a category.
+ * every canonical tag to a category, and no category to more than 20 tags:
+ * the chat's "related work" search sends a whole category to
+ * `search_evidence`, which takes at most 20 skills.
  */
 export const SKILL_CATEGORIES = {
   frontend: 'frontend',
@@ -159,6 +178,7 @@ export const SKILL_CATEGORIES = {
   'cloud-infra': 'cloud and delivery',
   backend: 'backend',
   data: 'data',
+  visualization: 'data visualization',
   ai: 'AI',
   testing: 'testing',
   leadership: 'leadership',
@@ -186,6 +206,13 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   animation: 'frontend',
   'chrome-extensions': 'frontend',
   'frontend-security': 'frontend',
+  electron: 'frontend',
+
+  // Glassgrid's charts. Their own category, so a charting-library gap
+  // (Recharts, Highcharts) finds the charting work as its closest, not
+  // whatever frontend record ranks first.
+  'data-visualization': 'visualization',
+  d3: 'visualization',
 
   nextjs: 'frontend',
   'tailwind-css': 'frontend',
@@ -201,6 +228,7 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   seo: 'platform',
   'developer-productivity': 'platform',
   'codebase-migrations': 'platform',
+  webassembly: 'platform',
 
   'ci-cd': 'cloud-infra',
   'github-actions': 'cloud-infra',
@@ -220,6 +248,7 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   postgresql: 'data',
   sql: 'data',
   'relational-databases': 'data',
+  duckdb: 'data',
 
   genai: 'ai',
   'ai-assisted-development': 'ai',
@@ -253,11 +282,13 @@ export const SKILL_CATEGORY: Readonly<Record<string, SkillCategory>> = {
   ecs: 'graphics-games',
   'state-machines': 'graphics-games',
   'game-ai': 'graphics-games',
+  'html-canvas': 'graphics-games',
 
   'dependency-injection': 'practice',
   'functional-programming': 'practice',
   parsers: 'practice',
   'open-source': 'practice',
+  zod: 'practice',
 
   'scientific-research': 'research',
 };
@@ -281,11 +312,13 @@ export interface GapTerm {
  * Deliberately absent: things Kaleb has used that the corpus has no record
  * of yet (Figma, Docker Compose, OpenAI, Anthropic, Hugging Face, Vercel,
  * Core Web Vitals' individual metrics such as LCP, which this site's own CI
- * measures). Calling those gaps would be false; claiming them needs a record
- * first. The site's own stack (Next.js, Tailwind, Vitest, Playwright,
- * GitHub Actions) has records now, under `portfolio-site`, so it moved to
- * `SKILLS_TABLE`. Also absent: iOS and Android, which React Native JDs name
- * as platforms, not skills.
+ * measures; Vite and pnpm workspaces, which Glassgrid is built with — its
+ * résumé entry says so, but no corpus record carries them). Calling those
+ * gaps would be false; claiming them needs a record first. The site's own
+ * stack (Next.js, Tailwind, Vitest, Playwright, GitHub Actions) has records
+ * now, under `portfolio-site`, so it moved to `SKILLS_TABLE`; so did Electron
+ * and D3.js, under `glassgrid`. Also absent: iOS and Android, which React
+ * Native JDs name as platforms, not skills.
  *
  * The long tail below the original entries (UI kits, build tools, ORMs,
  * observability vendors, …) is what the scan needs to say "mentioned, not
@@ -396,8 +429,7 @@ export const GAP_VOCABULARY: readonly GapTerm[] = [
   { id: 'shadcn-ui', label: 'shadcn/ui', aliases: ['shadcn'], category: 'frontend' },
   { id: 'mantine', label: 'Mantine', aliases: [], category: 'frontend' },
   { id: 'i18n', label: 'Internationalization', aliases: ['i18n', 'i18next', 'react-intl', 'localization'], category: 'frontend' },
-  { id: 'd3', label: 'D3.js', aliases: ['d3'], category: 'frontend' },
-  { id: 'charting-libraries', label: 'Charting libraries', aliases: ['recharts', 'chart.js', 'highcharts', 'echarts', 'visx'], category: 'frontend' },
+  { id: 'charting-libraries', label: 'Charting libraries', aliases: ['recharts', 'chart.js', 'highcharts', 'echarts', 'visx'], category: 'visualization' },
   { id: 'mapbox', label: 'Mapbox', aliases: [], category: 'frontend' },
   { id: 'leaflet', label: 'Leaflet', aliases: ['leaflet.js'], category: 'frontend' },
 
@@ -407,11 +439,9 @@ export const GAP_VOCABULARY: readonly GapTerm[] = [
   { id: 'capacitor', label: 'Capacitor', aliases: [], category: 'mobile' },
   { id: 'cordova', label: 'Cordova', aliases: ['phonegap'], category: 'mobile' },
   { id: 'jetpack-compose', label: 'Jetpack Compose', aliases: [], category: 'mobile' },
-  { id: 'electron', label: 'Electron', aliases: [], category: 'frontend' },
   { id: 'tauri', label: 'Tauri', aliases: [], category: 'frontend' },
 
   // Build tooling and monorepos
-  { id: 'vite', label: 'Vite', aliases: [], category: 'platform' },
   { id: 'rollup', label: 'Rollup', aliases: [], category: 'platform' },
   { id: 'esbuild', label: 'esbuild', aliases: [], category: 'platform' },
   { id: 'parcel', label: 'Parcel', aliases: [], category: 'platform' },
@@ -423,7 +453,6 @@ export const GAP_VOCABULARY: readonly GapTerm[] = [
   { id: 'nx', label: 'Nx', aliases: ['nx monorepo'], category: 'platform' },
   { id: 'turborepo', label: 'Turborepo', aliases: [], category: 'platform' },
   { id: 'lerna', label: 'Lerna', aliases: [], category: 'platform' },
-  { id: 'pnpm', label: 'pnpm', aliases: ['pnpm workspaces'], category: 'platform' },
   { id: 'yarn', label: 'Yarn', aliases: ['yarn workspaces'], category: 'platform' },
 
   // Testing tools
