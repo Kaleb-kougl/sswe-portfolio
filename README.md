@@ -13,6 +13,7 @@ A single scrolling portfolio page built with the Next.js App Router, React 19 an
 - **A real asset pipeline.** The blocks come from `scripts/hero.blend`. A Python script run through Blender generates them and exports `public/models/hero.glb` (8,672 bytes), which CI checks against a 500 KB budget on every run. See [`docs/hero-pipeline.md`](docs/hero-pipeline.md).
 - **Capability is measured, not guessed.** Phones run the live background too — this is one draw call, and a modern phone renders it trivially. Rather than infer capability from viewport width (or from `deviceMemory`, which iOS Safari does not expose), it animates by default and a frame-time watchdog downgrades once, permanently, if a device demonstrably cannot keep up. `prefers-reduced-motion` and Save-Data are honoured unconditionally and never adaptive; without WebGL the background renders nothing and the page stands on its own.
 - **A live demo, loaded on demand.** The r3f-projectiles card opens the real bullet-pattern engine in a focus-trapped dialog — six patterns, adjustable fire rate, live instance count. None of it is in the initial payload; it loads on click, and the page's own background suspends while it runs so only one WebGL context is ever busy.
+- **Glassgrid, served from here.** The featured card's live demo is the Glassgrid web build, a pinned GitHub Release unpacked into `public/glassgrid/` at build time: the tarball's sha256 is checked against `glassgrid.lock.json`, and the demo's own CSP, cache and content-type rules come from the manifest it ships, validated before `next.config` applies them under `/glassgrid` only. A workflow pins each new release in a PR. See [`docs/glassgrid-hosting.md`](docs/glassgrid-hosting.md).
 - **A contact form that cannot lie.** It posts to a route handler that validates server-side, carries a honeypot, and delivers through Formspree with no SDK and no DNS. reCAPTCHA v3 rides along, with Google's script loaded only once someone touches the form. With no provider configured it returns 503; with no captcha token, 400; if the provider rejects the message, 502 — and each says so plainly with the direct email address. No code path reports success for a message that went nowhere. Setup: [`docs/contact-delivery.md`](docs/contact-delivery.md).
 - **Zero third-party scripts until you need one.** Fonts are self-hosted, nothing analytics-shaped loads on the hero, and the only external script on the page is reCAPTCHA — gated behind first interaction with the contact form.
 
@@ -93,7 +94,13 @@ npm run test:vitals  # build, serve, and measure LCP/CLS under mobile emulation
 
 npm run hero:check   # validate the committed hero.glb against its budgets
 npm run hero:build   # regenerate it (requires Blender; see docs/hero-pipeline.md)
+
+npm run glassgrid:fetch   # unpack the pinned Glassgrid demo into public/glassgrid/ (build and dev do this too)
+GLASSGRID_SKIP=1 npm run build                               # build without the demo
+GLASSGRID_TARBALL=/path/to/glassgrid-web-0.1.0.tar.gz npm run build   # use a local copy of the pinned release
 ```
+
+`npm run build` downloads the pinned Glassgrid release (about 59 MB, once; it is cached in `.glassgrid-cache/`). See [`docs/glassgrid-hosting.md`](docs/glassgrid-hosting.md).
 
 ### Sibling packages
 
