@@ -25,6 +25,12 @@
 # production
 /build
 
+# Glassgrid web demo: unpacked from the pinned release by
+# scripts/fetch-glassgrid.mjs (prebuild), never committed. The cache holds the
+# downloaded tarball and the staging folder. See docs/glassgrid-hosting.md.
+/public/glassgrid/
+/.glassgrid-cache/
+
 # misc
 .DS_Store
 *.pem
@@ -58,6 +64,7 @@ docs/*
 # docs/* is ignored above; these are tracked
 !docs/hero-pipeline.md
 !docs/contact-delivery.md
+!docs/glassgrid-hosting.md
 
 # Held-out job descriptions for the fit-checker evals are third-party postings.
 # Kept local until we decide how (or whether) to commit them.

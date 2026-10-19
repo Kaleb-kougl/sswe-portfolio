@@ -1,0 +1,223 @@
+name: Bump Glassgrid
+
+# Pins a new Glassgrid web demo release in glassgrid.lock.json and opens a PR
+# for it. See docs/glassgrid-hosting.md.
+#
+# - repository_dispatch `glassgrid-release`: sent by glassgrid's
+#   release-web.yml after it publishes web-vX.Y.Z, with
+#   client_payload {version, url, sha256}. GitHub only delivers it to a
+#   workflow on this repository's DEFAULT branch.
+# - workflow_dispatch: the same by hand (Actions -> Bump Glassgrid -> Run
+#   workflow), from the release page's .sha256 file.
+#
+# The tarball is downloaded and its sha256 checked here, and then unpacked by
+# scripts/fetch-glassgrid.mjs with the new lock, so the PR only ever pins a
+# release that installs. The PR's own CI run builds and tests it again.
+#
+# TOKEN: a PR opened with the default GITHUB_TOKEN does not trigger
+# `pull_request` workflows, so ci.yml would not run on it. The repository
+# secret GLASSGRID_BUMP_TOKEN (a fine-grained PAT for this repository only:
+# Contents and Pull requests, read and write) is used to push and open the PR
+# when it is set. Without it this falls back to GITHUB_TOKEN with a warning;
+# that fallback also needs Settings -> Actions -> General -> "Allow GitHub
+# Actions to create and approve pull requests".
+
+on:
+  repository_dispatch:
+    types: [glassgrid-release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Glassgrid web version to pin (X.Y.Z or X.Y.Z-pre), without the web-v prefix'
+        required: true
+        type: string
+      sha256:
+        description: 'sha256 of glassgrid-web-<version>.tar.gz (from the release''s .sha256 file)'
+        required: true
+        type: string
+      url:
+        description: 'Release asset URL (leave empty for the standard one)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bump-glassgrid
+  cancel-in-progress: false
+
+env:
+  # ci.yml runs on pull requests to main.
+  BASE_BRANCH: main
+  RELEASES: https://github.com/Kaleb-kougl/glassgrid/releases
+
+jobs:
+  bump:
+    name: Pin the Glassgrid release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # push the glassgrid/v<version> branch (GITHUB_TOKEN fallback)
+      pull-requests: write # gh pr create (GITHUB_TOKEN fallback)
+
+    steps:
+      # Everything from the payload or the form goes through env, never into
+      # the script text, and is checked before anything uses it.
+      - name: Check the inputs
+        id: inputs
+        env:
+          VERSION: ${{ github.event.client_payload.version || inputs.version }}
+          URL: ${{ github.event.client_payload.url || inputs.url }}
+          SHA256: ${{ github.event.client_payload.sha256 || inputs.sha256 }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::version '$VERSION' is not X.Y.Z or X.Y.Z-pre"
+            exit 1
+          fi
+          expected="$RELEASES/download/web-v$VERSION/glassgrid-web-$VERSION.tar.gz"
+          URL="${URL:-$expected}"
+          if [[ "$URL" != "$RELEASES/download/"* ]]; then
+            echo "::error::url '$URL' is not a $RELEASES/download/ asset"
+            exit 1
+          fi
+          if [ "$URL" != "$expected" ]; then
+            echo "::error::url '$URL' is not the asset for $VERSION ($expected)"
+            exit 1
+          fi
+          SHA256="$(printf '%s' "$SHA256" | tr 'A-F' 'a-f')"
+          if ! [[ "$SHA256" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::sha256 is not 64 hex digits"
+            exit 1
+          fi
+          {
+            echo "version=$VERSION"
+            echo "url=$URL"
+            echo "sha256=$SHA256"
+            echo "branch=glassgrid/v$VERSION"
+            echo "file=glassgrid-web-$VERSION.tar.gz"
+          } >> "$GITHUB_OUTPUT"
+          echo "Pinning Glassgrid $VERSION: $URL ($SHA256)"
+
+      - name: Choose the token
+        id: token
+        env:
+          BUMP_TOKEN: ${{ secrets.GLASSGRID_BUMP_TOKEN }}
+        run: |
+          if [ -n "$BUMP_TOKEN" ]; then
+            echo "pat=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pat=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GLASSGRID_BUMP_TOKEN is not set: the PR is opened with GITHUB_TOKEN, which does not trigger pull_request workflows, so CI will NOT run on it. Close and reopen the PR (or push a commit to its branch) to start CI, and see docs/glassgrid-hosting.md to add the token."
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_BRANCH }}
+          token: ${{ secrets.GLASSGRID_BUMP_TOKEN || github.token }}
+
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download the release and check its sha256
+        env:
+          URL: ${{ steps.inputs.outputs.url }}
+          SHA256: ${{ steps.inputs.outputs.sha256 }}
+          FILE: ${{ runner.temp }}/${{ steps.inputs.outputs.file }}
+        run: |
+          set -euo pipefail
+          curl -fsSL --proto '=https' --proto-redir '=https' --retry 3 --max-filesize 500000000 -o "$FILE" "$URL"
+          actual="$(sha256sum "$FILE" | cut -d ' ' -f 1)"
+          if [ "$actual" != "$SHA256" ]; then
+            echo "::error::sha256 mismatch for $URL: expected $SHA256, got $actual"
+            exit 1
+          fi
+          # The release also publishes <file>.sha256; it must agree.
+          if published="$(curl -fsSL --proto '=https' --proto-redir '=https' --retry 3 "$URL.sha256" | cut -d ' ' -f 1)"; then
+            if [ "$published" != "$SHA256" ]; then
+              echo "::error::$URL.sha256 says $published, not $SHA256"
+              exit 1
+            fi
+          else
+            echo "::warning::could not read $URL.sha256; relying on the sha256 that was passed in"
+          fi
+          echo "Verified $(du -h "$FILE" | cut -f 1) $URL"
+
+      - name: Update glassgrid.lock.json
+        env:
+          VERSION: ${{ steps.inputs.outputs.version }}
+          URL: ${{ steps.inputs.outputs.url }}
+          SHA256: ${{ steps.inputs.outputs.sha256 }}
+        run: |
+          node -e '
+            const { VERSION: version, URL: url, SHA256: sha256 } = process.env;
+            require("node:fs").writeFileSync("glassgrid.lock.json", JSON.stringify({ version, url, sha256 }, null, 2) + "\n");
+          '
+          cat glassgrid.lock.json
+
+      # The same install `npm run build` does (lock checks, sha256, unpack,
+      # hosting manifest for /glassgrid/ at this version), from the file
+      # verified above. The script needs no dependencies, so no npm ci.
+      - name: Check the release installs with the new lock
+        env:
+          GLASSGRID_TARBALL: ${{ runner.temp }}/${{ steps.inputs.outputs.file }}
+        run: |
+          node scripts/fetch-glassgrid.mjs
+          rm -rf public/glassgrid .glassgrid-cache
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GLASSGRID_BUMP_TOKEN || github.token }}
+          VERSION: ${{ steps.inputs.outputs.version }}
+          URL: ${{ steps.inputs.outputs.url }}
+          SHA256: ${{ steps.inputs.outputs.sha256 }}
+          BRANCH: ${{ steps.inputs.outputs.branch }}
+          PAT: ${{ steps.token.outputs.pat }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- glassgrid.lock.json; then
+            echo "::notice::$BASE_BRANCH already pins Glassgrid $VERSION; nothing to do."
+            exit 0
+          fi
+          previous="$(node -p 'try { JSON.parse(require("node:child_process").execSync("git show HEAD:glassgrid.lock.json")).version } catch { "nothing" }')"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$BRANCH"
+          git add glassgrid.lock.json
+          git commit -q -F - <<EOF
+          chore(glassgrid): pin the web demo at $VERSION
+
+          $previous -> $VERSION, from $URL
+          sha256 $SHA256 (verified against the download and the release's .sha256)
+          EOF
+          git push --force origin "$BRANCH"
+
+          body="$RUNNER_TEMP/pr-body.md"
+          {
+            echo "Pins the Glassgrid web demo at **$VERSION** (was $previous)."
+            echo
+            echo "- Release: $RELEASES/tag/web-v$VERSION"
+            echo "- Asset: $URL"
+            echo "- sha256: \`$SHA256\`, checked against the download and the release's \`.sha256\`; the tarball installs with \`scripts/fetch-glassgrid.mjs\`."
+            echo
+            echo "On the Vercel preview (docs/glassgrid-hosting.md, \"Checking a deployment\"):"
+            echo
+            echo "- [ ] \`scripts/check-deploy.sh https://<preview>/glassgrid/\` from the glassgrid repository passes, compression included"
+            echo "- [ ] \`/glassgrid/?sample=taxi\` opens and draws in Chrome, Firefox and Safari"
+            if [ "$PAT" != "true" ]; then
+              echo
+              echo "> Opened with GITHUB_TOKEN: CI does not start on its own. Close and reopen this PR to run it."
+            fi
+          } > "$body"
+
+          existing="$(gh pr list --head "$BRANCH" --base "$BASE_BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --body-file "$body"
+            echo "Updated PR #$existing"
+          else
+            gh pr create --base "$BASE_BRANCH" --head "$BRANCH" --title "chore(glassgrid): pin the web demo at $VERSION" --body-file "$body"
+          fi

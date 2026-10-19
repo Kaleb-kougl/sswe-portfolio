@@ -65,8 +65,40 @@ jobs:
       - name: Check corpus token budget
         run: npm run corpus:tokens
 
+      # The Glassgrid demo (docs/glassgrid-hosting.md): `npm run build` runs
+      # scripts/fetch-glassgrid.mjs as `prebuild`, which downloads the pinned
+      # release tarball (~59 MB) into .glassgrid-cache/, checks its sha256 and
+      # unpacks it into public/glassgrid/. The cache is keyed on the lock, so
+      # the download happens once per pinned version; the sha256 is checked
+      # on every run all the same, cached or not. Restore and save are split
+      # so the tarball is kept as soon as the build has verified it, even if
+      # a later step fails (actions/cache alone saves only on success).
+      - name: Restore Glassgrid release cache
+        id: glassgrid-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .glassgrid-cache
+          key: glassgrid-${{ hashFiles('glassgrid.lock.json') }}
+
       - name: Verify Next.js Build
         run: npm run build
+
+      - name: Save Glassgrid release cache
+        if: steps.glassgrid-cache.outputs.cache-hit != 'true' && hashFiles('.glassgrid-cache/*.tar.gz') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .glassgrid-cache
+          key: glassgrid-${{ hashFiles('glassgrid.lock.json') }}
+
+      # Fails here, by name, rather than as a skipped e2e spec further down:
+      # e2e/glassgrid-hosting.spec.ts skips itself when the demo is absent,
+      # which is right locally (GLASSGRID_SKIP=1) and wrong in this job.
+      - name: Check the Glassgrid demo is unpacked
+        run: |
+          test -f public/glassgrid/glassgrid-hosting.json
+          test -f public/glassgrid/index.html
+          cat public/glassgrid/glassgrid.lock.json
+          du -sh public/glassgrid .next
 
       # Next 16 no longer prints "First Load JS" from `next build`, so this
       # measures it from the prerendered .next/server/app/index.html: every
@@ -97,6 +129,9 @@ jobs:
       #   - it was the only reason this workflow needed `contents: write`
       # Baselines are updated deliberately, locally, and reviewed in the diff:
       #   npx playwright test e2e/visual-regression.spec.ts --update-snapshots
+      # Includes e2e/glassgrid-hosting.spec.ts (desktop-chromium only): the
+      # taxi sample opens and draws, the CSP is on /glassgrid and not on /,
+      # .wasm/.parquet content types, Range and immutable caching.
       - name: Run End-to-End Tests
         run: npm run test:e2e -- --project=desktop-chromium --project=mobile-chromium
 
@@ -124,6 +159,10 @@ jobs:
     # all three browsers with a bare `--with-deps` and use only Chromium.
     permissions:
       contents: read
+    # None of these specs open the Glassgrid demo, so the dev server's
+    # `predev` fetch is skipped instead of downloading ~59 MB for nothing.
+    env:
+      GLASSGRID_SKIP: '1'
 
     steps:
       - name: Checkout repository
@@ -164,6 +203,10 @@ jobs:
     # its own, and `npm run test:vitals` does both halves in order.
     permissions:
       contents: read
+    # The vitals are the homepage's; its `prebuild` skips the Glassgrid demo
+    # (docs/glassgrid-hosting.md), which the homepage never loads.
+    env:
+      GLASSGRID_SKIP: '1'
 
     steps:
       - name: Checkout repository

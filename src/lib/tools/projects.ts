@@ -6,13 +6,14 @@ import { WORK_PROJECTS } from '@/data/workProjects';
  * WHAT A "PROJECT" IS, for list_projects and get_project.
  *
  * One project per `entry` that the corpus cites: every distinct
- * `Evidence.entry`, in corpus order. That is the four Work cards, the résumé
+ * `Evidence.entry`, in corpus order. That is the five Work cards, the résumé
  * roles and the other résumé projects that have at least one sourced record.
  * Nothing is authored here; each field is read from data the site already
  * renders:
  *
  *   - a Work card (workProjects.ts) supplies the name, description and links,
- *     and is marked `featured`, because it is one of the four the site leads with;
+ *     and is marked `featured`, because it is one of the five the site leads with
+ *     (Glassgrid, the one full-width card, is not singled out further here);
  *   - otherwise the résumé entry (resumeData.ts) supplies title and summary,
  *     and the links are the evidence records' own sources.
  *

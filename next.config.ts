@@ -1,6 +1,20 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 
+import {
+  glassgridHeaders,
+  glassgridRewrites,
+  loadGlassgridHosting,
+} from "./src/lib/glassgrid-hosting";
+
+// The Glassgrid demo, served from public/glassgrid/ at /glassgrid/. Its
+// release ships the headers (CSP with 'wasm-unsafe-eval', COOP, cache and
+// content types) and rewrites it needs; scripts/fetch-glassgrid.mjs unpacks
+// it before `next build` and src/lib/glassgrid-hosting.ts validates the
+// manifest. Absent (GLASSGRID_SKIP=1), this is null and adds nothing. See
+// docs/glassgrid-hosting.md.
+const glassgrid = loadGlassgridHosting(__dirname);
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
   // Ship browser source maps. Next disables them in production by default to
@@ -22,6 +36,20 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['three', 'lucide-react'],
+  },
+  // `trailingSlash` stays at its default (false): Glassgrid's header sources
+  // are written for `/glassgrid/` being answered with a 308 to `/glassgrid`.
+  async headers() {
+    // Site-wide rules, if any are ever added, go BEFORE the demo's: the later
+    // rule wins for the same header key, and the demo's CSP must win under
+    // /glassgrid.
+    return [...glassgridHeaders(glassgrid)];
+  },
+  async rewrites() {
+    // afterFiles, not beforeFiles: public files are checked first, so every
+    // real file under public/glassgrid/ is served as itself and only the
+    // app's routes fall through to its index.html (rewrites.md).
+    return { beforeFiles: [], afterFiles: glassgridRewrites(glassgrid), fallback: [] };
   },
 };
 

@@ -5,6 +5,10 @@
 
    __pane / __code — the two side-by-side code panes of the roblox-css
    drawing. The dark pane's raw-hex fill stays a utility.
+
+   __caption / __cell — the Glassgrid drawing: a pane's small mono caption
+   (grid headers, chart titles), and one grid cell drawn as a bar, link
+   blue when its column is the one the brush selects (--selected).
    ===================================================================== */
 
 .work-illustration {
@@ -21,4 +25,16 @@
 
 .work-illustration__code {
   @apply block whitespace-pre font-mono text-[7px] leading-[1.4] md:text-[8px];
+}
+
+.work-illustration__caption {
+  @apply truncate font-mono text-[8px] font-bold uppercase leading-none tracking-[0.08em] text-muted;
+}
+
+.work-illustration__cell {
+  @apply block h-1.5 rounded-full bg-control;
+}
+
+.work-illustration__cell--selected {
+  @apply bg-link/45;
 }

@@ -9,6 +9,14 @@ describe('skill categories', () => {
     expect(Object.keys(SKILL_CATEGORY).sort()).toEqual(SKILLS_TABLE.map((s) => s.id).sort());
     for (const category of Object.values(SKILL_CATEGORY)) expect(SKILL_CATEGORIES).toHaveProperty(category);
   });
+
+  it('keeps every category within search_evidence’s 20-skill limit', () => {
+    // The chat's related-work lookup (src/lib/chat/answer.ts) searches a whole
+    // category at once, and the tool rejects more than 20 skills.
+    const sizes = new Map<string, number>();
+    for (const category of Object.values(SKILL_CATEGORY)) sizes.set(category, (sizes.get(category) ?? 0) + 1);
+    for (const [category, size] of sizes) expect(size, category).toBeLessThanOrEqual(20);
+  });
 });
 
 describe('gap vocabulary', () => {

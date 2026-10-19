@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { WORK_PROJECTS, ROBLOX_CSS_COVERAGE } from '../src/data/workProjects';
+import {
+  GLASSGRID_CROSSFILTER,
+  GLASSGRID_CROSSFILTER_CLAIM,
+  ROBLOX_CSS_COVERAGE,
+  WORK_PROJECTS,
+} from '../src/data/workProjects';
 
 /**
  * Content assertions for the Work cards.
@@ -18,7 +23,7 @@ import { WORK_PROJECTS, ROBLOX_CSS_COVERAGE } from '../src/data/workProjects';
  */
 
 /**
- * BonkBall was one of these four cards until the Agentic AI Video Creator took
+ * BonkBall was one of the four grid cards until the Agentic AI Video Creator took
  * its slot; its `test('BonkBall links to the live game')` went with it. The
  * game is still on the résumé (RESUME_DATA['hammerball']) and still live on
  * Roblox — it is just no longer in the grid, so there is nothing here to
@@ -34,6 +39,53 @@ test.beforeEach(async ({ page }) => {
 
 test('every card renders, one per project in the data', async ({ page }) => {
   await expect(page.locator('#work li')).toHaveCount(WORK_PROJECTS.length);
+});
+
+test('Glassgrid is the featured card: first, and the full width from 768px up', async ({ page }, testInfo) => {
+  const first = page.locator('#work li').first();
+  await expect(first.getByRole('heading', { level: 3 })).toHaveText('Glassgrid');
+
+  const wide = (testInfo.project.use.viewport?.width ?? 0) >= 768;
+  const list = await page.locator('#work ul').boundingBox();
+  const featured = await first.boundingBox();
+  const next = await page.locator('#work li').nth(1).boundingBox();
+  if (!list || !featured || !next) throw new Error('work grid not laid out');
+
+  if (wide) {
+    // Spans both columns: as wide as the list, and about twice the width of a
+    // card in the 2x2 below it (the gap makes it a little more than double).
+    expect(Math.abs(featured.width - list.width)).toBeLessThanOrEqual(1);
+    expect(featured.width).toBeGreaterThan(next.width * 2);
+    expect(next.y).toBeGreaterThan(featured.y + featured.height - 1);
+  } else {
+    // One column: every card is the list's width.
+    expect(Math.abs(featured.width - next.width)).toBeLessThanOrEqual(1);
+  }
+});
+
+test('Glassgrid states its one timing with the machine it was measured on', async ({ page }) => {
+  const c = card(page, 'Glassgrid');
+  // The figure and its conditions together, exactly as the data module
+  // publishes them: never the number without the 2-vCPU VM.
+  await expect(c).toContainText(GLASSGRID_CROSSFILTER_CLAIM);
+  await expect(c).toContainText(`At ${GLASSGRID_CROSSFILTER.rows} rows`);
+  // And nothing that claims the MCP bridge (milestone M6) exists.
+  await expect(c).not.toContainText(/MCP/);
+});
+
+test('Glassgrid links to its demo, its source and its case study', async ({ page }) => {
+  const c = card(page, 'Glassgrid');
+  const glassgrid = WORK_PROJECTS.find((p) => p.id === 'glassgrid')!;
+  for (const label of ['Live demo', 'Source', 'Case study']) {
+    const expected = glassgrid.links.find((l) => l.label === label);
+    expect(expected, label).toBeDefined();
+    const link = c.getByRole('link', { name: new RegExp(`^${label}`) });
+    await expect(link).toHaveAttribute('href', expected!.href);
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /noopener/);
+  }
+  await expect(c.getByRole('link', { name: /^Live demo/ })).toHaveAttribute('href', /\/glassgrid\/\?sample=taxi$/);
+  await expect(c.getByRole('link', { name: /^Source/ })).toHaveAttribute('href', 'https://github.com/Kaleb-kougl/glassgrid');
 });
 
 test('roblox-css states its coverage, matching the single source', async ({ page }) => {

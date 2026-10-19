@@ -25,7 +25,7 @@ export interface LlmsEntry {
   type: ProjectEntry['type'];
 }
 
-/** A Work-section card: the four projects the site leads with. */
+/** A Work-section card: the five projects the site leads with, Glassgrid first. */
 export interface LlmsCard {
   id: string;
   name: string;

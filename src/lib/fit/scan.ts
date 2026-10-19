@@ -222,8 +222,8 @@ function gapTerms(id: string, terms: readonly string[]): string[] {
  * Names that contain a vocabulary word but aren't that skill: "Next.js" is
  * not a mention of JavaScript ("JS"). They take part in the longest-match
  * rule so the shorter word inside them doesn't count, then produce no row.
- * Several are now vocabulary terms themselves (Next.js and React Testing
- * Library are claimed; Nuxt, Express, D3 and the rest are gap terms); where
+ * Several are now vocabulary terms themselves (Next.js, React Testing
+ * Library and D3.js are claimed; Nuxt, Express and the rest are gap terms); where
  * the two match the same span the vocabulary term wins, because it is
  * compiled first. `route.ts` still reads this list to keep them out of
  * model proposals.

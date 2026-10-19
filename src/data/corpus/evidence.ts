@@ -1,6 +1,11 @@
 import { RESUME_DATA } from '../resumeData';
 import { SITE_URL } from '../site';
-import { ROBLOX_CSS_COVERAGE, WORK_PROJECTS, type WorkProjectId } from '../workProjects';
+import {
+  GLASSGRID_CROSSFILTER,
+  ROBLOX_CSS_COVERAGE,
+  WORK_PROJECTS,
+  type WorkProjectId,
+} from '../workProjects';
 import type { Evidence } from './schema';
 
 /**
@@ -21,6 +26,10 @@ import type { Evidence } from './schema';
  *     r3f-projectiles, which is cited instead.
  *   - "120fps" for the r3f-projectiles renderer. The pool size is in the code;
  *     a frame rate depends on the machine it was measured on.
+ *   - Glassgrid's other timings (open to first rows, scroll frame interval,
+ *     chart create) and its MCP bridge, which is planned, not built. Its one
+ *     timing here carries the machine in the same sentence and cites the
+ *     benchmark JSON it is read from, which is what "120fps" never had.
  * Entries of type profile, contact and skill are keyword lists or contact
  * details, not claims, and are skipped too.
  *
@@ -77,6 +86,8 @@ const R3F_NPM = { label: '@k9kbdev/r3f-projectiles on npm', href: cardLink('r3f-
 const ROBLOX_CSS_SOURCE = { label: 'roblox-css on GitHub', href: cardLink('roblox-css', 'Source') };
 const ROBLOX_CSS_NPM = { label: '@k9kbdev/roblox-css on npm', href: cardLink('roblox-css', 'npm') };
 const VIDEO_PIPELINE_SOURCE = { label: 'video-pipeline on GitHub', href: cardLink('video-pipeline', 'Source') };
+const GLASSGRID_REPO = cardLink('glassgrid', 'Source');
+const GLASSGRID_CASE_STUDY = cardLink('glassgrid', 'Case study');
 const PORTFOLIO_SOURCE = { label: 'sswe-portfolio on GitHub', href: bulletUrl('portfolio-site', 'github.com') };
 const BONKBALL = { label: 'BonkBall on Roblox', href: bulletUrl('hammerball', 'roblox.com') };
 const EXTENSION = { label: 'Work: Indeed Analytics Extension (internal, no public link)', href: WORK_ANCHOR };
@@ -221,6 +232,33 @@ export const EVIDENCE: readonly Evidence[] = [
     claim: 'I secured cross-platform data transfers with strict frontend input allowlists and automatic URL sanitization to prevent XSS, routing external input into existing backend validation.',
     skills: ['frontend-security'],
   }, EXTENSION, EXTENSION_PERIOD),
+
+  // --- Glassgrid --------------------------------------------------------
+  // Claims limited to the card and the résumé entry, both sourced to the
+  // public repo (see the SOURCING notes in workProjects.ts and resumeData.ts).
+  // Sources name the section each claim is read from, in the label rather
+  // than as a #fragment: GitHub renders heading ids as "user-content-…", so
+  // `npm run corpus:links` (which looks for id="<fragment>") could never pass
+  // a GitHub anchor. Four records, not more:
+  // the corpus is near its token budget (npm run corpus:tokens), and the test
+  // stack (Vitest, Playwright, axe-core) is already evidenced by this site.
+  project('glassgrid', 'crossfilter-latency', {
+    claim: `I built Glassgrid, an open-source data explorer: at ${GLASSGRID_CROSSFILTER.rows} rows a brush repaints 4 linked charts and the grid in ${GLASSGRID_CROSSFILTER.p95Ms} ms at p95, ${GLASSGRID_CROSSFILTER.conditions}.`,
+    skills: ['data-visualization', 'duckdb', 'web-performance'],
+    metric: `p95 ${GLASSGRID_CROSSFILTER.p95Ms} ms cross-filter at ${GLASSGRID_CROSSFILTER.rows} rows, 2-vCPU VM`,
+  }, { label: 'Glassgrid benchmark JSON', href: GLASSGRID_CROSSFILTER.source }),
+  project('glassgrid', 'two-runtimes', {
+    claim: 'I run one React app and query engine in Electron on native DuckDB and in the browser on DuckDB-WASM in a Web Worker; the web build has a strict CSP with no unsafe-eval.',
+    skills: ['electron', 'duckdb', 'webassembly', 'frontend-security'],
+  }, { label: 'Glassgrid case study, Architecture', href: GLASSGRID_CASE_STUDY }),
+  project('glassgrid', 'view-sized-results', {
+    claim: 'I compile each grid page and chart from a typed spec to SQL; the engine returns Apache Arrow sized to the view, drawn on Canvas 2D with D3.',
+    skills: ['sql', 'html-canvas', 'd3', 'data-visualization'],
+  }, { label: 'Glassgrid README, How it works', href: GLASSGRID_REPO }),
+  project('glassgrid', 'command-registry', {
+    claim: 'I made every action one of 25 typed, undoable commands with a Zod schema, and a parity test that each is marked for the planned MCP bridge or exempted.',
+    skills: ['state-management', 'zod', 'api-design'],
+  }, { label: 'Glassgrid case study, State you can trust', href: GLASSGRID_CASE_STUDY }),
 
   // --- Agentic AI Video Creator ------------------------------------------
   // Claims limited to what the card vouches for: its README, per workProjects.ts.

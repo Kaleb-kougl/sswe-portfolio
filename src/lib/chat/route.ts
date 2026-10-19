@@ -81,6 +81,7 @@ export function looksLikeJd(message: string): boolean {
  * role that holds it.
  */
 export const PROJECT_ALIASES: readonly { id: string; names: readonly string[] }[] = [
+  { id: 'glassgrid', names: ['glassgrid', 'glass grid', 'data explorer', 'csv explorer', 'cross-filter', 'crossfilter'] },
   { id: 'r3f-projectiles', names: ['r3f-projectiles', 'r3f projectiles', 'projectile engine', 'bullet-hell engine', 'bullet hell engine', 'bullet-hell', 'bullet hell'] },
   { id: 'roblox-css', names: ['roblox-css', 'roblox css'] },
   { id: 'hammerball', names: ['bonkball', 'bonk ball', 'hammerball', 'roblox game'] },
