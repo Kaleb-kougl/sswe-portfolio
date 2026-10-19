@@ -21,10 +21,10 @@ Level: Senior, the same as my most recent title (Senior Software Engineer, Indee
 ## Nice-to-have
 
 - **Partial**: Design and build payment APIs used by thousands of merchants
-  Evidence: GolfTV GraphQL API on AWS (IBM), Pattern system of pure functions (r3f-projectiles), Variant-driven animation primitives (roblox-css). Nothing for payments. No evidence at that scale.
+  Evidence: GolfTV GraphQL API on AWS (IBM), Pattern system of pure functions (r3f-projectiles), 25 typed, undoable commands (Glassgrid). Nothing for payments. No evidence at that scale.
   - GolfTV GraphQL API on AWS (IBM): [Résumé: Software Engineer, IBM](https://kalebkougl-portfolio.vercel.app/#career)
   - Pattern system of pure functions (r3f-projectiles): [r3f-projectiles on GitHub](https://github.com/Kaleb-kougl/r3f-projectiles)
-  - Variant-driven animation primitives (roblox-css): [roblox-css on GitHub](https://github.com/Kaleb-kougl/roblox-css)
+  - 25 typed, undoable commands (Glassgrid): [Glassgrid case study, State you can trust](https://github.com/Kaleb-kougl/glassgrid/blob/main/docs/case-study.md)
 - **Gap**: Improve reliability and observability of our Java and Kotlin services
   Not in my work yet. Closest backend work: GolfTV GraphQL API on AWS (IBM).
 - **Strong**: Mentor engineers and lead technical design reviews

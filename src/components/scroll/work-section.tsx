@@ -5,9 +5,10 @@ import { WORK_PROJECTS, type WorkBadgeTone, type WorkProjectId } from '@/data/wo
 /**
  * WorkSection — "Things I've shipped."
  *
- * A 2x2 card grid (one column under 768px). Each card draws that project's
- * OWN interface rather than a generic icon, so four cards read as four
- * different things.
+ * One featured card across the full width (Glassgrid, `featured` in the
+ * data), then a 2x2 grid of the other four; one column under 768px. Each card
+ * draws that project's OWN interface rather than a generic icon, so five
+ * cards read as five different things.
  *
  * Build rule: static HTML and inline SVG only. No WebGL here — the live 3D
  * belongs to the page background and nowhere else.
@@ -311,6 +312,143 @@ function AgentOrchestratorDrawing() {
   );
 }
 
+/**
+ * Glassgrid — a brushed date range filtering the grid and a second chart.
+ *
+ * Drawn from the README's demo, not invented: on the taxi sample, brushing a
+ * range on "Trips per day" filters the zone bars and the grid. So the panel is
+ * three linked views, and the one colour that means anything is the link
+ * blue of the selection: the brush, the line inside it, the part of each bar
+ * that survives the filter, and the grid column the brush is on. Everything
+ * outside the selection is the hairline/control greys of the rest of this
+ * file, which is how a cross-filter shows filtered-out data — as a ghost.
+ *
+ * No figures. The card's one number carries its machine in the same
+ * sentence; a drawing has nowhere to put that, so it shows shapes only.
+ *
+ * Under 768px the card is one column wide, so the zone bars drop out and the
+ * grid and the brushed line share the panel. The charts are SVGs stretched to
+ * their pane (`preserveAspectRatio="none"`), with non-scaling strokes so the
+ * line keeps its weight at any width; their captions are HTML so the text is
+ * never stretched with them.
+ */
+const TRIPS_PER_DAY = Array.from({ length: 25 }, (_, i) => {
+  // Two sines and a slow rise: a weekly rhythm on a trend. Deterministic.
+  const y = 30 - 9 * Math.sin(i * 0.9) - 5 * Math.sin(i * 0.37 + 1) - i * 0.35;
+  return { x: i * 5, y: Number(y.toFixed(2)) };
+});
+/** The brushed range, in the line's own x units (points 9 to 15). */
+const BRUSH = { from: 45, to: 75 } as const;
+const linePath = (points: readonly { x: number; y: number }[]) =>
+  points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`).join(' ');
+const FULL_LINE = linePath(TRIPS_PER_DAY);
+const BRUSHED_LINE = linePath(TRIPS_PER_DAY.filter((p) => p.x >= BRUSH.from && p.x <= BRUSH.to));
+
+/** Trips by zone: each bar's total, and the share left after the brush. */
+const ZONE_BARS = [
+  { total: 40, kept: 17 },
+  { total: 33, kept: 15 },
+  { total: 27, kept: 9 },
+  { total: 22, kept: 10 },
+  { total: 15, kept: 5 },
+  { total: 10, kept: 4 },
+] as const;
+
+/** Grid cell widths (% of their column), one row per entry. */
+const GRID_ROWS = [
+  [78, 64, 42],
+  [70, 88, 55],
+  [84, 52, 36],
+  [66, 74, 61],
+  [80, 58, 47],
+] as const;
+const GRID_COLUMNS = ['pickup', 'zone', 'fare'] as const;
+
+function CrossfilterDrawing() {
+  return (
+    <IllustrationPanel className="gap-2 bg-panel p-2">
+      {/* The grid: the pickup column is the one the brush filters. */}
+      <div className="work-illustration__pane work-illustration__pane--light flex flex-col justify-center gap-[7px] py-1.5">
+        <div className="grid grid-cols-[1.2fr_1fr_0.7fr] gap-x-2 border-b border-hairline pb-1">
+          {GRID_COLUMNS.map((column) => (
+            <span key={column} className="work-illustration__caption">
+              {column}
+            </span>
+          ))}
+        </div>
+        {GRID_ROWS.map((row, r) => (
+          <div key={r} className="grid grid-cols-[1.2fr_1fr_0.7fr] gap-x-2">
+            {row.map((width, c) => (
+              <span
+                key={GRID_COLUMNS[c]}
+                className={`work-illustration__cell${c === 0 ? ' work-illustration__cell--selected' : ''}`}
+                style={{ width: `${width}%` }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Trips per day, with the brushed range. */}
+      <div className="work-illustration__pane work-illustration__pane--light flex flex-col gap-1 py-1.5">
+        <span className="work-illustration__caption">Trips per day</span>
+        <svg viewBox="0 0 120 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
+          <rect
+            x={BRUSH.from}
+            y={0}
+            width={BRUSH.to - BRUSH.from}
+            height={40}
+            fill="currentColor"
+            fillOpacity={0.12}
+            className="text-link"
+          />
+          {[BRUSH.from, BRUSH.to].map((x) => (
+            <path
+              key={x}
+              d={`M${x} 0V40`}
+              stroke="currentColor"
+              strokeWidth={1}
+              vectorEffect="non-scaling-stroke"
+              className="text-link"
+            />
+          ))}
+          <path
+            d={FULL_LINE}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.25}
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            className="text-faint"
+          />
+          <path
+            d={BRUSHED_LINE}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            className="text-link"
+          />
+        </svg>
+      </div>
+
+      {/* Trips by zone: ghost totals, and what the brush leaves. md+ only. */}
+      <div className="work-illustration__pane work-illustration__pane--light hidden flex-col gap-1 py-1.5 md:flex">
+        <span className="work-illustration__caption">Trips by zone</span>
+        <svg viewBox="0 0 120 40" preserveAspectRatio="none" className="min-h-0 w-full flex-1">
+          {ZONE_BARS.map((bar, i) => (
+            <g key={i}>
+              <rect x={i * 20 + 3} y={40 - bar.total} width={14} height={bar.total} fill="currentColor" className="text-control" />
+              <rect x={i * 20 + 3} y={40 - bar.kept} width={14} height={bar.kept} fill="currentColor" className="text-link" />
+            </g>
+          ))}
+        </svg>
+      </div>
+    </IllustrationPanel>
+  );
+}
+
 /** Indeed Analytics Extension — the popup, as it appears over a campaign. */
 function ExtensionPopupDrawing() {
   const row = (label: string, value: string) => (
@@ -341,6 +479,7 @@ function ExtensionPopupDrawing() {
 }
 
 const ILLUSTRATIONS: Record<WorkProjectId, ReactNode> = {
+  glassgrid: <CrossfilterDrawing />,
   'r3f-projectiles': <ProjectilePoolDrawing />,
   'roblox-css': <CssTranslationDrawing />,
   'video-pipeline': <AgentOrchestratorDrawing />,
@@ -368,14 +507,16 @@ export function WorkSection() {
         </h2>
 
         <p className="mt-4 max-w-2xl text-lg text-body">
-          Two npm packages, a multi-agent LLM pipeline, and tooling used inside Indeed.
+          Glassgrid, a data explorer for desktop and the browser; two npm
+          packages; a multi-agent LLM pipeline; and tooling used inside Indeed.
         </p>
 
         <ul className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {WORK_PROJECTS.map((project) => (
             <li
               key={project.id}
-              className="card card--lg card--elevated flex flex-col p-5"
+              /* The featured card takes the full row above the 2x2. */
+              className={`card card--lg card--elevated flex flex-col p-5${project.featured ? ' md:col-span-2' : ''}`}
             >
               {ILLUSTRATIONS[project.id]}
 
@@ -390,7 +531,9 @@ export function WorkSection() {
                 </span>
               </div>
 
-              <p className="work-card__description mt-3 grow">
+              {/* The featured card is twice as wide; its copy keeps a readable
+                  measure rather than running the full width. */}
+              <p className={`work-card__description mt-3 grow${project.featured ? ' max-w-[75ch]' : ''}`}>
                 {project.description}
               </p>
 

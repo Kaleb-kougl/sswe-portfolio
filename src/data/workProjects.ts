@@ -1,5 +1,8 @@
+import { SITE_URL } from './site';
+
 /**
- * WORK SECTION DATA — the four things worth showing a hiring manager.
+ * WORK SECTION DATA — the five things worth showing a hiring manager: one
+ * featured card (Glassgrid) across the full width, and four below it.
  *
  * SOURCING RULE: every number on this page is one a reader could go check.
  * Each `verified` note below records where the claim came from. If you cannot
@@ -36,6 +39,38 @@ export const ROBLOX_CSS_COVERAGE = {
   specFiles: 12,
 } as const;
 
+/**
+ * Glassgrid's one published timing, kept as data so the card's sentence, the
+ * résumé bullet and the e2e test all read the same figure and the same
+ * conditions — never the number without the machine it was measured on.
+ *
+ * WHY CONDITIONS TRAVEL WITH THE NUMBER. This site has already refused one
+ * machine-dependent figure ("120 fps", see the header of corpus/evidence.ts).
+ * A latency is the same kind of claim: true on the machine that measured it.
+ * So it ships only with that machine named, and only with a file to check.
+ *
+ * Source, read on glassgrid@main (cd419c3):
+ * docs/benchmarks/m3/m3-exit-gate-medians-linux-x64.json →
+ * exitGate.crossfilter.p95Ms.median = 80.5 (runs 94.7 / 79.4 / 80.5),
+ * budgetMs 100, brushes 20, rows 10,000,000, machine.cpuCount 2, totalMemBytes
+ * 8,419,655,680 (8 GB), "4 charts + grid", source "parquet" (the background
+ * Parquet copy of the CSV). Measured from brush release to every other view
+ * painted, in Electron 44 under Xvfb with software rendering. The README's
+ * "Numbers" table and the case study's "Results" table quote the same median.
+ */
+export const GLASSGRID_CROSSFILTER = {
+  p95Ms: 80.5,
+  budgetMs: 100,
+  rows: '10M',
+  /** Says where the number is true; always printed with it. */
+  conditions: 'measured on a 2-vCPU Linux VM',
+  source:
+    'https://github.com/Kaleb-kougl/glassgrid/blob/main/docs/benchmarks/m3/m3-exit-gate-medians-linux-x64.json',
+} as const;
+
+/** The figure as the card states it. The e2e test asserts this exact string. */
+export const GLASSGRID_CROSSFILTER_CLAIM = `${GLASSGRID_CROSSFILTER.p95Ms} ms at p95, ${GLASSGRID_CROSSFILTER.conditions}`;
+
 /** Which badge tint a card's chip uses. Each tint ships its own legible ink. */
 export type WorkBadgeTone = 'lime' | 'blue' | 'neutral';
 
@@ -58,6 +93,7 @@ export interface WorkLink {
 
 /** Stable key; also selects the card's illustration in the component. */
 export type WorkProjectId =
+  | 'glassgrid'
   | 'r3f-projectiles'
   | 'roblox-css'
   | 'video-pipeline'
@@ -76,9 +112,73 @@ export interface WorkProject {
    * footer and the absence of a link is stated rather than merely felt.
    */
   linkNote?: string;
+  /**
+   * The lead card: spans both columns from 768px up, above the 2x2 of the
+   * rest. One at most, and it should be the first entry.
+   */
+  featured?: boolean;
 }
 
 export const WORK_PROJECTS: readonly WorkProject[] = [
+  {
+    id: 'glassgrid',
+    name: 'Glassgrid',
+    badge: { label: 'DESKTOP + WEB · MIT', tone: 'lime' },
+    featured: true,
+    //
+    // SOURCING — every clause is read off github.com/Kaleb-kougl/glassgrid at
+    // main (cd419c3), not from memory. Paths are in that repo:
+    //   multi-gigabyte CSV, canvas grid,  → README.md, opening paragraph:
+    //   linked charts, DuckDB computes      "Open a multi-gigabyte CSV on your own
+    //   every number                        machine, scroll it in a canvas grid and
+    //                                       cross-filter linked charts over it. An
+    //                                       embedded DuckDB computes every number"
+    //   one React app, one engine;        → README.md "How it works" ("One app,
+    //   native DuckDB in a                  two runtimes"); docs/case-study.md
+    //   utilityProcess, DuckDB-WASM         "Architecture"
+    //   in a Web Worker
+    //   typed, undoable commands          → README.md "How it works" ("Every action
+    //                                       is a command"); docs/m1-commands.md
+    //   80.5 ms at p95, 10M rows,         → GLASSGRID_CROSSFILTER above, which
+    //   four charts and the grid,           records the JSON field it is read from
+    //   2-vCPU Linux VM
+    //   MIT                               → LICENSE ("MIT License, Copyright (c)
+    //                                       2026 Kaleb Kougl")
+    //
+    // ONE NUMBER, ON PURPOSE. The README's table has more (open a 329 MB CSV
+    // to first rows in 315 ms, a 16.7 ms p95 scroll frame, 253.5 kB of
+    // first-load JS), all from the same VM. A card carries the one that is the
+    // product's reason to exist; the rest are a click away on the case study,
+    // with their conditions next to them.
+    //
+    // NOT CLAIMED: the MCP bridge. It is milestone M6, planned and not built.
+    // What exists is the command registry an agent would drive and a parity
+    // test over it; the résumé entry says exactly that and no more.
+    //
+    // NOT DEPLOYED ELSEWHERE: the README still names glassgrid.vercel.app as a
+    // TODO. The demo is served by this site under /glassgrid/, so the link is
+    // built from SITE_URL and moves with the domain.
+    description:
+      'Open a multi-gigabyte CSV on your own machine, scroll it in a canvas grid and cross-filter linked charts over it, with an embedded DuckDB computing every number. One React app and one query engine run as an Electron desktop app on native DuckDB and in the browser on DuckDB-WASM in a Web Worker, and every action is a typed, undoable command. ' +
+      `At ${GLASSGRID_CROSSFILTER.rows} rows, a brush repaints four charts and the grid in ${GLASSGRID_CROSSFILTER_CLAIM}.`,
+    links: [
+      {
+        label: 'Live demo',
+        href: `${SITE_URL}/glassgrid/?sample=taxi`,
+        screenReaderSuffix: ' of Glassgrid in the browser, on its taxi-trips sample',
+      },
+      {
+        label: 'Source',
+        href: 'https://github.com/Kaleb-kougl/glassgrid',
+        screenReaderSuffix: ' for Glassgrid on GitHub',
+      },
+      {
+        label: 'Case study',
+        href: 'https://github.com/Kaleb-kougl/glassgrid/blob/main/docs/case-study.md',
+        screenReaderSuffix: ' for Glassgrid on GitHub',
+      },
+    ],
+  },
   {
     id: 'r3f-projectiles',
     name: 'r3f-projectiles',

@@ -341,6 +341,44 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Built cross\u2011platform React Native features and added Jest/Appium test suites to raise release confidence.',
     ],
   },
+  'glassgrid': {
+    fileId: 'glassgrid',
+    title: 'Glassgrid',
+    company: 'Open Source · glassgrid',
+    dates: '',
+    type: 'project',
+    headline: 'Cross-filter a 10M-row CSV on your own machine.',
+    summary:
+      'An open-source data explorer: open a multi-gigabyte CSV locally, scroll it in a canvas grid and cross-filter linked charts, with an embedded DuckDB computing every number, as an Electron desktop app or in the browser.',
+    /*
+     * SOURCING. Every bullet is read off the public repository at main
+     * (github.com/Kaleb-kougl/glassgrid, cd419c3), and each names the file a
+     * reader can check: README.md ("How it works", "Interesting problems",
+     * "Tech stack"), docs/case-study.md, docs/m1-commands.md and the benchmark
+     * JSON. The Work card's SOURCING note in `workProjects.ts` maps its own
+     * clauses; this entry carries the longer list the corpus draws on.
+     *
+     * The timing bullet is built from GLASSGRID_CROSSFILTER so its figure and
+     * conditions cannot drift from the card's. It is not imported here:
+     * contact-section.tsx is a client component that imports this file, and
+     * workProjects.ts would follow it into the homepage bundle. The corpus
+     * test checks that every figure in a glassgrid record appears in this
+     * text, so a drift between the two shows up there.
+     *
+     * NOT CLAIMED: an MCP bridge. It is milestone M6 and not built; the
+     * command registry and its parity test are, and that is all this says.
+     */
+    bullets: [
+      'Built Glassgrid, an MIT-licensed data explorer: open a multi-gigabyte CSV locally, scroll it in a virtualized canvas grid and cross-filter linked charts, with an embedded DuckDB computing every number. Source: https://github.com/Kaleb-kougl/glassgrid',
+      'One React 19 app and one query engine run as an Electron desktop app, on native DuckDB in a utilityProcess, and in the browser on DuckDB-WASM in a Web Worker; the same engine suite runs on both drivers.',
+      'The UI never holds raw rows beyond the screen: each grid page and chart is a typed spec compiled to SQL, the engine returns Apache Arrow sized to the view, and the grid and charts draw it on Canvas 2D with d3-scale and d3-shape.',
+      'Cross-filtering 4 charts and the grid at 10M rows, brush release to every other view painted takes 80.5 ms at p95 against a 100 ms budget, measured on a Linux VM with 2 vCPUs and 8 GB, median of three runs. Benchmark: https://github.com/Kaleb-kougl/glassgrid/blob/main/docs/benchmarks/m3/m3-exit-gate-medians-linux-x64.json',
+      'Every action is one of 25 typed, undoable commands, each with a Zod input schema and Immer patches for undo; a parity test fails if a command is neither marked for the planned MCP bridge nor exempted with a reason.',
+      'The web build runs under a strict Content Security Policy with no unsafe-eval: Arrow vectors are built with plain closures, Zod runs jitless, and every web end-to-end test fails on a CSP violation.',
+      'Tested with Vitest unit tests, fast-check property tests, and Playwright end-to-end runs with axe-core, in a pnpm workspaces monorepo built with Vite. Case study: https://github.com/Kaleb-kougl/glassgrid/blob/main/docs/case-study.md',
+    ],
+    skills: ['TypeScript', 'React', 'Electron', 'DuckDB', 'DuckDB-WASM', 'Apache Arrow', 'Web Workers', 'Zod', 'D3', 'Canvas 2D', 'Vitest', 'fast-check', 'Playwright'],
+  },
   'video-pipeline': {
     fileId: 'video-pipeline',
     title: 'Agentic AI Video Creator',
