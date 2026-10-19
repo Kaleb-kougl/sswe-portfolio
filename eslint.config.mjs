@@ -21,6 +21,10 @@ const eslintConfig = defineConfig([
     "roblox-css/**",
     "r3f-scraper/**",
     "public/draco-gltf/**",
+    // The Glassgrid demo's release build, unpacked by
+    // scripts/fetch-glassgrid.mjs: minified third-party output, gitignored.
+    "public/glassgrid/**",
+    ".glassgrid-cache/**",
   ]),
   {
     files: ["__tests__/**/*.ts", "__tests__/**/*.tsx"],

@@ -3,7 +3,9 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/fetch-glassgrid.mjs --optional",
     "dev": "next dev",
+    "prebuild": "node scripts/fetch-glassgrid.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -19,6 +21,7 @@
     "roblox-css:check": "node scripts/check-roblox-css-claims.mjs",
     "corpus:tokens": "node scripts/corpus-tokens.mjs",
     "corpus:links": "node scripts/check-corpus-links.mjs",
+    "glassgrid:fetch": "node scripts/fetch-glassgrid.mjs",
     "test:motionscore": "npx -y motionscore http://localhost:3000"
   },
   "dependencies": {
