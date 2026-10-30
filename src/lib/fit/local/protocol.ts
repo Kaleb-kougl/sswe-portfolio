@@ -254,7 +254,7 @@ export function startRequest(state: SessionState, request: ToWorker): SessionSta
     case 'bench':
       return { ...state, phase: 'benching', activeId: request.id, error: null };
     case 'load':
-      return { ...state, phase: 'loading', activeId: request.id, progress: null, error: null };
+      return { ...state, phase: 'loading', activeId: request.id, progress: null, error: null, loaded: false };
     case 'generate':
       return { ...state, phase: 'running', activeId: request.id, error: null };
     case 'run':

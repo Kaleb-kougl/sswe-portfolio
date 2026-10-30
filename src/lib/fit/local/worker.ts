@@ -100,6 +100,8 @@ async function handleLoad(id: number, modelId?: LocalModelId | SpikeModelId) {
   const wanted: LocalModel | undefined = modelId ? pinned[modelId] : LOCAL_MODEL;
   if (!wanted) return post({ type: 'error', id, code: 'load_failed', message: `Unknown model ${String(modelId)}.` });
   if (loaded && engine && model.id === wanted.id) return post({ type: 'loaded', id, fromCache: true, elapsedMs: 0 });
+  // Claim the worker before awaiting the unload, so busy() rejects requests sent meanwhile.
+  current = { id, cancel: () => {} };
   if (engine) {
     // Switching models: free the old one's GPU memory first.
     await engine.unload().catch(() => {});

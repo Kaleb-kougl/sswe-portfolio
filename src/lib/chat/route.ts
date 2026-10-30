@@ -201,7 +201,7 @@ export function routeMessage(raw: string): ChatRoute {
   const skills = skillsInMessage(message);
   // A named project wins, unless the message is about a skill "at" an employer
   // ("React at IBM?" is a skill question; "What did he do at IBM?" is not).
-  const employerOnly = project && ['indeed-sr-swe', 'ibm-staff-swe', 'jbhunt-intern'].includes(project.id);
+  const employerOnly = project && EMPLOYER_NAMES.has(project.name);
   if (project && !(employerOnly && skills.length > 0)) {
     if (!employerOnly || PROJECT_CUE.test(message) || message.split(/\s+/).length <= 4) {
       return { tool: 'get_project', input: { id: project.id }, reason: `names "${project.name}"` };

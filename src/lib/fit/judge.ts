@@ -102,7 +102,8 @@ function normalizeYears(value: unknown): unknown {
 /** Two requirements are the same if they'd judge the same and read the same. */
 function requirementKey(req: ExtractedRequirement): string {
   return JSON.stringify([
-    skillKey(req.text),
+    // Like skillKey, but keeps + and # so "C++" and "C#" stay distinct.
+    req.text.toLowerCase().replace(/[^a-z0-9+#]+/g, ''),
     [...req.skills].sort(),
     req.otherSkills.map((s) => gapTerm(s)?.id ?? s.toLowerCase()).sort(),
     req.minYears,
@@ -307,7 +308,7 @@ export function assessSkills(
   const covered = (s: string) => matches.some((e) => e.skills.includes(s));
   const satisfied = (req.text ? exampleLists(req.text) : []).filter((list) => list.skills.some(covered));
   const inSatisfied = (id: string | null, label: string) =>
-    satisfied.some((list) => (id !== null && list.skills.includes(id)) || list.others.includes(label));
+    satisfied.some((list) => (id !== null && list.skills.includes(id)) || list.others.some((o) => o === label || (gapTerm(o) !== undefined && gapTerm(o)?.id === gapTerm(label)?.id)));
   const uncovered: string[] = [];
   const excused: string[] = [];
   for (const s of req.skills) {
