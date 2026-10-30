@@ -227,6 +227,7 @@ const MAGNITUDE_WORDS = String.raw`((?:tens|hundreds) of )?(thousands|millions|b
 const GAP = String.raw`(?:[\w-]+\s+){0,2}?`;
 
 const UNIT: Record<string, number> = { k: 1e3, thousand: 1e3, m: 1e6, million: 1e6, b: 1e9, billion: 1e9, trillion: 1e12 };
+const DATA_UNIT: Record<string, number> = { tb: 1e12, pb: 1e15, eb: 1e18 };
 const WORD_UNIT: Record<string, number> = { thousands: 1e3, millions: 1e6, billions: 1e9, trillions: 1e12 };
 
 function figure(digits: string, unit: string | undefined): number {
@@ -240,6 +241,7 @@ export function statedSizes(text: string): { kind: ScaleKind; size: number }[] {
   for (const kind of Object.keys(NOUNS) as ScaleKind[]) {
     const noun = `(?:${NOUNS[kind]})\\b`;
     for (const m of lower.matchAll(new RegExp(`\\b${NUMBER}\\s+${GAP}${noun}`, 'g'))) {
+      if (kind === 'data' && /\\b(?:tb|pb|eb)$/.test(m[0])) continue; // sized by the unit loop below
       found.push({ kind, size: figure(m[1], m[2]) });
     }
     for (const m of lower.matchAll(new RegExp(`\\b${MAGNITUDE_WORDS}\\s+${GAP}${noun}`, 'g'))) {
@@ -249,7 +251,7 @@ export function statedSizes(text: string): { kind: ScaleKind; size: number }[] {
       for (const m of lower.matchAll(new RegExp(`\\bteam of ${NUMBER}`, 'g'))) found.push({ kind, size: figure(m[1], m[2]) });
     }
     if (kind === 'data') {
-      for (const m of lower.matchAll(new RegExp(`\\b${NUMBER}\\s*(tb|pb|eb)\\b`, 'g'))) found.push({ kind, size: figure(m[1], m[2]) });
+      for (const m of lower.matchAll(new RegExp(`\\b${NUMBER}\\s*(tb|pb|eb)\\b`, 'g'))) found.push({ kind, size: figure(m[1], m[2]) * DATA_UNIT[m[3]] });
     }
   }
   return found;

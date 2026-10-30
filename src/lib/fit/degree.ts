@@ -47,7 +47,7 @@ const NEGATED = /\b(?:no|not|without|with or without)\b[^.;]{0,30}\bdegree\b|\bd
 
 const LEVELS: readonly [DegreeLevel, RegExp][] = [
   ['associate', /\bassociate['’]?s?\s+degree\b/i],
-  ['bachelor', /\bbachelor['’]?s?\b|\bundergraduate degree\b|\bb\.\s?[as]\.|\b(?:bs|ba|bsc|b\.sc|beng)\b(?=\s*(?:\/|or\b|and\b|in\b|,|degree|\())/i],
+  ['bachelor', /\bbachelor['’]?s?\b|\bundergraduate degree\b|\bb\.\s?[as]\.|\b(?:bs|ba|bsc|b\.sc|beng)\b(?=\s*(?:\/|or\b|and\b|in\b|,|degree|\(|$))/i],
   ['master', /\bmaster['’]?s?\b|\bm\.\s?s\.|\b(?:ms|msc|m\.sc|meng|mba)\b(?=\s*(?:\/|or\b|and\b|in\b|,|degree|\(|$))/i],
   ['doctorate', /\bph\.?\s?d\b|\bdoctorate\b|\bdoctoral degree\b/i],
 ];

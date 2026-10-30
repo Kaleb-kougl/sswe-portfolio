@@ -64,6 +64,9 @@ export function thirdPerson(claim: string): string {
   let named = false;
   return claim
     .replace(/\bI(?:’|')ve\b/g, () => (named ? 'he has' : ((named = true), 'Kaleb has')))
+    .replace(/\bI(?:’|')m\b/g, () => (named ? 'he is' : ((named = true), 'Kaleb is')))
+    .replace(/\bI(?:’|')d\b/g, () => (named ? 'he would' : ((named = true), 'Kaleb would')))
+    .replace(/\bI(?:’|')ll\b/g, () => (named ? 'he will' : ((named = true), 'Kaleb will')))
     .replace(/\bI\b/g, () => (named ? 'he' : ((named = true), 'Kaleb')))
     .replace(/\bmy\b/g, 'his')
     .replace(/\bMy\b/g, 'His')

@@ -197,7 +197,7 @@ export function sampleFrame(
   if (watchdog.filled < WATCHDOG_MIN_SAMPLES) return;
 
   const averageWorkMs = watchdog.sum / watchdog.filled;
-  if (averageWorkMs <= WATCHDOG_MAX_WORK_MS) {
+  if (workMs <= WATCHDOG_MAX_WORK_MS || averageWorkMs <= WATCHDOG_MAX_WORK_MS) {
     watchdog.badFor = 0;
     return;
   }
