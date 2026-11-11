@@ -65,6 +65,7 @@ docs/*
 !docs/hero-pipeline.md
 !docs/contact-delivery.md
 !docs/glassgrid-hosting.md
+!docs/flights-proxy.md
 
 # Held-out job descriptions for the fit-checker evals are third-party postings.
 # Kept local until we decide how (or whether) to commit them.
