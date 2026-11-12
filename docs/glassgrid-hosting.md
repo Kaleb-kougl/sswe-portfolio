@@ -169,6 +169,10 @@ It passes locally against `next start` with every check (compression included, s
 
 Then open `/glassgrid/?sample=taxi` in Chrome, Firefox and Safari and use glassgrid's manual checklist (`docs/m4-web-demo.md`).
 
+## Live flight data
+
+The demo's CSP is `connect-src 'self'`, so it cannot fetch from third parties. Live aircraft come from this site instead: `GET /api/flights`, a fixed-area, CDN-cached proxy for the adsb.lol API. Its contract, caching, failure behaviour and the ODbL attribution any page showing the data must carry are in [flights-proxy.md](flights-proxy.md).
+
 ## One origin, shared with the portfolio
 
 The demo's headers apply only under `/glassgrid`, but storage is per origin, not per path. The portfolio's pages and the demo can see each other's:
