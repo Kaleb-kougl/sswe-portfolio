@@ -2,6 +2,9 @@
   "name": "sswe-portfolio",
   "version": "0.2.0",
   "private": true,
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "scripts": {
     "predev": "node scripts/fetch-glassgrid.mjs --optional",
     "dev": "next dev",
