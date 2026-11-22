@@ -25,7 +25,7 @@ export interface LlmsEntry {
   type: ProjectEntry['type'];
 }
 
-/** A Work-section card: the five projects the site leads with, Glassgrid first. */
+/** A Work-section card: the six projects the site leads with, Roblox Dungeons first. */
 export interface LlmsCard {
   id: string;
   name: string;

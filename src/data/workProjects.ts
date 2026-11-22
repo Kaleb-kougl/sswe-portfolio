@@ -1,8 +1,9 @@
 import { SITE_URL } from './site';
 
 /**
- * WORK SECTION DATA — the five things worth showing a hiring manager: one
- * featured card (Glassgrid) across the full width, and four below it.
+ * WORK SECTION DATA — the six things worth showing a hiring manager: two
+ * featured cards across the full width (Roblox Dungeons, then Glassgrid), and
+ * four below them.
  *
  * SOURCING RULE: every number on this page is one a reader could go check.
  * Each `verified` note below records where the claim came from. If you cannot
@@ -71,6 +72,59 @@ export const GLASSGRID_CROSSFILTER = {
 /** The figure as the card states it. The e2e test asserts this exact string. */
 export const GLASSGRID_CROSSFILTER_CLAIM = `${GLASSGRID_CROSSFILTER.p95Ms} ms at p95, ${GLASSGRID_CROSSFILTER.conditions}`;
 
+/**
+ * Roblox Dungeons is read at one commit, not at `main`.
+ *
+ * The game's repository moves every day, so a sentence read off `main` is true
+ * only until the next merge. Every claim on the card, in the résumé entry and
+ * in the corpus is read at this commit, and every source link is a permalink
+ * to it. Bump the pin on purpose, re-read the sources named in the card's
+ * SOURCING note, and only then change a sentence.
+ *
+ * Pinned 2026-11-22 from `git ls-remote` on the public repository (`main`).
+ */
+export const ROBLOX_DUNGEONS_REPO = 'https://github.com/Kaleb-kougl/roblox-dungeons';
+export const ROBLOX_DUNGEONS_PIN = 'dff7b30418327964a522ac1f0939a98ed7358d46';
+/** A permalink to a file in the game's repository at the pinned commit. */
+export const robloxDungeonsFile = (path: string) =>
+  `${ROBLOX_DUNGEONS_REPO}/blob/${ROBLOX_DUNGEONS_PIN}/${path}`;
+
+/**
+ * Roblox Dungeons' one published measurement: the rollback spike's CPU result.
+ *
+ * WHY THIS ONE. The card is an argument about judgment, and this is the number
+ * a decision was made on: rollback netcode was measured against a gate set in
+ * advance, failed it, and was not built. Like Glassgrid's latency it is true
+ * on the device that measured it, so the device is printed with it, always.
+ *
+ * Source, read at the pin: docs/decisions/0004-rollback-measured-then-not-built.md,
+ * the "Decision" table: "CPU: copy the state and step it 16 ticks, per rendered
+ * frame", gate "4 ms p95 on a mid-range phone", measured "11.77 ms p95 on an
+ * iPhone 17, which dropped to 50 fps". The full record is
+ * docs/ROLLBACK_SPIKE.md (decision RBD8 and the device table).
+ *
+ * NOT ON THE CARD: the spike's second result (teammates corrected by a tile or
+ * more 27 to 74 times a minute against a gate of 6). It is from a bot sweep,
+ * and the record says so; a card has no room for that qualifier.
+ */
+export const ROBLOX_DUNGEONS_ROLLBACK = {
+  p95Ms: 11.77,
+  gateMs: 4,
+  /** Says where the number is true; always printed with it. */
+  device: 'iPhone 17',
+  source: robloxDungeonsFile('docs/decisions/0004-rollback-measured-then-not-built.md'),
+} as const;
+
+/** The figure as the card states it. The e2e test asserts this exact string. */
+export const ROBLOX_DUNGEONS_ROLLBACK_CLAIM = `${ROBLOX_DUNGEONS_ROLLBACK.p95Ms} ms at p95 on an ${ROBLOX_DUNGEONS_ROLLBACK.device}, against a ${ROBLOX_DUNGEONS_ROLLBACK.gateMs} ms gate`;
+
+/**
+ * Golden fixtures the port replays bit for bit: the JSON files in `fixtures/`
+ * at the pin (README.md, "Proof": "16 golden files exported from the
+ * original"; counted in the directory, 16).
+ */
+export const ROBLOX_DUNGEONS_FIXTURES = 16;
+
 /** Which badge tint a card's chip uses. Each tint ships its own legible ink. */
 export type WorkBadgeTone = 'lime' | 'blue' | 'neutral';
 
@@ -93,6 +147,7 @@ export interface WorkLink {
 
 /** Stable key; also selects the card's illustration in the component. */
 export type WorkProjectId =
+  | 'roblox-dungeons'
   | 'glassgrid'
   | 'r3f-projectiles'
   | 'roblox-css'
@@ -113,13 +168,86 @@ export interface WorkProject {
    */
   linkNote?: string;
   /**
-   * The lead card: spans both columns from 768px up, above the 2x2 of the
-   * rest. One at most, and it should be the first entry.
+   * A lead card: spans both columns from 768px up, above the 2x2 of the
+   * rest. Two at most, and they are the first entries, in the order a reader
+   * should meet them.
    */
   featured?: boolean;
 }
 
 export const WORK_PROJECTS: readonly WorkProject[] = [
+  {
+    id: 'roblox-dungeons',
+    name: 'Roblox Dungeons',
+    badge: { label: 'LIVE ON ROBLOX · SOURCE AVAILABLE', tone: 'lime' },
+    featured: true,
+    //
+    // FIRST, AND A GAME. BonkBall lost its slot in this grid because "a
+    // multiplayer game made a weaker argument than a multi-agent LLM system
+    // does". This card is here for the opposite reason, so it must not read
+    // as "a game": the first clause says what it is, and every clause after
+    // it is a constraint or a decision. If an edit makes this card describe
+    // gameplay, it has stopped doing its job.
+    //
+    // SOURCING — every clause is read off github.com/Kaleb-kougl/roblox-dungeons
+    // at ROBLOX_DUNGEONS_PIN (dff7b30), not at main and not from memory. Paths
+    // are in that repo:
+    //   co-op bullet-hell roguelike,      → README.md, opening paragraph ("A co-op
+    //   up to 8 players, live on Roblox     bullet-hell roguelike on Roblox for up
+    //                                       to 8 players"), and its "Play it on
+    //                                       Roblox" link
+    //   deterministic simulation,         → README.md "1. A port that replays bit
+    //   replays its TypeScript original     for bit"; fixtures/README.md;
+    //   bit for bit, 16 golden fixtures     ROBLOX_DUNGEONS_FIXTURES above
+    //   test runner raises on clock,      → README.md "2. Determinism that is
+    //   RNG and Roblox API calls            enforced, not promised";
+    //                                       scripts/lune/lib/realm.luau
+    //   server replays a submitted        → ARCHITECTURE.md "Trust boundary"
+    //   run from its inputs                 ("Recomputes a run's hash, score,
+    //                                       floor and summary ... the client's
+    //                                       numbers are only compared")
+    //   rollback measured, 11.77 ms       → ROBLOX_DUNGEONS_ROLLBACK above, which
+    //   p95, iPhone 17, 4 ms gate,          records the table it is read from
+    //   not built
+    //   source available                  → LICENSE ("Source available for review
+    //                                       ... All rights reserved"). NOT open
+    //                                       source: the badge must never say MIT.
+    //
+    // ONE NUMBER, ON PURPOSE, as on the Glassgrid card. The README has more
+    // (lines of source and tests, spec files, commits). They change daily and
+    // say how much was written, not how well it was decided; they belong on a
+    // case study with a date next to them, not here.
+    //
+    // NOT CLAIMED: that the server stops cheating. ARCHITECTURE.md lists what
+    // replay validation does not do (bots, tool-assisted inputs, one party
+    // member forcing a co-op run unranked). The card says the server replays
+    // runs instead of trusting scores, which is what it does.
+    //
+    // THE THIRD LINK is the repo's one-page architecture, at the pin. When this
+    // site has its own case study page (docs plan PS10-PS13) the link becomes
+    // "Case study" and points there.
+    description:
+      `A co-op bullet-hell roguelike for up to 8 players, live on Roblox, built on a deterministic simulation that replays its TypeScript original bit for bit across ${ROBLOX_DUNGEONS_FIXTURES} golden fixtures. ` +
+      'The test runner loads the simulation where clock, RNG and Roblox API calls raise, so determinism is enforced rather than promised, and the server replays every submitted run from its inputs instead of trusting the score. ' +
+      `Rollback netcode was measured before it was built, at ${ROBLOX_DUNGEONS_ROLLBACK_CLAIM}, and then not built.`,
+    links: [
+      {
+        label: 'Play',
+        href: 'https://www.roblox.com/games/87902875988844/Roblox-Dungeons',
+        screenReaderSuffix: ' Roblox Dungeons on Roblox',
+      },
+      {
+        label: 'Source',
+        href: ROBLOX_DUNGEONS_REPO,
+        screenReaderSuffix: ' for Roblox Dungeons on GitHub',
+      },
+      {
+        label: 'Architecture',
+        href: robloxDungeonsFile('ARCHITECTURE.md'),
+        screenReaderSuffix: ' of Roblox Dungeons, one page on GitHub',
+      },
+    ],
+  },
   {
     id: 'glassgrid',
     name: 'Glassgrid',

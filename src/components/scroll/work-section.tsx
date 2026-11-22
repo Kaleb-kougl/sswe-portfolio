@@ -5,10 +5,10 @@ import { WORK_PROJECTS, type WorkBadgeTone, type WorkProjectId } from '@/data/wo
 /**
  * WorkSection — "Things I've shipped."
  *
- * One featured card across the full width (Glassgrid, `featured` in the
- * data), then a 2x2 grid of the other four; one column under 768px. Each card
- * draws that project's OWN interface rather than a generic icon, so five
- * cards read as five different things.
+ * Two featured cards across the full width (Roblox Dungeons, then Glassgrid;
+ * `featured` in the data), then a 2x2 grid of the other four; one column
+ * under 768px. Each card draws that project's OWN interface rather than a
+ * generic icon, so six cards read as six different things.
  *
  * Build rule: static HTML and inline SVG only. No WebGL here — the live 3D
  * belongs to the page background and nowhere else.
@@ -449,6 +449,63 @@ function CrossfilterDrawing() {
   );
 }
 
+/**
+ * Roblox Dungeons — one recorded run, and the state hash it reaches in three
+ * places.
+ *
+ * NOT invented hex. These are `hashes[t]` of `fixtures/run-full-1337.json` in
+ * the game's repository at the pinned commit (ROBLOX_DUNGEONS_PIN in
+ * workProjects.ts): the full M1 run on seed 1337, 3,600 ticks, exported from
+ * the web build. `hashes[0]` is the fresh state and `hashes[3600]` is the
+ * fixture's `finalHash`. The port's parity spec
+ * (`src/shared/sim/runFull.spec.ts`) replays the recording and compares every
+ * one of them, and CI runs that spec on both architectures
+ * (`.github/workflows/ci.yml`, the `specs` matrix), which is what the second
+ * and third panes say.
+ *
+ * The first pane is the reference, in ink; the other two are in the link blue
+ * because they are the same values arrived at somewhere else. Under 768px the
+ * card is one column wide, so the CI pane drops out, as Glassgrid's zone bars
+ * do.
+ */
+const PARITY_HASHES = [
+  { tick: 0, hash: '85b2b092' },
+  { tick: 1200, hash: '8ebf783c' },
+  { tick: 2400, hash: 'e5285500' },
+  { tick: 3600, hash: '793279ef' },
+] as const;
+
+const PARITY_PANES = [
+  { caption: 'Web build · fixture', reference: true, wideOnly: false },
+  { caption: 'Roblox port · replay', reference: false, wideOnly: false },
+  { caption: 'CI · x86-64 and arm64', reference: false, wideOnly: true },
+] as const;
+
+function HashParityDrawing() {
+  return (
+    <IllustrationPanel className="gap-2 bg-panel p-2">
+      {PARITY_PANES.map((pane) => (
+        <div
+          key={pane.caption}
+          className={`work-illustration__pane work-illustration__pane--light flex-col justify-center gap-[5px] py-1.5 ${pane.wideOnly ? 'hidden md:flex' : 'flex'}`}
+        >
+          <span className="work-illustration__caption border-b border-hairline pb-1">
+            {pane.caption}
+          </span>
+          {PARITY_HASHES.map((row) => (
+            <div key={row.tick} className="flex items-baseline justify-between gap-2">
+              <span className="work-illustration__tick">tick {row.tick}</span>
+              <span className={`work-illustration__hash${pane.reference ? '' : ' work-illustration__hash--matched'}`}>
+                {row.hash}
+              </span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </IllustrationPanel>
+  );
+}
+
 /** Indeed Analytics Extension — the popup, as it appears over a campaign. */
 function ExtensionPopupDrawing() {
   const row = (label: string, value: string) => (
@@ -479,6 +536,7 @@ function ExtensionPopupDrawing() {
 }
 
 const ILLUSTRATIONS: Record<WorkProjectId, ReactNode> = {
+  'roblox-dungeons': <HashParityDrawing />,
   glassgrid: <CrossfilterDrawing />,
   'r3f-projectiles': <ProjectilePoolDrawing />,
   'roblox-css': <CssTranslationDrawing />,
@@ -507,6 +565,7 @@ export function WorkSection() {
         </h2>
 
         <p className="mt-4 max-w-2xl text-lg text-body">
+          Roblox Dungeons, a co-op game on a deterministic simulation;
           Glassgrid, a data explorer for desktop and the browser; two npm
           packages; a multi-agent LLM pipeline; and tooling used inside Indeed.
         </p>
@@ -515,7 +574,7 @@ export function WorkSection() {
           {WORK_PROJECTS.map((project) => (
             <li
               key={project.id}
-              /* The featured card takes the full row above the 2x2. */
+              /* Each featured card takes a full row above the 2x2. */
               className={`card card--lg card--elevated flex flex-col p-5${project.featured ? ' md:col-span-2' : ''}`}
             >
               {ILLUSTRATIONS[project.id]}
@@ -531,7 +590,7 @@ export function WorkSection() {
                 </span>
               </div>
 
-              {/* The featured card is twice as wide; its copy keeps a readable
+              {/* A featured card is twice as wide; its copy keeps a readable
                   measure rather than running the full width. */}
               <p className={`work-card__description mt-3 grow${project.featured ? ' max-w-[75ch]' : ''}`}>
                 {project.description}

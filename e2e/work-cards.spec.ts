@@ -3,6 +3,10 @@ import {
   GLASSGRID_CROSSFILTER,
   GLASSGRID_CROSSFILTER_CLAIM,
   ROBLOX_CSS_COVERAGE,
+  ROBLOX_DUNGEONS_FIXTURES,
+  ROBLOX_DUNGEONS_PIN,
+  ROBLOX_DUNGEONS_REPO,
+  ROBLOX_DUNGEONS_ROLLBACK_CLAIM,
   WORK_PROJECTS,
 } from '../src/data/workProjects';
 
@@ -41,26 +45,71 @@ test('every card renders, one per project in the data', async ({ page }) => {
   await expect(page.locator('#work li')).toHaveCount(WORK_PROJECTS.length);
 });
 
-test('Glassgrid is the featured card: first, and the full width from 768px up', async ({ page }, testInfo) => {
-  const first = page.locator('#work li').first();
-  await expect(first.getByRole('heading', { level: 3 })).toHaveText('Glassgrid');
+test('Roblox Dungeons and Glassgrid are the featured cards: first, in that order, each the full width from 768px up', async ({ page }, testInfo) => {
+  const cards = page.locator('#work li');
+  await expect(cards.nth(0).getByRole('heading', { level: 3 })).toHaveText('Roblox Dungeons');
+  await expect(cards.nth(1).getByRole('heading', { level: 3 })).toHaveText('Glassgrid');
+  // Two, and they lead: the data's rule, held here so a third cannot slip in.
+  expect(WORK_PROJECTS.filter((p) => p.featured).map((p) => p.id)).toEqual(['roblox-dungeons', 'glassgrid']);
+  expect(WORK_PROJECTS.slice(0, 2).every((p) => p.featured)).toBe(true);
 
   const wide = (testInfo.project.use.viewport?.width ?? 0) >= 768;
   const list = await page.locator('#work ul').boundingBox();
-  const featured = await first.boundingBox();
-  const next = await page.locator('#work li').nth(1).boundingBox();
-  if (!list || !featured || !next) throw new Error('work grid not laid out');
+  const first = await cards.nth(0).boundingBox();
+  const second = await cards.nth(1).boundingBox();
+  const next = await cards.nth(2).boundingBox();
+  if (!list || !first || !second || !next) throw new Error('work grid not laid out');
 
   if (wide) {
-    // Spans both columns: as wide as the list, and about twice the width of a
-    // card in the 2x2 below it (the gap makes it a little more than double).
-    expect(Math.abs(featured.width - list.width)).toBeLessThanOrEqual(1);
-    expect(featured.width).toBeGreaterThan(next.width * 2);
-    expect(next.y).toBeGreaterThan(featured.y + featured.height - 1);
+    // Each spans both columns: as wide as the list, and about twice the width
+    // of a card in the 2x2 below (the gap makes it a little more than double).
+    for (const featured of [first, second]) {
+      expect(Math.abs(featured.width - list.width)).toBeLessThanOrEqual(1);
+      expect(featured.width).toBeGreaterThan(next.width * 2);
+    }
+    // Stacked, not side by side, and the 2x2 starts under the second.
+    expect(second.y).toBeGreaterThan(first.y + first.height - 1);
+    expect(next.y).toBeGreaterThan(second.y + second.height - 1);
   } else {
     // One column: every card is the list's width.
-    expect(Math.abs(featured.width - next.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(first.width - next.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(second.width - next.width)).toBeLessThanOrEqual(1);
   }
+});
+
+test('Roblox Dungeons states its one measurement with the device it was measured on', async ({ page }) => {
+  const c = card(page, 'Roblox Dungeons');
+  // The figure, its device and its gate together, exactly as the data module
+  // publishes them: never 11.77 ms without the iPhone 17.
+  await expect(c).toContainText(ROBLOX_DUNGEONS_ROLLBACK_CLAIM);
+  await expect(c).toContainText(`${ROBLOX_DUNGEONS_FIXTURES} golden fixtures`);
+  await expect(c).toContainText('then not built');
+  // The repository is source available, all rights reserved. The other cards'
+  // licence badges must never be copied onto this one.
+  await expect(c).toContainText(/source available/i);
+  await expect(c).not.toContainText(/\bMIT\b|open[- ]source/i);
+  // And none of the README's daily-moving counts (lines, spec files, commits).
+  await expect(c).not.toContainText(/\d[\d,]* (?:lines|commits|spec files)/);
+});
+
+test('Roblox Dungeons links to the game, its source and its architecture at the pinned commit', async ({ page }) => {
+  const c = card(page, 'Roblox Dungeons');
+  const dungeons = WORK_PROJECTS.find((p) => p.id === 'roblox-dungeons')!;
+  for (const label of ['Play', 'Source', 'Architecture']) {
+    const expected = dungeons.links.find((l) => l.label === label);
+    expect(expected, label).toBeDefined();
+    const link = c.getByRole('link', { name: new RegExp(`^${label}`) });
+    await expect(link).toHaveAttribute('href', expected!.href);
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', /noopener/);
+  }
+  await expect(c.getByRole('link', { name: /^Play/ })).toHaveAttribute('href', /^https:\/\/www\.roblox\.com\/games\/\d+\//);
+  await expect(c.getByRole('link', { name: /^Source/ })).toHaveAttribute('href', ROBLOX_DUNGEONS_REPO);
+  // A permalink, not `main`: the page it opens is the one the claims were read from.
+  await expect(c.getByRole('link', { name: /^Architecture/ })).toHaveAttribute(
+    'href',
+    `${ROBLOX_DUNGEONS_REPO}/blob/${ROBLOX_DUNGEONS_PIN}/ARCHITECTURE.md`,
+  );
 });
 
 test('Glassgrid states its one timing with the machine it was measured on', async ({ page }) => {

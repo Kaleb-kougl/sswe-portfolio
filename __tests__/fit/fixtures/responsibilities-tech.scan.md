@@ -27,8 +27,9 @@ Checked against Kaleb Kougl's portfolio. Quick check without a model: rows are t
 ## Nice-to-have
 
 - **Strong**: Build and maintain our internal CI/CD pipelines on GitHub Actions
-  Evidence: Led the OneHost micro-frontend migration (Indeed), GitHub Actions CI with Vitest and Playwright (This portfolio site).
+  Evidence: Led the OneHost micro-frontend migration (Indeed), Determinism enforced by the test runner (Roblox Dungeons), GitHub Actions CI with Vitest and Playwright (This portfolio site).
   - Led the OneHost micro-frontend migration (Indeed): [Résumé: Senior Software Engineer, Indeed.com](https://kalebkougl-portfolio.vercel.app/#career)
+  - Determinism enforced by the test runner (Roblox Dungeons): [Roblox Dungeons ARCHITECTURE.md, The determinism invariant](https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/ARCHITECTURE.md)
   - GitHub Actions CI with Vitest and Playwright (This portfolio site): [sswe-portfolio on GitHub](https://github.com/Kaleb-kougl/sswe-portfolio)
 - **Strong**: Own the Webpack and module federation setup for 30+ micro-frontends
   Evidence: Led the OneHost micro-frontend migration (Indeed), Co-architected OneHost, led 6 engineers (Indeed), Halved Webpack build time (IBM).
