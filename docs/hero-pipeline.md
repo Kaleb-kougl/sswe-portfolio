@@ -4,7 +4,7 @@ The fixed 3D background is **112 small blocks that rearrange as you scroll**.
 This document covers how the blocks are produced: the Blender file, the
 generator script, the exported `hero.glb`, and the budget check that guards it.
 
-The five scroll arrangements (letters -> fibonacci sphere -> four ascending bars
+The five scroll arrangements (letters -> fibonacci sphere -> five ascending bars
 -> exploded wireframe -> receding floor) are **not** part of this pipeline.
 Only the first one, the `KK` letters, is baked -- it is the asset's rest pose.
 The other four are computed at runtime on the web from the block positions.

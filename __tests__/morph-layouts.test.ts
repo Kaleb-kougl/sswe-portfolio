@@ -3,7 +3,9 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { RESUME_DATA } from '@/data/resumeData';
 import {
+  CAREER_BAR_COUNT,
   ARTBOARD_WORLD_H,
   ARTBOARD_WORLD_W,
   BLOCK_COUNT,
@@ -93,19 +95,35 @@ describe('morph-layouts', () => {
     }
   });
 
-  it('puts the career bars on four ascending columns', () => {
+  it('puts the career bars on five ascending columns, one per role', () => {
+    // Each bar is two blocks wide: group the distinct x positions in pairs.
+    const xs = new Set<number>();
+    for (let i = 0; i < BLOCK_COUNT; i++) xs.add(Math.round(LAYOUTS.position[at(2, i) * 3] * 100) / 100);
+    const columns = [...xs].sort((p, q) => p - q);
+    expect(columns).toHaveLength(CAREER_BAR_COUNT * 2);
+
     const tops = new Map<number, number>();
+    const counts = new Map<number, number>();
     for (let i = 0; i < BLOCK_COUNT; i++) {
       const flat = at(2, i);
       const x = Math.round(LAYOUTS.position[flat * 3] * 100) / 100;
       const y = LAYOUTS.position[flat * 3 + 1];
-      const bar = Math.floor((x - STAGE_BOUNDS[2].centerX + 100) / 5.5);
+      const bar = Math.floor(columns.indexOf(x) / 2);
       tops.set(bar, Math.max(tops.get(bar) ?? -Infinity, y));
+      counts.set(bar, (counts.get(bar) ?? 0) + 1);
     }
-    const heights = [...tops.entries()].sort((a, b) => a[0] - b[0]).map(([, y]) => y);
-    // Bars 7, 11, 16 and 22 blocks tall — strictly ascending left to right.
-    expect(heights).toHaveLength(4);
+    const heights = [...tops.entries()].sort((p, q) => p[0] - q[0]).map(([, y]) => y);
+    // Bars 4, 7, 11, 15 and 19 blocks tall — strictly ascending left to right.
+    expect(heights).toHaveLength(5);
     for (let i = 1; i < heights.length; i++) expect(heights[i]).toBeGreaterThan(heights[i - 1]);
+    // Every block is in a bar: two columns of 4 + 7 + 11 + 15 + 19.
+    expect([...counts.entries()].sort((p, q) => p[0] - q[0]).map(([, n]) => n)).toEqual([8, 14, 22, 30, 38]);
+
+    // The count is the career section's: one bar per role it renders
+    // ("five steps up"). A role added to RESUME_DATA fails here until the
+    // background has a bar for it.
+    const roles = Object.values(RESUME_DATA).filter((entry) => entry.type === 'work');
+    expect(CAREER_BAR_COUNT).toBe(roles.length);
   });
 
   it('spreads the process stage across three depth layers', () => {
