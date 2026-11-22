@@ -10,7 +10,7 @@
  *
  *   hero     the letters KK
  *   work     a fibonacci sphere
- *   career   four ascending bars
+ *   career   five ascending bars, one per role in the career section
  *   process  an exploded view in three offset layers
  *   contact  a receding floor plane
  *
@@ -280,11 +280,26 @@ export interface MorphLayouts {
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const SPHERE_TILT = 0.35;
-const BAR_HEIGHTS = [7, 11, 16, 22] as const;
+/**
+ * One bar per role in the career section ("five steps up"), in blocks. Each
+ * bar is two blocks wide, so the heights must sum to BLOCK_COUNT / 2 = 56 for
+ * the stage to use every block. The mockup had four bars (7, 11, 16, 22) from
+ * when the section showed four roles; `__tests__/morph-layouts.test.ts` now
+ * holds this count to the number of `work` entries in RESUME_DATA.
+ */
+const BAR_HEIGHTS = [4, 7, 11, 15, 19] as const;
+/** How many bars the career stage draws. */
+export const CAREER_BAR_COUNT = BAR_HEIGHTS.length;
+/**
+ * Artboard pixels from one bar's left edge to the next. The bars keep the
+ * span the mockup tuned for four (330px from the first bar to the last), so
+ * the stage sits where it did beside the copy.
+ */
+const BAR_PITCH_PX = 330 / (BAR_HEIGHTS.length - 1);
 const FLOOR_COLS = 14;
 
 interface BarCell {
-  /** Which bar (0..3). */
+  /** Which bar (0..CAREER_BAR_COUNT - 1). */
   k: number;
   /** Row within the bar. */
   r: number;
@@ -301,7 +316,7 @@ function buildBarCells(): BarCell[] {
       for (let w = 0; w < 2; w++) cells.push({ k, r, w, top: r === h - 1 });
     }
   });
-  return cells; // 2 * (7 + 11 + 16 + 22) = 112
+  return cells; // 2 * (4 + 7 + 11 + 15 + 19) = 112
 }
 
 function buildLayouts(): MorphLayouts {
@@ -369,17 +384,17 @@ function buildLayouts(): MorphLayouts {
       sz > 0.45 ? (i % 4 === 0 ? RGB.lime : RGB.orange) : RGB.ink,
     );
 
-    // --- 2 · career — four ascending bars ----------------------------------
+    // --- 2 · career — five ascending bars ----------------------------------
     const bar = bars[i];
     write(
       2,
       i,
-      900 + bar.k * 110 + bar.w * 20,
+      900 + bar.k * BAR_PITCH_PX + bar.w * 20,
       740 - bar.r * 20,
       0,
       1,
       1,
-      bar.top ? RGB.lime : bar.k === 3 ? RGB.orange : RGB.ink,
+      bar.top ? RGB.lime : bar.k === CAREER_BAR_COUNT - 1 ? RGB.orange : RGB.ink,
     );
 
     // --- 3 · process — exploded view, three offset layers -------------------

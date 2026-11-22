@@ -3,6 +3,10 @@ import { SITE_URL } from '../site';
 import {
   GLASSGRID_CROSSFILTER,
   ROBLOX_CSS_COVERAGE,
+  ROBLOX_DUNGEONS_FIXTURES,
+  ROBLOX_DUNGEONS_ROLLBACK,
+  ROBLOX_DUNGEONS_ROLLBACK_CLAIM,
+  robloxDungeonsFile,
   WORK_PROJECTS,
   type WorkProjectId,
 } from '../workProjects';
@@ -30,6 +34,9 @@ import type { Evidence } from './schema';
  *     chart create) and its MCP bridge, which is planned, not built. Its one
  *     timing here carries the machine in the same sentence and cites the
  *     benchmark JSON it is read from, which is what "120fps" never had.
+ *   - Roblox Dungeons' line, test and commit counts, which move daily, and
+ *     the rollback spike's misprediction rate, which is from a bot sweep and
+ *     needs that said next to it. Its one figure carries its device.
  * Entries of type profile, contact and skill are keyword lists or contact
  * details, not claims, and are skipped too.
  *
@@ -232,6 +239,38 @@ export const EVIDENCE: readonly Evidence[] = [
     claim: 'I secured cross-platform data transfers with strict frontend input allowlists and automatic URL sanitization to prevent XSS, routing external input into existing backend validation.',
     skills: ['frontend-security'],
   }, EXTENSION, EXTENSION_PERIOD),
+
+  // --- Roblox Dungeons ----------------------------------------------------
+  // Claims limited to the card and the résumé entry, both read at one pinned
+  // commit of the public repo (ROBLOX_DUNGEONS_PIN in workProjects.ts), and
+  // every source is a permalink to it. Four records, not more: the corpus is
+  // near its token budget (npm run corpus:tokens). Existing tags only: a new
+  // tag means rebuilding the skill embeddings (__tests__/fit/embed.test.ts).
+  //
+  // TAGGED NARROWLY, as the portfolio-site records are. With `typescript`,
+  // `automated-testing` and `api-design` on these, the fit fixtures showed a
+  // game outranking r3f-projectiles, the video pipeline's tests and
+  // Glassgrid's command registry on overlap alone, under requirements a
+  // reader would not connect to it ("payment APIs"). So these answer for
+  // what they are evidence of: Roblox work, CI, and system design.
+  project('roblox-dungeons', 'bit-for-bit-port', {
+    claim: `I ported a game simulation from a TypeScript web build to Roblox (roblox-ts, compiled to Luau) so that it replays the original bit for bit across ${ROBLOX_DUNGEONS_FIXTURES} golden fixtures.`,
+    skills: ['roblox-ts', 'game-development'],
+    metric: `${ROBLOX_DUNGEONS_FIXTURES} golden fixtures replayed bit for bit`,
+  }, { label: 'Roblox Dungeons, fixtures README', href: robloxDungeonsFile('fixtures/README.md') }),
+  project('roblox-dungeons', 'enforced-determinism', {
+    claim: 'I enforce determinism mechanically: the headless test runner loads the simulation where clock, RNG and Roblox API calls raise, and CI runs the spec suite on x86-64 and arm64.',
+    skills: ['automated-testing', 'ci-cd', 'github-actions', 'system-design'],
+  }, { label: 'Roblox Dungeons ARCHITECTURE.md, The determinism invariant', href: robloxDungeonsFile('ARCHITECTURE.md') }),
+  project('roblox-dungeons', 'replay-validation', {
+    claim: 'I designed the server to replay each submitted run from its inputs on a 4 ms time budget instead of trusting a reported score, with the wallet kept as a ledger of transactions.',
+    skills: ['system-design', 'game-development'],
+  }, { label: 'Roblox Dungeons ARCHITECTURE.md, Trust boundary', href: robloxDungeonsFile('ARCHITECTURE.md') }),
+  project('roblox-dungeons', 'rollback-not-built', {
+    claim: `I measured rollback netcode before building it: ${ROBLOX_DUNGEONS_ROLLBACK_CLAIM}. I did not build it, and built lockstep with local prediction instead.`,
+    skills: ['system-design', 'game-development'],
+    metric: `p95 ${ROBLOX_DUNGEONS_ROLLBACK.p95Ms} ms on an ${ROBLOX_DUNGEONS_ROLLBACK.device} against a ${ROBLOX_DUNGEONS_ROLLBACK.gateMs} ms gate`,
+  }, { label: 'Roblox Dungeons, decision record 4', href: ROBLOX_DUNGEONS_ROLLBACK.source }),
 
   // --- Glassgrid --------------------------------------------------------
   // Claims limited to the card and the résumé entry, both sourced to the

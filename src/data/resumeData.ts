@@ -341,6 +341,50 @@ export const RESUME_DATA: Record<string, ProjectEntry> = {
       'Built cross\u2011platform React Native features and added Jest/Appium test suites to raise release confidence.',
     ],
   },
+  'roblox-dungeons': {
+    fileId: 'roblox-dungeons',
+    title: 'Roblox Dungeons',
+    company: 'Source available \u00b7 roblox-dungeons',
+    dates: '',
+    type: 'project',
+    headline: 'A simulation that replays bit for bit, and a server that checks.',
+    summary:
+      'A co-op bullet-hell roguelike for up to 8 players, live on Roblox, built on a deterministic simulation with lockstep multiplayer and a server that replays every run it is sent.',
+    /*
+     * SOURCING. Every bullet is read off the public repository at ONE commit
+     * (github.com/Kaleb-kougl/roblox-dungeons, dff7b30; the pin and the reason
+     * for it are ROBLOX_DUNGEONS_PIN in `workProjects.ts`), and each ends in a
+     * permalink a reader can check: README.md ("The hard problems", "How this
+     * was built"), ARCHITECTURE.md ("One frame of co-op", "Trust boundary"),
+     * fixtures/README.md and decision record 0004. The Work card's SOURCING
+     * note maps its own clauses; this entry carries the longer list the corpus
+     * draws on.
+     *
+     * The rollback bullet repeats ROBLOX_DUNGEONS_ROLLBACK's figures. They are
+     * not imported, for the reason given on the Glassgrid entry below
+     * (contact-section.tsx is a client component that imports this file). The
+     * corpus test checks that every figure in a roblox-dungeons record
+     * appears in this text, so a drift between the two shows up there.
+     *
+     * The permalinks are typed out here for the same reason. When the pin
+     * moves, `git grep dff7b30` finds every one.
+     *
+     * NOT CLAIMED: line, test and commit counts. The README states them "as of
+     * November 2026" and they move daily. Also not claimed: that the server
+     * prevents cheating; ARCHITECTURE.md lists what replay validation does not
+     * catch, and these bullets say only what it does.
+     */
+    bullets: [
+      'Built Roblox Dungeons, a co-op bullet-hell roguelike for up to 8 players that is live on Roblox, in TypeScript compiled to Luau with roblox-ts, Flamework, Reflex and React. Source: https://github.com/Kaleb-kougl/roblox-dungeons',
+      'Ported the simulation from a private TypeScript web build so that it replays the original bit for bit: the parity specs replay 16 golden fixtures exported from the original and compare every state hash. Fixtures: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/fixtures/README.md',
+      'Determinism is enforced, not promised: the headless test runner loads the simulation in an environment where clock, RNG and Roblox API calls raise, ESLint mirrors the rule, and CI runs the spec suite on both x86-64 and arm64. Architecture: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/ARCHITECTURE.md',
+      'Co-op is lockstep: the server merges every player\u2019s input into one log, clients step it at a steady 60 Hz from a jitter buffer, and the local player is drawn up to 20 ticks ahead of the confirmed state. One frame of co-op: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/ARCHITECTURE.md',
+      'The server treats every reported result as a claim: a run is submitted as its inputs and replayed on a 4 ms time budget, and the wallet is a ledger of transactions rather than a balance a client can set. Trust boundary: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/ARCHITECTURE.md',
+      'Measured rollback netcode before building it: copying the state and stepping it 16 ticks a frame took 11.77 ms at p95 on an iPhone 17 against a 4 ms gate, so it was not built and the spike\u2019s code was removed. Decision record: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/docs/decisions/0004-rollback-measured-then-not-built.md',
+      'Built in four weeks pairing with Claude, Anthropic\u2019s coding agent, behind a merge gate that runs typecheck, lint, the headless spec suite and checks on generated facts. README: https://github.com/Kaleb-kougl/roblox-dungeons/blob/dff7b30418327964a522ac1f0939a98ed7358d46/README.md',
+    ],
+    skills: ['TypeScript', 'Roblox-TS', 'Luau', 'Flamework', 'Reflex', 'React', 'Lockstep netcode', 'Deterministic simulation', 'GitHub Actions'],
+  },
   'glassgrid': {
     fileId: 'glassgrid',
     title: 'Glassgrid',

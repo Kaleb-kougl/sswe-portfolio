@@ -121,7 +121,7 @@ export function extractNumbers(text: string): string[] {
 export const ENTITIES: readonly { name: string; pattern: RegExp }[] = [
   ...[
     'IBM', 'J.B. Hunt', 'JB Hunt', 'OneHost', 'Horizon', 'Luxon', 'GolfTV', 'Watson Media', 'IBM Developer',
-    'BonkBall', 'Flamework', 'Reflex', 'SimplePath', 'Framer Motion', 'Analytical Chemistry', 'Northwestern',
+    'BonkBall', 'Roblox Dungeons', 'Flamework', 'Reflex', 'SimplePath', 'Framer Motion', 'Analytical Chemistry', 'Northwestern',
     'Agentic AI Video Creator', 'Indeed Analytics Extension',
     'Google', 'Microsoft', 'Amazon', 'Meta', 'Facebook', 'Apple', 'Netflix', 'OpenAI', 'Anthropic', 'Stripe',
     'Uber', 'Airbnb', 'Salesforce', 'Oracle', 'Adobe', 'Spotify', 'Shopify', 'Twitter', 'LinkedIn',

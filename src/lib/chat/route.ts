@@ -81,9 +81,14 @@ export function looksLikeJd(message: string): boolean {
  * role that holds it.
  */
 export const PROJECT_ALIASES: readonly { id: string; names: readonly string[] }[] = [
+  // Before r3f-projectiles: "bullet-hell roguelike" starts with that entry's
+  // "bullet-hell", and the earliest match wins, ties going to the first listed.
+  { id: 'roblox-dungeons', names: ['roblox dungeons', 'roblox-dungeons', 'bullet-hell roguelike', 'bullet hell roguelike', 'roguelike', 'lockstep', 'rollback', 'netcode'] },
   { id: 'glassgrid', names: ['glassgrid', 'glass grid', 'data explorer', 'csv explorer', 'cross-filter', 'crossfilter'] },
   { id: 'r3f-projectiles', names: ['r3f-projectiles', 'r3f projectiles', 'projectile engine', 'bullet-hell engine', 'bullet hell engine', 'bullet-hell', 'bullet hell'] },
   { id: 'roblox-css', names: ['roblox-css', 'roblox css'] },
+  // "roblox game" stays BonkBall's: evals/chat/phrasings.ts holds that phrase
+  // out as a test of this router, and a held-out case is not edited to pass.
   { id: 'hammerball', names: ['bonkball', 'bonk ball', 'hammerball', 'roblox game'] },
   { id: 'video-pipeline', names: ['video-pipeline', 'video pipeline', 'video creator', 'agentic ai video creator'] },
   { id: 'analytics-extension', names: ['analytics extension', 'chrome extension project', 'indeed analytics extension'] },

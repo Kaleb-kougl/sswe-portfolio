@@ -9,6 +9,10 @@
    __caption / __cell — the Glassgrid drawing: a pane's small mono caption
    (grid headers, chart titles), and one grid cell drawn as a bar, link
    blue when its column is the one the brush selects (--selected).
+
+   __tick / __hash — the Roblox Dungeons drawing: one row of a pane is a
+   tick and the state hash at it. The reference pane's hashes are ink; a
+   pane that reached the same values is link blue (--matched).
    ===================================================================== */
 
 .work-illustration {
@@ -37,4 +41,16 @@
 
 .work-illustration__cell--selected {
   @apply bg-link/45;
+}
+
+.work-illustration__tick {
+  @apply font-mono text-[8px] leading-none text-muted;
+}
+
+.work-illustration__hash {
+  @apply font-mono text-[9px] font-bold leading-none text-body;
+}
+
+.work-illustration__hash--matched {
+  @apply text-link;
 }
